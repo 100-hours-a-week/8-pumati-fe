@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write ."
   },
   "dependencies": {
     "@tanstack/react-query": "^5.74.7",
@@ -25,8 +28,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^8.31.0",
+    "@typescript-eslint/parser": "^8.31.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-prettier": "^5.2.6",
+    "prettier": "^3.5.3",
     "tailwindcss": "^4",
     "typescript": "^5.4"
   }
