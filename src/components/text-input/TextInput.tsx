@@ -23,11 +23,12 @@ export default function TextInput({
 
   return (
     <article className="relative flex flex-col gap-2 px-5 pt-3 pb-7 max-w-[540px] w-full">
-      <label className="font-medium">
+      <label className="font-medium" htmlFor={name}>
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <input
         {...register(name)}
+        id={name}
         className={`px-4 py-3 placeholder:text-grey rounded-md outline-none border focus:border-transparent border-grey focus:ring-2 focus:ring-blue focus:ring-offset-0`}
         {...rest}
       />
