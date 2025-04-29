@@ -22,7 +22,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={pretendard.className}>{children}</body>
+      <body className={pretendard.className}>
+        <div className="flex min-h-screen w-full bg-blue-white">
+          <main className="mx-auto min-w-[375px] max-w-[600px] w-full min-h-screen bg-white shadow-sm overflow-auto">
+            {children}
+          </main>
+        </div>
+      </body>
     </html>
   );
 }

@@ -22,3 +22,8 @@
   --color-red: #ff7f74;
   --color-light-red: #fff9f8;
 }
+
+body {
+  @apply m-0 p-0 min-h-screen;
+  @apply text-black;
+}
