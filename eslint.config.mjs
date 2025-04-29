@@ -17,7 +17,7 @@ const eslintConfig = [
       'plugin:@typescript-eslint/recommended',
       'plugin:prettier/recommended',
     ],
-    plugins: ['@typescript-eslint', 'prettier'],
+    plugins: ['@typescript-eslint', 'prettier', 'import'],
     rules: {
       'prettier/prettier': 'error',
       'react-hooks/rules-of-hooks': 'error',
@@ -29,6 +29,32 @@ const eslintConfig = [
       'no-console': 'warn',
       'no-debugger': 'warn',
       'prefer-const': 'warn',
+      'import/order': [
+        'warn',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            ['parent', 'sibling', 'index'],
+            'object',
+            'type',
+          ],
+          pathGroups: [
+            {
+              pattern: '@/**',
+              group: 'internal',
+              position: 'after',
+            },
+          ],
+          pathGroupsExcludedImportTypes: ['builtin'],
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
+          'newlines-between': 'always',
+        },
+      ],
     },
   }),
 ];
