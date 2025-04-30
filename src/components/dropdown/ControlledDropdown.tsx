@@ -5,7 +5,7 @@ import { Dropdown } from './Dropdown';
 import { DropdownOption } from './types';
 
 type ControlledDropdownProps = {
-  label: string;
+  label?: string;
   name: string;
   options: DropdownOption[];
   placeholder: string;

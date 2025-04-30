@@ -1,19 +1,13 @@
-'use client';
-
 import { Controller, useFormContext } from 'react-hook-form';
-import { ImageUploader } from './ImageUploader';
+import { TextInput } from './TextInput';
+import { TextInputProps } from './types';
 
-type ControlledImageUploaderProps = {
-  name: string;
-  label?: string;
-  required?: boolean;
-};
-
-export function ControlledImageUploader({
+export function ControlledTextInput({
   name,
   label,
   required,
-}: ControlledImageUploaderProps) {
+  ...rest
+}: TextInputProps) {
   const { control } = useFormContext();
 
   return (
@@ -21,12 +15,13 @@ export function ControlledImageUploader({
       name={name}
       control={control}
       render={({ field }) => (
-        <ImageUploader
+        <TextInput
           name={name}
           label={label}
           required={required}
           value={field.value}
           onChange={field.onChange}
+          {...rest}
         />
       )}
     />

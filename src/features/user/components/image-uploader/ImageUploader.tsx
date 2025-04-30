@@ -7,7 +7,7 @@ import { useFormContext } from 'react-hook-form';
 
 type ImageUploaderProps = {
   name: string;
-  label: string;
+  label?: string;
   required?: boolean;
   value?: File | null;
   onChange: (file: File | null) => void;
@@ -15,7 +15,6 @@ type ImageUploaderProps = {
 
 export function ImageUploader({
   name,
-  
   label,
   required,
   value,
@@ -50,9 +49,11 @@ export function ImageUploader({
   }, [value]);
   return (
     <article className="relative flex flex-col gap-2 px-5 pt-3 pb-7 w-full max-w-[540px]">
-      <label className="font-medium" htmlFor={name}>
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
+      {label && (
+        <label className="font-medium" htmlFor={name}>
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
+      )}
       <div className="relative self-center w-[120px] h-[120px]">
         <div
           onClick={handleClick}

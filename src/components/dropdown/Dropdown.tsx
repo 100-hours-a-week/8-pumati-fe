@@ -7,7 +7,7 @@ import { MenuList } from './MenuList';
 import { DropdownOption, DropdownValue } from './types';
 
 type DropdownProps = {
-  label: string;
+  label?: string;
   name: string;
   options: DropdownOption[];
   placeholder: string;
@@ -44,9 +44,11 @@ export function Dropdown({
   };
   return (
     <article className="relative flex flex-col gap-2 px-5 pt-3 pb-7 max-w-[540px] w-full">
-      <label className="font-medium" htmlFor={name}>
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
+      {label && (
+        <label className="font-medium" htmlFor={name}>
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
+      )}
       <div className="relative">
         <button
           ref={buttonRef}
