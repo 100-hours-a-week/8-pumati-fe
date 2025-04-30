@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowIcon } from '@/components/icons';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import MenuList from './MenuList';
 import { DropdownOption, DropdownValue } from './types';
@@ -25,6 +25,7 @@ export default function Dropdown({
   selected,
   onSelect,
 }: DropdownProps) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const {
     formState: { errors },
@@ -48,6 +49,7 @@ export default function Dropdown({
       </label>
       <div className="relative">
         <button
+          ref={buttonRef}
           type="button"
           onClick={handleMenuToggle}
           className="flex items-center justify-between w-full px-4 py-3 text-left border rounded-md border-grey focus:border-transparent focus:ring-2 focus:ring-blue focus:ring-offset-0 outline-none cursor-pointer"
@@ -62,7 +64,14 @@ export default function Dropdown({
             className={`${isOpen ? 'rotate-0' : 'rotate-180'} transition-transform duration-200 ease-in-out`}
           />
         </button>
-        {isOpen && <MenuList options={options} onSelect={handleSelect} />}
+        {isOpen && (
+          <MenuList
+            options={options}
+            onSelect={handleSelect}
+            onOutsideClick={() => setIsOpen(false)}
+            buttonRef={buttonRef}
+          />
+        )}
       </div>
       {errorMessage && (
         <p className="absolute bottom-0 text-sm text-red-500">
