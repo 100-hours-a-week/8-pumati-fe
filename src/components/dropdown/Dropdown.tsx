@@ -61,7 +61,7 @@ export default function Dropdown({
             width={24}
             height={24}
             fill="var(--color-grey)"
-            className={`${isOpen ? 'rotate-0' : 'rotate-180'} transition-transform duration-200 ease-in-out`}
+            className={`${isOpen ? 'rotate-0' : 'rotate-x-180'} transition-transform duration-200 ease-in-out`}
           />
         </button>
         {isOpen && (
