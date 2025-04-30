@@ -1,6 +1,7 @@
 'use client';
 
 import { Controller, useFormContext } from 'react-hook-form';
+import { FormFieldWrapper } from '../form';
 import { Dropdown } from './Dropdown';
 import { DropdownOption } from './types';
 
@@ -26,15 +27,14 @@ export function ControlledDropdown({
       name={name}
       control={control}
       render={({ field }) => (
-        <Dropdown
-          label={label}
-          name={name}
-          options={options}
-          placeholder={placeholder}
-          required={required}
-          selected={field.value}
-          onSelect={(value) => field.onChange(value)}
-        />
+        <FormFieldWrapper name={name} label={label} required={required}>
+          <Dropdown
+            options={options}
+            placeholder={placeholder}
+            selected={field.value}
+            onSelect={(value) => field.onChange(value)}
+          />
+        </FormFieldWrapper>
       )}
     />
   );

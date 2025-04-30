@@ -1,5 +1,6 @@
 'use client';
 
+import { FormFieldWrapper } from '@/components/form';
 import { Controller, useFormContext } from 'react-hook-form';
 import { ImageUploader } from './ImageUploader';
 
@@ -21,13 +22,13 @@ export function ControlledImageUploader({
       name={name}
       control={control}
       render={({ field }) => (
-        <ImageUploader
-          name={name}
-          label={label}
-          required={required}
-          value={field.value}
-          onChange={field.onChange}
-        />
+        <FormFieldWrapper name={name} label={label} required={required}>
+          <ImageUploader
+            name={name}
+            value={field.value}
+            onChange={field.onChange}
+          />
+        </FormFieldWrapper>
       )}
     />
   );

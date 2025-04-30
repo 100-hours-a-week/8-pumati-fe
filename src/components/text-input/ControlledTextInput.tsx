@@ -1,13 +1,20 @@
 import { Controller, useFormContext } from 'react-hook-form';
+import { FormFieldWrapper } from '../form';
 import { TextInput } from './TextInput';
-import { TextInputProps } from './types';
+
+type ControlledTextInputProps = {
+  name: string;
+  label?: string;
+  required?: boolean;
+  placeholder: string;
+};
 
 export function ControlledTextInput({
   name,
   label,
   required,
-  ...rest
-}: TextInputProps) {
+  placeholder,
+}: ControlledTextInputProps) {
   const { control } = useFormContext();
 
   return (
@@ -15,14 +22,14 @@ export function ControlledTextInput({
       name={name}
       control={control}
       render={({ field }) => (
-        <TextInput
-          name={name}
-          label={label}
-          required={required}
-          value={field.value}
-          onChange={field.onChange}
-          {...rest}
-        />
+        <FormFieldWrapper name={name} label={label} required={required}>
+          <TextInput
+            name={name}
+            placeholder={placeholder}
+            value={field.value}
+            onChange={field.onChange}
+          />
+        </FormFieldWrapper>
       )}
     />
   );
