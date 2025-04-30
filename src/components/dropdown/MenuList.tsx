@@ -1,6 +1,6 @@
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { RefObject, useRef } from 'react';
-import MenuItem from './MenuItem';
+import { MenuItem } from './MenuItem';
 import { DropdownOption, DropdownValue } from './types';
 
 type MenuListProps = {
@@ -10,7 +10,7 @@ type MenuListProps = {
   buttonRef: RefObject<HTMLButtonElement | null>;
 };
 
-export default function MenuList({
+export function MenuList({
   options,
   onSelect,
   onOutsideClick,

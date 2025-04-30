@@ -9,12 +9,7 @@ export interface TextInputProps
   required?: boolean;
 }
 
-export default function TextInput({
-  name,
-  label,
-  required,
-  ...rest
-}: TextInputProps) {
+export function TextInput({ name, label, required, ...rest }: TextInputProps) {
   const {
     register,
     formState: { errors },

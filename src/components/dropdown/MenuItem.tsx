@@ -5,7 +5,7 @@ type MenuItemProps = {
   onSelect: (value: DropdownValue) => void;
 };
 
-export default function MenuItem({ option, onSelect }: MenuItemProps) {
+export function MenuItem({ option, onSelect }: MenuItemProps) {
   const handleSelect = () => {
     onSelect(option.value);
   };

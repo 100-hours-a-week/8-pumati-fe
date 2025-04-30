@@ -1,7 +1,7 @@
 'use client';
 
 import { Controller, useFormContext } from 'react-hook-form';
-import Dropdown from './Dropdown';
+import { Dropdown } from './Dropdown';
 import { DropdownOption } from './types';
 
 type ControlledDropdownProps = {
@@ -12,7 +12,7 @@ type ControlledDropdownProps = {
   required?: boolean;
 };
 
-export default function ControlledDropdown({
+export function ControlledDropdown({
   label,
   name,
   options,

@@ -3,7 +3,7 @@
 import { ArrowIcon } from '@/components/icons';
 import { useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import MenuList from './MenuList';
+import { MenuList } from './MenuList';
 import { DropdownOption, DropdownValue } from './types';
 
 type DropdownProps = {
@@ -16,7 +16,7 @@ type DropdownProps = {
   onSelect: (value: DropdownValue) => void;
 };
 
-export default function Dropdown({
+export function Dropdown({
   label,
   options = [],
   name,
