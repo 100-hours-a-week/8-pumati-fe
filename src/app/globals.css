@@ -19,6 +19,11 @@
   /* Secondary Colors */
   --color-green: #a3d139;
   --color-light-green: #fafdf5;
-  --color-red: #ff7f74;
+  --color-red: #e53935;
   --color-light-red: #fff9f8;
+}
+
+body {
+  @apply m-0 p-0 min-h-screen;
+  @apply text-black;
 }
