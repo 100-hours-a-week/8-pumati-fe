@@ -22,7 +22,7 @@ export function FormFieldWrapper({
   const errorMessage = errors[name]?.message;
 
   return (
-    <article className="relative flex flex-col gap-2 px-5 pt-3 pb-7 w-full max-w-[540px]">
+    <article className="relative flex flex-col gap-2 pt-3 pb-7 w-full max-w-[540px]">
       {label && (
         <label className="font-medium" htmlFor={name}>
           {label} {required && <span className="text-red-500">*</span>}
