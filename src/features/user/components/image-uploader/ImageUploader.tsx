@@ -2,41 +2,22 @@
 
 import { PlusIcon, ProfileIcon } from '@/components/icons';
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { useImageUploader } from '../../hooks/useImageUploader';
 
 type ImageUploaderProps = {
   name: string;
-  value?: File | null;
+  value: File | null;
   onChange: (file: File | null) => void;
 };
 
 export function ImageUploader({ name, value, onChange }: ImageUploaderProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const { fileInputRef, preview, handleFileInputClick, handleFileChange } =
+    useImageUploader(value, onChange);
 
-  const handleClick = () => {
-    fileInputRef.current?.click();
-  };
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null;
-
-    onChange(file);
-  };
-
-  useEffect(() => {
-    if (value) {
-      const url = URL.createObjectURL(value);
-      setPreview(url);
-
-      return () => URL.revokeObjectURL(url);
-    } else {
-      setPreview(null);
-    }
-  }, [value]);
   return (
     <div className="relative self-center w-[120px] h-[120px]">
       <div
-        onClick={handleClick}
+        onClick={handleFileInputClick}
         className="w-full h-full bg-light-grey rounded-full overflow-hidden flex items-end justify-center cursor-pointer"
       >
         {preview ? (
@@ -53,7 +34,7 @@ export function ImageUploader({ name, value, onChange }: ImageUploaderProps) {
       </div>
       <button
         type="button"
-        onClick={handleClick}
+        onClick={handleFileInputClick}
         className="absolute bottom-0 right-1 w-[28px] h-[28px] bg-soft-grey border-2 border-white rounded-full flex items-center justify-center"
       >
         <PlusIcon width={24} height={24} fill="var(--color-white)" />
@@ -64,7 +45,7 @@ export function ImageUploader({ name, value, onChange }: ImageUploaderProps) {
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={handleChange}
+        onChange={handleFileChange}
       />
     </div>
   );
