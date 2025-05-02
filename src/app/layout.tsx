@@ -1,4 +1,6 @@
 import { pretendard } from '@/assets/fonts';
+import { Header } from '@/components';
+import { cn } from '@/utils/style';
 import type { Metadata } from 'next';
 import './globals.css';
 
@@ -15,12 +17,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={pretendard.className}>
-        <div className="flex min-h-screen w-full bg-blue-white">
-          <main className="mx-auto min-w-[375px] max-w-[600px] w-full min-h-screen bg-white shadow-sm overflow-auto">
-            {children}
-          </main>
-        </div>
+      <body
+        className={cn(
+          pretendard.className,
+          'relative flex min-h-screen w-full bg-blue-white overflow-auto',
+        )}
+      >
+        <main className="mx-auto min-w-[375px] max-w-[600px] w-full min-h-screen bg-white shadow-md">
+          <Header />
+          {children}
+        </main>
       </body>
     </html>
   );

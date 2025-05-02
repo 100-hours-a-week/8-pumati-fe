@@ -1,4 +1,4 @@
-import { useOutsideClick } from '@/hooks/useOutsideClick';
+import { useOutsideClick } from '@/hooks';
 import { RefObject, useRef } from 'react';
 import { MenuItem } from './MenuItem';
 import { DropdownOption, DropdownValue } from './types';
