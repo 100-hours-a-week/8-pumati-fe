@@ -1,5 +1,6 @@
 export { ArrowIcon } from './ArrowIcon';
 export { CancelIcon } from './CancelIcon';
+export { KakaoIcon } from './KakaoIcon';
 export { LogoIcon } from './LogoIcon';
 export { MenuIcon } from './MenuIcon';
 export { PlusIcon } from './PlusIcon';

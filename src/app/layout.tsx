@@ -25,7 +25,7 @@ export default function RootLayout({
       >
         <main className="relative mx-auto min-w-[375px] max-w-[600px] w-full min-h-screen bg-white shadow-md">
           <Header />
-          <div className="px-6">{children}</div>
+          <div className="px-6 min-h-[calc(100vh-4rem)]">{children}</div>
         </main>
       </body>
     </html>
