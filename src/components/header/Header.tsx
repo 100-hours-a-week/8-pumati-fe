@@ -1,27 +1,25 @@
 'use client';
 
-import { drawerAtom } from '@/store';
+import { navbarAtom } from '@/store';
 import { cn } from '@/utils/style';
 import { useAtom } from 'jotai';
 import Link from 'next/link';
 import { useRef } from 'react';
-import { Drawer } from '../drawer';
 import { CancelIcon, LogoIcon, MenuIcon } from '../icons';
-import { NavMenuList } from './NavMenuList';
+import { NavBar } from './NavBar';
 
 export function Header() {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useAtom(drawerAtom);
+  const [isNavbarOpen, setIsNavbarOpen] = useAtom(navbarAtom);
 
-  const handleSidebarToggle = () => {
-    setIsDrawerOpen((prev) => !prev);
-  };
   return (
-    <section className="relative">
-      <header
+    <header className="sticky top-0 w-full bg-white overflow-hidden z-40">
+      <section
         className={cn(
-          'sticky top-0 z-40 flex justify-between items-center px-8 py-4 h-16 bg-white transition-all duration-200 ease-in-out border-b border-soft-grey',
-          isDrawerOpen && 'border-b-white',
+          'flex justify-between items-center z-40 px-8 py-4 h-16 border-b border-soft-grey',
+          isNavbarOpen
+            ? 'border-b-white'
+            : 'transition-colors duration-300 ease-in-out',
         )}
       >
         <Link href="/">
@@ -31,18 +29,16 @@ export function Header() {
           ref={buttonRef}
           type="button"
           className="cursor-pointer"
-          onClick={handleSidebarToggle}
+          onClick={() => setIsNavbarOpen((prev) => !prev)}
         >
-          {isDrawerOpen ? (
+          {isNavbarOpen ? (
             <CancelIcon width={18} height={18} fill="var(--color-dark-grey)" />
           ) : (
             <MenuIcon width={24} height={24} fill="var(--color-dark-grey)" />
           )}
         </button>
-      </header>
-      <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
-        <NavMenuList />
-      </Drawer>
-    </section>
+      </section>
+      <NavBar triggerRef={buttonRef} />
+    </header>
   );
 }
