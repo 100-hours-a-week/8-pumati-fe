@@ -16,7 +16,7 @@ export function Header() {
     <header className="sticky top-0 w-full bg-white overflow-hidden z-40">
       <section
         className={cn(
-          'flex justify-between items-center z-40 px-8 py-4 h-16 border-b border-soft-grey',
+          'flex justify-between items-center z-40 px-6 py-4 h-16 border-b border-soft-grey',
           isNavbarOpen
             ? 'border-b-white'
             : 'transition-colors duration-300 ease-in-out',
