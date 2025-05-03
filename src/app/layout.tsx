@@ -20,12 +20,12 @@ export default function RootLayout({
       <body
         className={cn(
           pretendard.className,
-          'relative flex min-h-screen w-full bg-blue-white overflow-auto',
+          'min-h-screen w-full bg-blue-white',
         )}
       >
-        <main className="mx-auto min-w-[375px] max-w-[600px] w-full min-h-screen bg-white shadow-md">
+        <main className="relative mx-auto min-w-[375px] max-w-[600px] w-full min-h-screen bg-white shadow-md">
           <Header />
-          {children}
+          <div className="px-6">{children}</div>
         </main>
       </body>
     </html>
