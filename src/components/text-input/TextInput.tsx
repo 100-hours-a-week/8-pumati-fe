@@ -1,17 +1,17 @@
 'use client';
 
-type TextInputProps = {
-  name: string;
-  placeholder: string;
-  value?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-};
+import { cn } from '@/utils/style';
+import { InputHTMLAttributes } from 'react';
+
+export type TextInputProps = InputHTMLAttributes<HTMLInputElement>;
 
 export function TextInput({
   name,
   placeholder,
   value,
   onChange,
+  maxLength,
+  disabled,
 }: TextInputProps) {
   return (
     <input
@@ -19,7 +19,12 @@ export function TextInput({
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      className={`px-4 py-3 placeholder:text-grey rounded-md outline-none border focus:border-transparent border-grey focus:ring-2 focus:ring-blue focus:ring-offset-0`}
+      maxLength={maxLength}
+      disabled={disabled}
+      className={cn(
+        'px-4 py-3 placeholder:text-grey rounded-md outline-none border focus:border-transparent border-grey focus:ring-2 focus:ring-blue focus:ring-offset-0',
+        disabled && 'bg-blue-white',
+      )}
     />
   );
 }

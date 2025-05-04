@@ -2,13 +2,12 @@
 
 import { Controller, useFormContext } from 'react-hook-form';
 import { FormFieldWrapper } from '../form';
-import { TextInput } from './TextInput';
+import { TextInput, TextInputProps } from './TextInput';
 
-type ControlledTextInputProps = {
+type ControlledTextInputProps = TextInputProps & {
   name: string;
   label?: string;
   required?: boolean;
-  placeholder: string;
 };
 
 export function ControlledTextInput({
@@ -16,6 +15,8 @@ export function ControlledTextInput({
   label,
   required,
   placeholder,
+  maxLength,
+  disabled,
 }: ControlledTextInputProps) {
   const { control } = useFormContext();
 
@@ -30,6 +31,8 @@ export function ControlledTextInput({
             placeholder={placeholder}
             value={field.value}
             onChange={field.onChange}
+            maxLength={maxLength}
+            disabled={disabled}
           />
         </FormFieldWrapper>
       )}

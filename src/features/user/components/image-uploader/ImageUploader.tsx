@@ -2,7 +2,7 @@
 
 import { PlusIcon, ProfileIcon } from '@/components/icons';
 import Image from 'next/image';
-import { useImageUploader } from '../../hooks/useImageUploader';
+import { useImageUploader } from '../../hooks';
 
 type ImageUploaderProps = {
   name: string;
