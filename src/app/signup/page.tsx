@@ -1,3 +1,9 @@
+import { SignupContainer } from '@/features/user/components/signup';
+
 export default function SignupPage() {
-  return <div>SignupPage</div>;
+  return (
+    <section className="flex justify-center items-center gap-10 pb-12 min-h-[calc(100vh-6rem)]">
+      <SignupContainer />
+    </section>
+  );
 }
