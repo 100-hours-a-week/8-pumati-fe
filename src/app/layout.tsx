@@ -1,5 +1,4 @@
 import { pretendard } from '@/assets/fonts';
-import { Header } from '@/components';
 import { cn } from '@/utils/style';
 import type { Metadata } from 'next';
 import './globals.css';
@@ -24,8 +23,7 @@ export default function RootLayout({
         )}
       >
         <main className="relative mx-auto min-w-[375px] max-w-[600px] w-full min-h-screen bg-white shadow-md">
-          <Header />
-          <div className="px-6 min-h-[calc(100vh-4rem)] h-full">{children}</div>
+          {children}
         </main>
       </body>
     </html>
