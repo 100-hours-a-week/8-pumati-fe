@@ -16,7 +16,7 @@ export function useCodeVerification() {
 
     setIsVerifying(true);
     // 인증 코드 실행
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
 
     setIsVerifying(false);
     setIsVerified(true);
