@@ -21,6 +21,12 @@
   --color-light-green: #fafdf5;
   --color-red: #e53935;
   --color-light-red: #fff9f8;
+
+  /* Social Colors */
+  --color-kakao: #fee500;
+
+  /* Breakpoints */
+  --breakpoint-xs: 25rem;
 }
 
 body {
