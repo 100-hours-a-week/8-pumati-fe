@@ -42,14 +42,12 @@ export function useTagInput(
       return;
     }
 
-    // 2) 중복/빈값/최대 개수 검증
     if (value.includes(tag) || value.length >= maxTags) {
       setTagValue('');
       setFocus('tags');
       return;
     }
 
-    // 3) 성공 시: 기존 에러 제거, 값 변경, tags 배열 전체 검증 트리거
     clearErrors('tags');
     onChange([...value, tag]);
     setTagValue('');
