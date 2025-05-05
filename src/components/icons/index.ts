@@ -6,3 +6,4 @@ export { MenuIcon } from './MenuIcon';
 export { PlusIcon } from './PlusIcon';
 export { ProfileIcon } from './ProfileIcon';
 export { SpinnerIcon } from './SpinnerIcon';
+export { UploadImageIcon } from './UploadImageIcon';

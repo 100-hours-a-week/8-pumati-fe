@@ -14,7 +14,10 @@ export function SignupContainer() {
   };
   return (
     <FormProvider {...methods}>
-      <form className="mt-12 w-[25rem]" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="mt-12 w-full max-w-[25rem]"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <SignupForm />
       </form>
     </FormProvider>
