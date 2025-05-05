@@ -26,6 +26,10 @@ export const newProjectSchema = z.object({
     )
     .min(1, '프로젝트 이미지를 1장 이상 업로드해 주세요.')
     .max(5, '프로젝트 이미지는 최대 5장까지 업로드 가능합니다.'),
+  description: z
+    .string()
+    .min(1, { message: '프로젝트 상세 설명을 입력해주세요.' })
+    .max(1000, '최대 1000자까지 입력 가능합니다.'),
   tags: z.array(tagSchema).min(1, { message: '태그를 입력해주세요.' }),
 });
 
