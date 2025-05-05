@@ -1,7 +1,5 @@
+import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/constants';
 import { z } from 'zod';
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
 
 export const signupSchema = z.object({
   profileImage: z
