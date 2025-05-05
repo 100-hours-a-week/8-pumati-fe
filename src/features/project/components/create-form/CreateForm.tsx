@@ -5,11 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm } from 'react-hook-form';
 import { NewProject, newProjectSchema } from '../../schemas';
 import { ImageUploader } from '../image-uploader';
+import { TagInput } from '../tag';
 
 export function CreateForm() {
   const methods = useForm<NewProject>({
     defaultValues: {
       images: [],
+      tags: [],
     },
     resolver: zodResolver(newProjectSchema),
   });
@@ -29,6 +31,7 @@ export function CreateForm() {
           required
           maxImages={5}
         />
+        <TagInput name="tags" label="태그" required maxTags={5} />
         <Button type="submit">생성하기</Button>
       </form>
     </FormProvider>

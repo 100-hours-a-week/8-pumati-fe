@@ -1,4 +1,4 @@
-import { CreateForm } from '@/features/project/components/new/CreateForm';
+import { CreateForm } from '@/features/project/components/create-form/CreateForm';
 
 export default function NewProjectPage() {
   return (
