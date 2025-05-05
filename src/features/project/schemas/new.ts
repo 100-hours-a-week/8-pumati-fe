@@ -11,6 +11,26 @@ export const tagSchema = z
   });
 
 export const newProjectSchema = z.object({
+  title: z
+    .string()
+    .min(1, '프로젝트 이름을 입력해주세요.')
+    .min(2, '이름은 2~20자 이내로 입력해주세요.')
+    .max(20, '이름은 2~20자 이내로 입력해주세요.')
+    .regex(/^[A-Za-z0-9가-힣ㄱ-ㅎㅏ-ㅣ]+$/, {
+      message: '이름은 특수문자를 포함할 수 없습니다.',
+    }),
+  introduction: z
+    .string()
+    .min(1, '한 줄 소개를 입력해주세요.')
+    .max(150, '한 줄 소개는 150자 이내로 입력해주세요.'),
+  deploymentUrl: z
+    .string()
+    .min(1, '프로젝트 배포 링크를 입력해주세요.')
+    .max(200, '링크는 200자 이내로 입력해주세요.'),
+  githubUrl: z
+    .string()
+    .min(1, '프로젝트 GitHub 링크를 입력해주세요.')
+    .max(200, '링크는 200자 이내로 입력해주세요.'),
   images: z
     .array(
       z

@@ -11,8 +11,12 @@ export function CreateForm() {
   const methods = useForm<NewProject>({
     defaultValues: {
       images: [],
-      tags: [],
+      title: '',
+      introduction: '',
+      deploymentUrl: '',
+      githubUrl: '',
       description: '',
+      tags: [],
     },
     resolver: zodResolver(newProjectSchema),
   });
@@ -23,7 +27,7 @@ export function CreateForm() {
   return (
     <FormProvider {...methods}>
       <form
-        className="mt-9 w-full max-w-[25rem]"
+        className="mt-9 mb-25 w-full max-w-[25rem]"
         onSubmit={methods.handleSubmit(onSubmit)}
       >
         <ImageUploader
@@ -38,6 +42,24 @@ export function CreateForm() {
           required
           placeholder="프로젝트 이름을 입력해주세요."
         />
+        <TextInput
+          name="introduction"
+          label="한 줄 소개"
+          required
+          placeholder="간단한 설명을 입력해주세요."
+        />
+        <TextInput
+          name="deploymentUrl"
+          label="배포 링크"
+          required
+          placeholder="배포된 프로젝트의 URL을 입력해주세요"
+        />
+        <TextInput
+          name="githubUrl"
+          label="GitHub 링크"
+          required
+          placeholder="GitHub 링크를 입력해주세요."
+        />
         <Textarea
           name="description"
           label="상세 설명"
@@ -46,7 +68,9 @@ export function CreateForm() {
           rows={6}
         />
         <TagInput name="tags" label="태그" required maxTags={5} />
-        <Button type="submit">생성하기</Button>
+        <Button type="submit" className="mt-3">
+          생성하기
+        </Button>
       </form>
     </FormProvider>
   );
