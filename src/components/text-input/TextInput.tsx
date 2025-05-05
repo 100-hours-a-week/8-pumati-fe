@@ -1,6 +1,5 @@
 'use client';
 
-import { cn } from '@/utils/style';
 import { InputHTMLAttributes } from 'react';
 
 export type TextInputProps = InputHTMLAttributes<HTMLInputElement>;
@@ -21,10 +20,7 @@ export function TextInput({
       onChange={onChange}
       maxLength={maxLength}
       disabled={disabled}
-      className={cn(
-        'px-4 py-3 placeholder:text-grey rounded-md outline-none border focus:border-transparent border-grey focus:ring-2 focus:ring-blue focus:ring-offset-0',
-        disabled && 'bg-blue-white',
-      )}
+      className="px-4 py-3 placeholder:text-grey rounded-md outline-none border focus:border-transparent border-grey focus:ring-2 focus:ring-blue focus:ring-offset-0 disabled:bg-blue-white"
     />
   );
 }
