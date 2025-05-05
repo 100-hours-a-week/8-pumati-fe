@@ -32,21 +32,27 @@ export function useTagInput(
     }
   };
 
-  const addTag = async (tag: string) => {
+  const validateTag = (tag: string) => {
     const result = tagSchema.safeParse(tag);
     if (!result.success) {
       setError('tags', {
         type: 'manual',
         message: result.error.errors[0].message,
       });
-      return;
+      return false;
     }
 
     if (value.includes(tag) || value.length >= maxTags) {
       setTagValue('');
       setFocus('tags');
-      return;
+      return false;
     }
+
+    return true;
+  };
+
+  const addTag = async (tag: string) => {
+    if (!validateTag(tag)) return;
 
     clearErrors('tags');
     onChange([...value, tag]);
