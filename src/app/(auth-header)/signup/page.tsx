@@ -1,4 +1,4 @@
-import { SignupContainer } from '@/features/user/components/signup';
+import { SignupContainer } from '@/features/user/components';
 
 export default function SignupPage() {
   return (
