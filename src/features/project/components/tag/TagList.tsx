@@ -3,7 +3,7 @@ import { TagItem } from './TagItem';
 
 type TagListProps = {
   tags: string[];
-  removeTag: (index: number) => void;
+  removeTag?: (index: number) => void;
 };
 
 export function TagList({ tags, removeTag }: TagListProps) {
@@ -13,7 +13,7 @@ export function TagList({ tags, removeTag }: TagListProps) {
         <TagItem
           key={`${tag}-${index}`}
           tag={tag}
-          removeTag={() => removeTag(index)}
+          removeTag={removeTag && (() => removeTag(index))}
         />
       ))}
     </ul>

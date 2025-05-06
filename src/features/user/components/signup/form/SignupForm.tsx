@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useCodeVerification } from '../../hooks';
+import { useCodeVerification } from '../../../hooks';
 import { FirstStep } from './FirstStep';
 import { SecondStep } from './SecondStep';
 

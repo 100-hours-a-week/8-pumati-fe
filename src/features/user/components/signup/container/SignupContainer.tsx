@@ -1,9 +1,9 @@
 'use client';
 
+import { useSignup } from '@/features/user/hooks';
+import { Signup } from '@/features/user/schemas';
 import { FormProvider } from 'react-hook-form';
-import { useSignup } from '../../hooks';
-import { Signup } from '../../schemas';
-import { SignupForm } from './SignupForm';
+import { SignupForm } from '../form';
 
 export function SignupContainer() {
   const methods = useSignup();

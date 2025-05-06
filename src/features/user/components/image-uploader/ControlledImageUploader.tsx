@@ -1,6 +1,6 @@
 'use client';
 
-import { FormFieldWrapper } from '@/components/form';
+import { FormFieldWrapper } from '@/components';
 import { Controller, useFormContext } from 'react-hook-form';
 import { ImageUploader } from './ImageUploader';
 

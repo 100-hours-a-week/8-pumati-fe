@@ -1,3 +1,9 @@
+import { ProjectsContainer } from '@/features/project/components';
+
 export default function ProjectsPage() {
-  return <div>ProjectsPage</div>;
+  return (
+    <section className="flex justify-center">
+      <ProjectsContainer />
+    </section>
+  );
 }

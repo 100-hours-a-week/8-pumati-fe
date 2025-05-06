@@ -1,4 +1,2 @@
-export * from './FirstStep';
-export * from './SecondStep';
-export * from './SignupContainer';
-export * from './SignupForm';
+export * from './container';
+export * from './form';
