@@ -19,7 +19,7 @@ export function TagItem({ tag, removeTag }: TagItemProps) {
       className="flex items-center gap-[6px] px-3 py-1 bg-light-blue border border-soft-blue rounded-full cursor-pointer transition-all duration-100 hover:brightness-95"
       onClick={handleRemoveTag}
     >
-      <span className="text-blue text-sm font-medium">{tag}</span>
+      <span className="text-center text-blue text-sm font-medium">{tag}</span>
       {isRemoveTag && (
         <CancelIcon
           width={8}
