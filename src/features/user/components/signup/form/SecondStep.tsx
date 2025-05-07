@@ -1,6 +1,10 @@
 'use client';
 
+import type { DropdownOption } from '@/components';
 import { Button, Dropdown, TextInput } from '@/components';
+import { useTeamList } from '@/features/user/hooks';
+import { useMemo } from 'react';
+import { useWatch } from 'react-hook-form';
 
 type SecondStepProps = {
   onPrev: () => void;
@@ -21,6 +25,31 @@ export function SecondStep({
   isVerified,
   onCodeVerification,
 }: SecondStepProps) {
+  const { data: teamList } = useTeamList();
+  const { term } = useWatch();
+
+  const termOptions = useMemo(
+    () =>
+      teamList.map(({ term }) => ({
+        label: `${term}기`,
+        value: term,
+      })),
+    [teamList],
+  );
+  const teamNumberOptions = useMemo(
+    () =>
+      teamList.reduce<Record<number, DropdownOption[]>>(
+        (prev, { term, teamNumbers }) => {
+          prev[term] = teamNumbers.map((number) => ({
+            label: `${number}팀`,
+            value: number,
+          }));
+          return prev;
+        },
+        {},
+      ),
+    [teamList],
+  );
   return (
     <>
       {isTrainee ? (
@@ -55,21 +84,16 @@ export function SecondStep({
           <Dropdown
             label="기수"
             name="term"
-            options={[
-              { label: '1기', value: 1 },
-              { label: '2기', value: 2 },
-            ]}
+            options={termOptions || []}
             placeholder="기수를 선택해주세요."
             required
           />
           <Dropdown
             label="팀(조)"
-            name="team"
-            options={[
-              { label: '팀1', value: 1 },
-              { label: '팀2', value: 2 },
-            ]}
+            name="teamNumber"
+            options={teamNumberOptions[term] || []}
             placeholder="팀(조)을 선택해주세요."
+            disabled={!term}
             required
           />
           <Dropdown

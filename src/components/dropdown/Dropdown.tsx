@@ -10,6 +10,7 @@ type DropdownProps = {
   placeholder: string;
   selected?: DropdownValue;
   onSelect: (value: DropdownValue) => void;
+  disabled?: boolean;
 };
 
 export function Dropdown({
@@ -17,6 +18,7 @@ export function Dropdown({
   placeholder,
   selected,
   onSelect,
+  disabled,
 }: DropdownProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -36,7 +38,8 @@ export function Dropdown({
         ref={buttonRef}
         type="button"
         onClick={handleMenuToggle}
-        className="flex items-center justify-between w-full px-4 py-3 text-left border rounded-md border-grey focus:border-transparent focus:ring-2 focus:ring-blue focus:ring-offset-0 outline-none cursor-pointer"
+        className="flex items-center justify-between w-full px-4 py-3 text-left border rounded-md border-grey focus:border-transparent focus:ring-2 focus:ring-blue focus:ring-offset-0 outline-none cursor-pointer disabled:bg-blue-white"
+        disabled={disabled}
       >
         <p className={selectedLabel ? '' : 'text-grey'}>
           {selectedLabel || placeholder}

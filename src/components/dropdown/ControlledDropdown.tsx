@@ -11,6 +11,7 @@ type ControlledDropdownProps = {
   options: DropdownOption[];
   placeholder: string;
   required?: boolean;
+  disabled?: boolean;
 };
 
 export function ControlledDropdown({
@@ -19,6 +20,7 @@ export function ControlledDropdown({
   options,
   placeholder,
   required,
+  disabled,
 }: ControlledDropdownProps) {
   const { control } = useFormContext();
 
@@ -33,6 +35,7 @@ export function ControlledDropdown({
             placeholder={placeholder}
             selected={field.value}
             onSelect={(value) => field.onChange(value)}
+            disabled={disabled}
           />
         </FormFieldWrapper>
       )}
