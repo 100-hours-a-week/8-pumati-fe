@@ -1,8 +1,8 @@
 import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/constants';
 import { z } from 'zod';
 
-export const signupSchema = z.object({
-  profileImage: z
+export const signupFormSchema = z.object({
+  profileImageUrl: z
     .instanceof(File)
     .refine(
       (file) => file.size <= MAX_FILE_SIZE,
@@ -32,7 +32,7 @@ export const signupSchema = z.object({
   term: z.number({
     required_error: '기수를 선택해주세요.',
   }),
-  team: z.number({
+  teamNumber: z.number({
     required_error: '팀(조)을 선택해주세요.',
   }),
   course: z.string({
@@ -40,4 +40,27 @@ export const signupSchema = z.object({
   }),
 });
 
-export type Signup = z.infer<typeof signupSchema>;
+export type SignupForm = z.infer<typeof signupFormSchema>;
+
+export const teamListSchema = z.array(
+  z.object({
+    term: z.number(),
+    teamNumbers: z.array(z.number()),
+  }),
+);
+
+export type TeamList = z.infer<typeof teamListSchema>;
+
+export const signupDataSchema = z.object({
+  name: z.string(),
+  nickname: z.string(),
+  term: z.number(),
+  teamNumber: z.number(),
+  course: z.string(),
+  signupToken: z.string(),
+  role: z.literal('TRAINEE'),
+  mailConsent: z.boolean(),
+  profileImageUrl: z.string().url().nullable(),
+});
+
+export type SignupData = z.infer<typeof signupDataSchema>;

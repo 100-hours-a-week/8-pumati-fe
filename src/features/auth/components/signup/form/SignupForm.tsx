@@ -9,7 +9,7 @@ export function SignupForm() {
   const [step, setStep] = useState(0);
   const [isTrainee, setIsTrainee] = useState(false);
 
-  const { codeValue, isVerifying, isVerified, handleCodeVerification } =
+  const { codeValue, isVerifying, handleCodeVerification } =
     useCodeVerification();
 
   const steps = [
@@ -20,7 +20,6 @@ export function SignupForm() {
       setIsTrainee={setIsTrainee}
       codeValue={codeValue}
       isVerifying={isVerifying}
-      isVerified={isVerified}
       onCodeVerification={handleCodeVerification}
     />,
   ];

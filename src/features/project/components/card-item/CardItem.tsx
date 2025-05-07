@@ -1,5 +1,6 @@
 'use client';
 
+import { PROJECT_PATH } from '@/constants';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ProjectItem } from '../../schemas';
@@ -15,7 +16,7 @@ export function CardItem({ project }: CardItemProps) {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/projects/${id}`);
+    router.push(PROJECT_PATH.DETAIL(id.toString()));
   };
   return (
     <li

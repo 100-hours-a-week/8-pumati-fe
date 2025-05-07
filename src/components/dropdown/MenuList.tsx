@@ -23,7 +23,7 @@ export function MenuList({
   return (
     <ul
       ref={ref}
-      className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg border-grey overflow-hidden"
+      className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg border-grey max-h-[146px] overflow-auto"
     >
       {options.map((option) => (
         <MenuItem key={option.value} option={option} onSelect={onSelect} />

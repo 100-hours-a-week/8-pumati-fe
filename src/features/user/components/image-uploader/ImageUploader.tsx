@@ -1,8 +1,8 @@
 'use client';
 
 import { PlusIcon, ProfileIcon } from '@/components/icons';
+import { useImageUploader } from '@/features/auth/hooks';
 import Image from 'next/image';
-import { useImageUploader } from '../../hooks';
 
 type ImageUploaderProps = {
   name: string;

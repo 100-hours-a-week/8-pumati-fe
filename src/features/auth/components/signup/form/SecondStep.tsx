@@ -1,6 +1,12 @@
 'use client';
 
+import type { DropdownOption } from '@/components';
 import { Button, Dropdown, TextInput } from '@/components';
+import { useTeamList } from '@/features/auth/hooks';
+import { isCodeVerifiedAtom } from '@/store';
+import { useAtomValue } from 'jotai';
+import { useMemo } from 'react';
+import { useWatch } from 'react-hook-form';
 
 type SecondStepProps = {
   onPrev: () => void;
@@ -8,7 +14,6 @@ type SecondStepProps = {
   setIsTrainee: (isTrainee: boolean) => void;
   codeValue: string;
   isVerifying: boolean;
-  isVerified: boolean;
   onCodeVerification: () => void;
 };
 
@@ -18,9 +23,34 @@ export function SecondStep({
   setIsTrainee,
   codeValue,
   isVerifying,
-  isVerified,
   onCodeVerification,
 }: SecondStepProps) {
+  const isCodeVerified = useAtomValue(isCodeVerifiedAtom);
+  const { data: teamList } = useTeamList();
+  const { term } = useWatch();
+
+  const termOptions = useMemo(
+    () =>
+      teamList.map(({ term }) => ({
+        label: `${term}기`,
+        value: term,
+      })),
+    [teamList],
+  );
+  const teamNumberOptions = useMemo(
+    () =>
+      teamList.reduce<Record<number, DropdownOption[]>>(
+        (prev, { term, teamNumbers }) => {
+          prev[term] = teamNumbers.map((number) => ({
+            label: `${number}팀`,
+            value: number,
+          }));
+          return prev;
+        },
+        {},
+      ),
+    [teamList],
+  );
   return (
     <>
       {isTrainee ? (
@@ -32,21 +62,23 @@ export function SecondStep({
               placeholder="인증코드를 입력해주세요."
               required
               maxLength={4}
-              disabled={isVerifying || isVerified}
+              disabled={isVerifying || isCodeVerified}
             />
-            {!isVerified && (
+            {!isCodeVerified && (
               <Button
                 type="button"
                 size="sm"
                 className="absolute top-[49px] right-[5px]"
-                disabled={codeValue.length !== 4 || isVerifying || isVerified}
+                disabled={
+                  codeValue.length !== 4 || isVerifying || isCodeVerified
+                }
                 isLoading={isVerifying}
                 onClick={onCodeVerification}
               >
                 인증하기
               </Button>
             )}
-            {isVerified && (
+            {isCodeVerified && (
               <p className="absolute bottom-0 text-sm text-blue">
                 인증코드가 확인되었습니다.
               </p>
@@ -55,21 +87,16 @@ export function SecondStep({
           <Dropdown
             label="기수"
             name="term"
-            options={[
-              { label: '1기', value: 1 },
-              { label: '2기', value: 2 },
-            ]}
+            options={termOptions || []}
             placeholder="기수를 선택해주세요."
             required
           />
           <Dropdown
             label="팀(조)"
-            name="team"
-            options={[
-              { label: '팀1', value: 1 },
-              { label: '팀2', value: 2 },
-            ]}
+            name="teamNumber"
+            options={teamNumberOptions[term] || []}
             placeholder="팀(조)을 선택해주세요."
+            disabled={!term}
             required
           />
           <Dropdown
