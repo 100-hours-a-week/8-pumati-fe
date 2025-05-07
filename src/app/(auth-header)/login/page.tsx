@@ -2,6 +2,7 @@
 
 import { Button } from '@/components';
 import { KakaoIcon, LogoIcon } from '@/components/icons';
+import { loginWithProvider } from '@/features/auth/services';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -16,6 +17,7 @@ export default function LoginPage() {
         variant="kakao"
         size="lg"
         icon={<KakaoIcon width={20} height={20} />}
+        onClick={() => loginWithProvider('kakao')}
       >
         카카오 로그인
       </Button>
