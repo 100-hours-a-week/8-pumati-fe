@@ -1,8 +1,8 @@
 'use client';
 
 import { Button, TextInput } from '@/components';
+import { ImageUploader } from '@/features/user/components';
 import { useFormContext } from 'react-hook-form';
-import { ImageUploader } from '../../image-uploader';
 
 type FirstStepProps = {
   onNext: () => void;

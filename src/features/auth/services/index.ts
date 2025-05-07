@@ -1,5 +1,4 @@
-import { SignupData } from '@/features/user/schemas';
-import { LoginProvider } from '../schemas';
+import { LoginProvider, SignupData } from '../schemas';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 

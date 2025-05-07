@@ -1,11 +1,10 @@
 'use client';
 
-import { useSignup } from '@/features/auth/hooks';
-import { useSignupForm } from '@/features/user/hooks';
+import { useSignup, useSignupForm } from '@/features/auth/hooks';
 import {
   SignupData,
-  SignupForm as SignupFormType,
-} from '@/features/user/schemas';
+  SignupForm as SignupFormData,
+} from '@/features/auth/schemas';
 import { usePresignedUrl } from '@/hooks/usePresignedUrl';
 import { isCodeVerifiedAtom, signupTokenAtom } from '@/store';
 import { useAtomValue } from 'jotai';
@@ -22,7 +21,7 @@ export function SignupContainer() {
   const { mutateAsync: getPresignedUrl } = usePresignedUrl();
   const { mutate: signup } = useSignup();
 
-  const onSubmit = async (data: SignupFormType) => {
+  const onSubmit = async (data: SignupFormData) => {
     if (!signupToken) {
       throw new Error('Signup token is not found');
     }

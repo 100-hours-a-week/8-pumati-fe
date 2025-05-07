@@ -2,7 +2,7 @@
 
 import type { DropdownOption } from '@/components';
 import { Button, Dropdown, TextInput } from '@/components';
-import { useTeamList } from '@/features/user/hooks';
+import { useTeamList } from '@/features/auth/hooks';
 import { isCodeVerifiedAtom } from '@/store';
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';

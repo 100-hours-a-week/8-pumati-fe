@@ -1,6 +1,6 @@
 import { AUTH_QUERY_KEY } from '@/constants/query-key';
+import { SignupContainer } from '@/features/auth/components';
 import { getTeamList } from '@/features/auth/services';
-import { SignupContainer } from '@/features/user/components';
 import { getQueryClient } from '@/libs/tanstack-query';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
