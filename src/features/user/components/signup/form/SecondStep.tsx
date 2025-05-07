@@ -3,6 +3,8 @@
 import type { DropdownOption } from '@/components';
 import { Button, Dropdown, TextInput } from '@/components';
 import { useTeamList } from '@/features/user/hooks';
+import { isCodeVerifiedAtom } from '@/store';
+import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 
@@ -12,7 +14,6 @@ type SecondStepProps = {
   setIsTrainee: (isTrainee: boolean) => void;
   codeValue: string;
   isVerifying: boolean;
-  isVerified: boolean;
   onCodeVerification: () => void;
 };
 
@@ -22,9 +23,9 @@ export function SecondStep({
   setIsTrainee,
   codeValue,
   isVerifying,
-  isVerified,
   onCodeVerification,
 }: SecondStepProps) {
+  const isCodeVerified = useAtomValue(isCodeVerifiedAtom);
   const { data: teamList } = useTeamList();
   const { term } = useWatch();
 
@@ -61,21 +62,23 @@ export function SecondStep({
               placeholder="인증코드를 입력해주세요."
               required
               maxLength={4}
-              disabled={isVerifying || isVerified}
+              disabled={isVerifying || isCodeVerified}
             />
-            {!isVerified && (
+            {!isCodeVerified && (
               <Button
                 type="button"
                 size="sm"
                 className="absolute top-[49px] right-[5px]"
-                disabled={codeValue.length !== 4 || isVerifying || isVerified}
+                disabled={
+                  codeValue.length !== 4 || isVerifying || isCodeVerified
+                }
                 isLoading={isVerifying}
                 onClick={onCodeVerification}
               >
                 인증하기
               </Button>
             )}
-            {isVerified && (
+            {isCodeVerified && (
               <p className="absolute bottom-0 text-sm text-blue">
                 인증코드가 확인되었습니다.
               </p>

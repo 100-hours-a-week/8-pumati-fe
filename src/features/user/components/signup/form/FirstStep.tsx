@@ -18,7 +18,7 @@ export function FirstStep({ onNext }: FirstStepProps) {
   };
   return (
     <>
-      <ImageUploader label="프로필 이미지" name="profileImage" />
+      <ImageUploader label="프로필 이미지" name="profileImageUrl" />
       <TextInput
         label="이름"
         name="name"

@@ -1,19 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Signup, signupSchema } from '../schemas';
+import { SignupForm, signupFormSchema } from '../schemas';
 
-export function useSignup() {
-  const methods = useForm<Signup>({
+export function useSignupForm() {
+  const methods = useForm<SignupForm>({
     defaultValues: {
-      profileImage: undefined,
+      profileImageUrl: undefined,
       name: '',
       nickname: '',
       code: '',
       term: undefined,
-      team: undefined,
+      teamNumber: undefined,
       course: undefined,
     },
-    resolver: zodResolver(signupSchema),
+    resolver: zodResolver(signupFormSchema),
   });
 
   return methods;
