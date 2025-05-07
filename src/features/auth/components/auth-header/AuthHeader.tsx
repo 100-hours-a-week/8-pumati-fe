@@ -1,13 +1,14 @@
 'use client';
 
 import { ArrowIcon } from '@/components/icons';
+import { ROOT_PATH } from '@/constants';
 import { useRouter } from 'next/navigation';
 
 export function AuthHeader() {
   const router = useRouter();
 
   const handleBack = () => {
-    router.push('/');
+    router.push(ROOT_PATH);
   };
   return (
     <header className="sticky top-0 flex justify-center items-center px-6 py-4 w-full h-16 border-b border-soft-grey bg-white z-40">

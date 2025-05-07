@@ -1,6 +1,7 @@
 'use client';
 
 import { CallToAction } from '@/components';
+import { PROJECT_PATH } from '@/constants';
 import { useRouter } from 'next/navigation';
 import { ProjectItem } from '../../schemas';
 import { CardList } from '../card-list';
@@ -82,7 +83,7 @@ export function ProjectsContainer() {
       <CallToAction
         text="프로젝트를 생성해보세요!"
         buttonText="생성하기"
-        action={() => router.push('/projects/new')}
+        action={() => router.push(PROJECT_PATH.NEW)}
       />
       <CardList projects={projects} />
     </div>

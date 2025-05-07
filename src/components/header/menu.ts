@@ -1,15 +1,17 @@
+import { AUTH_PATH, PROJECT_PATH, ROOT_PATH } from '@/constants';
+
 export const MENU_LIST = [
   {
     label: '홈으로',
-    href: '/',
+    href: ROOT_PATH,
   },
   {
     label: '프로젝트',
-    href: '/projects',
+    href: PROJECT_PATH.ROOT,
   },
   {
     label: '로그인하러 가기',
-    href: '/login',
+    href: AUTH_PATH.LOGIN,
   },
 ];
 
