@@ -9,6 +9,7 @@ type ImageUploaderProps = {
   value: File[];
   onChange: (files: File[]) => void;
   maxImages?: number;
+  disabled?: boolean;
 };
 
 export function ImageUploader({
@@ -16,6 +17,7 @@ export function ImageUploader({
   value,
   onChange,
   maxImages = 5,
+  disabled,
 }: ImageUploaderProps) {
   const {
     fileInputRef,
@@ -32,7 +34,7 @@ export function ImageUploader({
       </p>
       <UploadBox
         onClick={handleFileInputClick}
-        disabled={value.length >= maxImages}
+        disabled={value.length >= maxImages || !!disabled}
       />
       <ImageList
         previews={previews}

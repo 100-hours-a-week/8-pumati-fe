@@ -5,7 +5,7 @@ import {
   SignupData,
   SignupForm as SignupFormData,
 } from '@/features/auth/schemas';
-import { usePresignedUrl } from '@/hooks';
+import { useUploadFileToS3 } from '@/hooks';
 import { isCodeVerifiedAtom, signupTokenAtom } from '@/store';
 import { useAtomValue } from 'jotai';
 import { FormProvider } from 'react-hook-form';
@@ -18,7 +18,7 @@ export function SignupContainer() {
   const methods = useSignupForm();
   const { handleSubmit, setError } = methods;
 
-  const { mutateAsync: getPresignedUrl } = usePresignedUrl();
+  const { mutateAsync: getPresignedUrl } = useUploadFileToS3();
   const { mutate: signup } = useSignup();
 
   const onSubmit = async (data: SignupFormData) => {

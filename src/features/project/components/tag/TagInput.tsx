@@ -8,9 +8,15 @@ type TagInputProps = {
   value: string[];
   onChange: (tags: string[]) => void;
   maxTags?: number;
+  disabled?: boolean;
 };
 
-export function TagInput({ value, onChange, maxTags = 5 }: TagInputProps) {
+export function TagInput({
+  value,
+  onChange,
+  maxTags = 5,
+  disabled,
+}: TagInputProps) {
   const { tagValue, handleChange, handleKeyDown, removeTag } = useTagInput(
     value,
     onChange,
@@ -29,7 +35,7 @@ export function TagInput({ value, onChange, maxTags = 5 }: TagInputProps) {
         onKeyDown={handleKeyDown}
         placeholder="태그를 입력해주세요 (Enter로 추가)"
         className="px-4 py-3 mt-4 placeholder:text-grey rounded-md outline-none border focus:border-transparent border-grey focus:ring-2 focus:ring-blue focus:ring-offset-0 disabled:bg-blue-white"
-        disabled={value.length >= maxTags}
+        disabled={value.length >= maxTags || !!disabled}
       />
       <TagList tags={value} removeTag={removeTag} />
     </div>

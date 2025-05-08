@@ -9,6 +9,7 @@ type ControlledImageUploaderProps = {
   label?: string;
   required?: boolean;
   maxImages?: number;
+  disabled?: boolean;
 };
 
 export function ControlledImageUploader({
@@ -16,6 +17,7 @@ export function ControlledImageUploader({
   label,
   required,
   maxImages = 5,
+  disabled,
 }: ControlledImageUploaderProps) {
   const { control } = useFormContext();
 
@@ -30,6 +32,7 @@ export function ControlledImageUploader({
             value={field.value || []}
             onChange={field.onChange}
             maxImages={maxImages}
+            disabled={disabled}
           />
         </FormFieldWrapper>
       )}
