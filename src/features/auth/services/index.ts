@@ -6,6 +6,50 @@ export const loginWithProvider = async (provider: LoginProvider) => {
   window.location.href = `${BASE_URL}/api/oauth/${provider}/redirection`;
 };
 
+export const logout = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/auth/tokens`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Failed to logout:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while logging out');
+  }
+};
+
+export const getMe = async (token: string) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/members/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data.data;
+  } catch (error) {
+    console.error('Failed to get me:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while fetching me');
+  }
+};
+
 export const getTeamList = async () => {
   try {
     const response = await fetch(`${BASE_URL}/api/teams`);
