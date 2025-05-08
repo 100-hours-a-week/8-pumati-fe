@@ -1,2 +1,3 @@
+export * from './useMultiFilesToS3';
 export * from './useOutsideClick';
-export * from './usePresignedUrl';
+export * from './useUploadFileToS3';

@@ -10,7 +10,7 @@ export const tagSchema = z
     message: '태그는 특수문자를 포함할 수 없습니다.',
   });
 
-export const newProjectSchema = z.object({
+export const newProjectFormSchema = z.object({
   title: z
     .string()
     .min(1, '프로젝트 이름을 입력해주세요.')
@@ -25,10 +25,12 @@ export const newProjectSchema = z.object({
     .max(150, '한 줄 소개는 150자 이내로 입력해주세요.'),
   deploymentUrl: z
     .string()
+    .url('올바른 형식의 링크를 입력해주세요.')
     .min(1, '프로젝트 배포 링크를 입력해주세요.')
     .max(200, '링크는 200자 이내로 입력해주세요.'),
   githubUrl: z
     .string()
+    .url('올바른 형식의 링크를 입력해주세요.')
     .min(1, '프로젝트 GitHub 링크를 입력해주세요.')
     .max(200, '링크는 200자 이내로 입력해주세요.'),
   images: z
@@ -46,11 +48,29 @@ export const newProjectSchema = z.object({
     )
     .min(1, '프로젝트 이미지를 1장 이상 업로드해 주세요.')
     .max(5, '프로젝트 이미지는 최대 5장까지 업로드 가능합니다.'),
-  description: z
+  detailedDescription: z
     .string()
     .min(1, { message: '프로젝트 상세 설명을 입력해주세요.' })
     .max(1000, '최대 1000자까지 입력 가능합니다.'),
   tags: z.array(tagSchema).min(1, { message: '태그를 입력해주세요.' }),
+});
+
+export type NewProjectForm = z.infer<typeof newProjectFormSchema>;
+
+const projectImageSchema = z.object({
+  url: z.string().url(),
+  sequence: z.number().int().positive(),
+});
+
+export const newProjectSchema = z.object({
+  title: z.string(),
+  introduction: z.string(),
+  detailedDescription: z.string(),
+  images: z.array(projectImageSchema),
+  deploymentUrl: z.string(),
+  githubUrl: z.string(),
+  tags: z.array(z.string()),
+  teamId: z.number(),
 });
 
 export type NewProject = z.infer<typeof newProjectSchema>;
