@@ -16,7 +16,7 @@ export function TeamMemberList({ teamMembers }: TeamMemberListProps) {
         {teamMembers.map((teamMember) => (
           <li
             key={teamMember.id}
-            className="flex justify-start items-center gap-4 py-3 mx-3 border-b border-light-grey"
+            className="flex justify-start items-center gap-4 py-3 mx-1 border-b border-light-grey"
           >
             <Image
               src={teamMember.profileImageUrl}
