@@ -1,8 +1,9 @@
 'use client';
 
 import { SpinnerIcon } from '@/components/icons';
-import { AUTH_PATH, ROOT_PATH } from '@/constants';
-import { signupTokenAtom } from '@/store';
+import { AUTH_PATH } from '@/constants';
+import { useMe } from '@/features/auth/hooks';
+import { accessTokenAtom, signupTokenAtom } from '@/store';
 import { useSetAtom } from 'jotai';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
@@ -12,19 +13,24 @@ export default function LoginCallbackPage() {
   const searchParams = useSearchParams();
   const message = searchParams.get('message');
   const setSignupToken = useSetAtom(signupTokenAtom);
+  const setAccessToken = useSetAtom(accessTokenAtom);
+
+  const { mutate: getMe } = useMe();
 
   useEffect(() => {
     if (message === 'additionalInfoRequired') {
       setSignupToken(searchParams.get('signupToken'));
       router.push(AUTH_PATH.SIGN_UP);
     } else if (message === 'loginSuccess') {
-      router.push(ROOT_PATH);
+      const accessToken = searchParams.get('accessToken') as string;
+
+      setAccessToken(accessToken);
+      getMe(accessToken);
     } else {
       // 로그인 실패 처리 Toast
       router.push(AUTH_PATH.LOGIN);
     }
   }, [message]);
-
   return (
     <section className="flex h-screen w-full items-center justify-center">
       <SpinnerIcon
