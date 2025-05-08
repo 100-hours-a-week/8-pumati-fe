@@ -20,7 +20,7 @@ export function SwipeButton({ direction }: SwipeButtonProps) {
     <button
       className={cn(
         'absolute top-1/2 -translate-y-1/2 z-20 flex justify-center items-center p-1 rounded-full bg-grey opacity-20 hover:opacity-100 transition-all duration-200 cursor-pointer',
-        direction === 'left' ? 'left-4' : 'right-4',
+        direction === 'left' ? 'left-2 xs:left-4' : 'right-2 xs:right-4',
       )}
       onClick={handleClick}
     >
