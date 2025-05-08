@@ -31,9 +31,13 @@ export function SignupContainer() {
       return;
     }
 
-    const { code, profileImageUrl, ...signupFormData } = data;
+    const { name, nickname, term, teamNumber, course } = data;
     const signupData: SignupData = {
-      ...signupFormData,
+      name,
+      nickname,
+      term,
+      teamNumber,
+      course,
       signupToken,
       role: 'TRAINEE',
       mailConsent: true,

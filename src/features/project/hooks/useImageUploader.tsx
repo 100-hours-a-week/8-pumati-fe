@@ -48,7 +48,7 @@ export function useImageUploader(
     return () => {
       newPreviews.forEach((url) => URL.revokeObjectURL(url));
     };
-  }, [value]);
+  }, [previews, value]);
 
   return {
     fileInputRef,
