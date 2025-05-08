@@ -51,8 +51,8 @@ export const projectDetailSchema = z.object({
   teamRank: z.number(),
   isSubscribed: z.boolean(),
   badgeImageUrl: z.string().nullable(),
-  createdAt: z.string(),
-  modifiedAt: z.string(),
+  createdAt: z.string().datetime(),
+  modifiedAt: z.string().datetime(),
 });
 
 export type ProjectDetail = z.infer<typeof projectDetailSchema>;
