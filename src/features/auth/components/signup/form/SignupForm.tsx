@@ -13,8 +13,9 @@ export function SignupForm() {
     useCodeVerification();
 
   const steps = [
-    <FirstStep onNext={() => setStep(1)} />,
+    <FirstStep key={0} onNext={() => setStep(1)} />,
     <SecondStep
+      key={1}
       onPrev={() => setStep(0)}
       isTrainee={isTrainee}
       setIsTrainee={setIsTrainee}
