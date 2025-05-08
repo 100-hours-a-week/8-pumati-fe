@@ -1,3 +1,5 @@
+'use client';
+
 import { CancelIcon } from '@/components/icons';
 
 type TagItemProps = {

@@ -5,7 +5,7 @@ import {
   SignupData,
   SignupForm as SignupFormData,
 } from '@/features/auth/schemas';
-import { usePresignedUrl } from '@/hooks/usePresignedUrl';
+import { usePresignedUrl } from '@/hooks';
 import { isCodeVerifiedAtom, signupTokenAtom } from '@/store';
 import { useAtomValue } from 'jotai';
 import { FormProvider } from 'react-hook-form';
