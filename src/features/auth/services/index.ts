@@ -6,6 +6,26 @@ export const loginWithProvider = async (provider: LoginProvider) => {
   window.location.href = `${BASE_URL}/api/oauth/${provider}/redirection`;
 };
 
+export const logout = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/auth/tokens`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Failed to logout:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while logging out');
+  }
+};
+
 export const getMe = async (token: string) => {
   try {
     const response = await fetch(`${BASE_URL}/api/members/me`, {
