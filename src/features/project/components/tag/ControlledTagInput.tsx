@@ -9,6 +9,7 @@ type ControlledTagInputProps = {
   label?: string;
   required?: boolean;
   maxTags?: number;
+  disabled?: boolean;
 };
 
 export function ControlledTagInput({
@@ -16,6 +17,7 @@ export function ControlledTagInput({
   label,
   required,
   maxTags = 5,
+  disabled,
 }: ControlledTagInputProps) {
   const { control } = useFormContext();
 
@@ -29,6 +31,7 @@ export function ControlledTagInput({
             value={field.value || []}
             onChange={field.onChange}
             maxTags={maxTags}
+            disabled={disabled}
           />
         </FormFieldWrapper>
       )}

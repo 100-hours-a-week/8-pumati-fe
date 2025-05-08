@@ -27,6 +27,33 @@ export const getPresignedUrl = async (file: File) => {
   }
 };
 
+export const getMultiPresignedUrl = async (files: File[]) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/pre-signed-urls`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        files: files.map((file) => ({
+          fileName: file.name,
+          contentType: file.type,
+        })),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('Failed to get presigned URL:', error);
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while getting presigned URL');
+  }
+};
+
 export const uploadFileToS3 = async (
   presignedUrl: PresignedUrl,
   file: File,
