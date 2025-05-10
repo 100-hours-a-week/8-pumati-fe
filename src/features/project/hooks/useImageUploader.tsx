@@ -40,15 +40,13 @@ export function useImageUploader(
 
   // URL 해제에 대한 최적화 필요
   useEffect(() => {
-    previews.forEach((url) => URL.revokeObjectURL(url));
-
     const newPreviews = value.map((file) => URL.createObjectURL(file));
     setPreviews(newPreviews);
 
     return () => {
-      newPreviews.forEach((url) => URL.revokeObjectURL(url));
+      newPreviews.forEach(URL.revokeObjectURL);
     };
-  }, [previews, value]);
+  }, [value, setPreviews]);
 
   return {
     fileInputRef,
