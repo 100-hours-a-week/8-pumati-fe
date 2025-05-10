@@ -62,7 +62,7 @@ export function SimpleCardItem({ project, rank }: SimpleCardItemProps) {
           </p>
         </div>
       </div>
-      <TagList tags={tags.slice(0, 3)} />
+      <TagList tags={tags.map((tag) => tag.content)} />
     </li>
   );
 }

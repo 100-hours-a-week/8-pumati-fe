@@ -17,11 +17,15 @@ const latestProjects: ProjectItem[] = [
     introduction:
       '카카오 테크 부트캠프 교육생의 성장 과정을 한눈에 보고, 출석까지 관리할 수 있는 교육생 중심 플랫폼입니다.카카오 테크 부트캠프 교육생의 성장 과정을 한눈에 보고, 출석까지 관리할 수 있는 교육생 중심 플랫폼입니다.',
     tags: [
-      '풀스택',
-      '품앗이awegaawe',
-      '품앗이awegaawe',
-      '품앗이awegaawe',
-      '품앗이awegaawe',
+      {
+        content: 'tag1',
+      },
+      {
+        content: 'tag2',
+      },
+      {
+        content: 'tag3',
+      },
     ],
     givedPumatiCount: 120,
     receivedPumatiCount: 95,
@@ -40,7 +44,17 @@ const latestProjects: ProjectItem[] = [
     title: 'goorm Dive',
     introduction:
       '실무자와 함께 하는 실전 프로젝트 경험, 맞춤형 멘토링을 제공하는 Deep Dive 프로그램입니다.',
-    tags: ['AI', '클라우드', '품앗이클라우드클라우드클라우', '품앗이awegaawe'],
+    tags: [
+      {
+        content: 'tag1',
+      },
+      {
+        content: 'tag2',
+      },
+      {
+        content: 'tag3',
+      },
+    ],
     givedPumatiCount: 75,
     receivedPumatiCount: 80,
     createdAt: '2025-04-28T09:00:00Z',
@@ -58,7 +72,17 @@ const latestProjects: ProjectItem[] = [
     title: 'Campus Connect',
     introduction:
       '교육생들 간 네트워킹과 협업을 돕는 플랫폼으로, 프로젝트 콜라보레이션을 쉽게 관리할 수 있습니다.',
-    tags: ['풀스택', '협업'],
+    tags: [
+      {
+        content: 'tag1',
+      },
+      {
+        content: 'tag2',
+      },
+      {
+        content: 'tag3',
+      },
+    ],
     givedPumatiCount: 45,
     receivedPumatiCount: 50,
     createdAt: '2025-05-02T11:20:00Z',
