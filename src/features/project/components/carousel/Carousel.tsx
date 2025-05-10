@@ -10,21 +10,22 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 type CarouselProps = {
+  pagination?: boolean;
   children: React.ReactNode[];
 };
 
-export function Carousel({ children }: CarouselProps) {
+export function Carousel({ children, pagination = true }: CarouselProps) {
   return (
     <article className="relative">
       <Swiper
-        modules={[Pagination, Navigation]}
+        modules={pagination ? [Pagination, Navigation] : [Navigation]}
         spaceBetween={50}
         slidesPerView={1}
         autoplay={{
           delay: 3000,
           disableOnInteraction: false,
         }}
-        pagination={{ clickable: true }}
+        pagination={pagination ? { clickable: true } : false}
         grabCursor
         keyboard={{ enabled: true }}
         loop
