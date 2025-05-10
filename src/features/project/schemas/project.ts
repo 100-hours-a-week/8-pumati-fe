@@ -1,22 +1,16 @@
 import { z } from 'zod';
 
-export const projectItemSchema = z.object({
-  id: z.number(),
-  teamId: z.number(),
-  term: z.number(),
-  teamNumber: z.number(),
-  badgeImageUrl: z.string(),
-  representativeImageUrl: z.string(),
-  title: z.string(),
-  introduction: z.string(),
-  tags: z.array(z.string()),
-  givedPumatiCount: z.number(),
-  receivedPumatiCount: z.number(),
-  createdAt: z.string().datetime(),
-  modifiedAt: z.string().datetime(),
-});
+export type PaginationMeta = {
+  nextCursorId: number;
+  nextCursorTime: string;
+  hasNext: boolean;
+};
 
-export type ProjectItem = z.infer<typeof projectItemSchema>;
+export type InfiniteScrollResponse<T> = {
+  message: string;
+  data: T[];
+  meta: PaginationMeta;
+};
 
 const projectImageSchema = z.object({
   id: z.number(),
@@ -32,6 +26,26 @@ export type ProjectImage = z.infer<typeof projectImageSchema>;
 const projectTagSchema = z.object({
   content: z.string(),
 });
+
+export const projectItemSchema = z.object({
+  id: z.number(),
+  teamId: z.number(),
+  term: z.number(),
+  teamNumber: z.number(),
+  badgeImageUrl: z.string(),
+  representativeImageUrl: z.string(),
+  title: z.string(),
+  introduction: z.string(),
+  tags: z.array(projectTagSchema),
+  givedPumatiCount: z.number(),
+  receivedPumatiCount: z.number(),
+  createdAt: z.string().datetime(),
+  modifiedAt: z.string().datetime(),
+});
+
+export type ProjectItem = z.infer<typeof projectItemSchema>;
+
+export type ProjectInfiniteScrollResponse = InfiniteScrollResponse<ProjectItem>;
 
 export const projectDetailSchema = z.object({
   id: z.number(),

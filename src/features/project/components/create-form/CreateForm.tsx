@@ -33,7 +33,10 @@ export function CreateForm() {
   const { mutateAsync: createProject } = useCreateProject();
 
   const onSubmit = async (data: NewProjectForm) => {
-    if (!auth?.teamId) return;
+    if (!auth?.teamId) {
+      alert('팀 정보가 없습니다.');
+      return;
+    }
 
     setIsSubmitting(true);
     const { urls } = await uploadMultiFilesToS3(data.images);
