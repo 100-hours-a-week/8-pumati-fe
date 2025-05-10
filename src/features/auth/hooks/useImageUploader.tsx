@@ -31,7 +31,7 @@ export function useImageUploader(
     } else {
       setPreview(null);
     }
-  }, [value]);
+  }, [value, setPreview]);
 
   return {
     fileInputRef,

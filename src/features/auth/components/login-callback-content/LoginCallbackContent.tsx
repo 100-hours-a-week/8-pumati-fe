@@ -30,7 +30,7 @@ export function LoginCallbackContent() {
       // 로그인 실패 처리 Toast
       router.push(AUTH_PATH.LOGIN);
     }
-  }, [message, getMe, router, , searchParams, setAccessToken, setSignupToken]);
+  }, [message, getMe, router, searchParams, setAccessToken, setSignupToken]);
   return (
     <section className="flex h-screen w-full items-center justify-center">
       <SpinnerIcon
