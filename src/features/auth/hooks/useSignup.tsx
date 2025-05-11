@@ -1,15 +1,15 @@
-import { ROOT_PATH } from '@/constants';
+import { accessTokenAtom } from '@/store';
 import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import { useSetAtom } from 'jotai';
 import { signup } from '../services';
 
 export function useSignup() {
-  const router = useRouter();
+  const setAccessToken = useSetAtom(accessTokenAtom);
 
   return useMutation({
     mutationFn: signup,
-    onSuccess: () => {
-      router.push(ROOT_PATH);
+    onSuccess: (data) => {
+      setAccessToken(data.accessToken);
     },
     onError: (error) => {
       // 회원가입 실패 처리 Toast

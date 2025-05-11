@@ -10,6 +10,7 @@ export const logout = async () => {
   try {
     const response = await fetch(`${BASE_URL}/api/auth/tokens`, {
       method: 'DELETE',
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -74,6 +75,7 @@ export const signup = async (signupData: SignupData) => {
   try {
     const response = await fetch(`${BASE_URL}/api/members/social`, {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
