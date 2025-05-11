@@ -56,7 +56,7 @@ export function SignupContainer() {
     const { accessToken } = await signup(signupData);
     await getAuth(accessToken);
 
-    router.push(ROOT_PATH);
+    router.replace(ROOT_PATH);
   };
   return (
     <FormProvider {...methods}>

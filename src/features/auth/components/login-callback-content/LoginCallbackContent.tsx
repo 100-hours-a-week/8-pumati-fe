@@ -20,14 +20,14 @@ export function LoginCallbackContent() {
   useEffect(() => {
     if (message === 'additionalInfoRequired') {
       setSignupToken(searchParams.get('signupToken'));
-      router.push(AUTH_PATH.SIGN_UP);
+      router.replace(AUTH_PATH.SIGN_UP);
     } else if (message === 'loginSuccess') {
       const accessToken = searchParams.get('accessToken') as string;
 
       setAccessToken(accessToken);
       getAuth(accessToken, {
         onSuccess: () => {
-          router.push(ROOT_PATH);
+          router.replace(ROOT_PATH);
         },
       });
     } else {
