@@ -1,4 +1,6 @@
 import { PROJECT_PATH } from '@/constants';
+import { PROJECT_QUERY_KEY } from '@/constants/query-key';
+import { getQueryClient } from '@/libs/tanstack-query';
 import { accessTokenAtom } from '@/store';
 import { useMutation } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
@@ -10,9 +12,14 @@ export function useCreateProject() {
   const router = useRouter();
   const accessToken = useAtomValue(accessTokenAtom);
 
+  const queryClient = getQueryClient();
+
   return useMutation<{ id: number }, Error, NewProject>({
     mutationFn: (data) => createProject(data, accessToken as string),
     onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_QUERY_KEY.PROJECTS,
+      });
       router.push(PROJECT_PATH.DETAIL(data.id.toString()));
     },
     onError: (error) => {
