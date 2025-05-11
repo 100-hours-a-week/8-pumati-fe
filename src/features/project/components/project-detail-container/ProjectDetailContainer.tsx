@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { ProjectDetail, TeamMember } from '../../schemas';
 import { Carousel } from '../carousel';
 import { Comments } from './Comments';
@@ -152,7 +153,23 @@ export function ProjectDetailContainer() {
   return (
     <div className="flex flex-col gap-1">
       <div className="max-w-[25rem] w-full mx-auto">
-        <Carousel images={PROJECT_DETAUL_DATA.images} />
+        <Carousel>
+          {PROJECT_DETAUL_DATA.images.map(({ id, url }) => (
+            <div
+              key={id}
+              className="relative w-full aspect-[4/3] max-h-[300px] overflow-hidden bg-blue-white"
+            >
+              <Image
+                src={url}
+                alt="프로젝트 이미지"
+                fill
+                sizes="100%"
+                className="object-contain group-hover:scale-105 transition-all duration-300"
+                priority
+              />
+            </div>
+          ))}
+        </Carousel>
         <Description
           title={PROJECT_DETAUL_DATA.title}
           modifiedAt={PROJECT_DETAUL_DATA.modifiedAt}

@@ -23,13 +23,13 @@ export function CardItem({ project }: CardItemProps) {
       className="flex flex-col rounded-lg overflow-hidden shadow-lg group cursor-pointer"
       onClick={handleClick}
     >
-      <div className="relative w-full aspect-[2/1] overflow-hidden">
+      <div className="relative w-full aspect-[2/1] overflow-hidden bg-black">
         <Image
           src={representativeImageUrl}
           alt={title}
           fill
           sizes="100%"
-          className="object-cover group-hover:scale-105 transition-all duration-300"
+          className="object-contain group-hover:scale-105 transition-all duration-300"
         />
       </div>
       <div className="px-4 pt-2 pb-4">
@@ -41,7 +41,7 @@ export function CardItem({ project }: CardItemProps) {
           {introduction}
         </p>
         <div className="max-h-[76px] overflow-hidden">
-          <TagList tags={tags} />
+          <TagList tags={tags.map((tag) => tag.content)} />
         </div>
       </div>
     </li>

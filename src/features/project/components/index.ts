@@ -3,5 +3,8 @@ export * from './card-list';
 export * from './create-form';
 export * from './image-uploader';
 export * from './project-detail-container';
+export * from './project-gallery';
 export * from './projects-container';
+export * from './simple-card-item';
+export * from './simple-card-list';
 export * from './tag';
