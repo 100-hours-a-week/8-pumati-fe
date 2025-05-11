@@ -10,6 +10,7 @@ export const logout = async () => {
   try {
     const response = await fetch(`${BASE_URL}/api/auth/tokens`, {
       method: 'DELETE',
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -74,6 +75,7 @@ export const signup = async (signupData: SignupData) => {
   try {
     const response = await fetch(`${BASE_URL}/api/members/social`, {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -93,5 +95,33 @@ export const signup = async (signupData: SignupData) => {
     throw error instanceof Error
       ? error
       : new Error('An unexpected error occurred while signing up');
+  }
+};
+
+export const refresh = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/auth/tokens`, {
+      method: 'PUT',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      if (response.status === 400) {
+        const data = await response.json();
+
+        return data.message;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data.data;
+  } catch (error) {
+    console.error('Failed to refresh:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while refreshing');
   }
 };

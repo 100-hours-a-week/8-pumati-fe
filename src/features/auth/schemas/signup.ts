@@ -6,7 +6,7 @@ export const signupFormSchema = z.object({
     .instanceof(File)
     .refine(
       (file) => file.size <= MAX_FILE_SIZE,
-      '이미지 용량은 최대 5MB 까지 가능합니다.',
+      '이미지 용량은 최대 10MB 까지 가능합니다.',
     )
     .refine(
       (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),

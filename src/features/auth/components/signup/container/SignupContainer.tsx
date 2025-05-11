@@ -1,6 +1,7 @@
 'use client';
 
-import { useSignup, useSignupForm } from '@/features/auth/hooks';
+import { ROOT_PATH } from '@/constants';
+import { useAuth, useSignup, useSignupForm } from '@/features/auth/hooks';
 import {
   SignupData,
   SignupForm as SignupFormData,
@@ -8,10 +9,12 @@ import {
 import { useUploadFileToS3 } from '@/hooks';
 import { isCodeVerifiedAtom, signupTokenAtom } from '@/store';
 import { useAtomValue } from 'jotai';
+import { useRouter } from 'next/navigation';
 import { FormProvider } from 'react-hook-form';
 import { SignupForm } from '../form';
 
 export function SignupContainer() {
+  const router = useRouter();
   const signupToken = useAtomValue(signupTokenAtom);
   const isCodeVerified = useAtomValue(isCodeVerifiedAtom);
 
@@ -19,7 +22,8 @@ export function SignupContainer() {
   const { handleSubmit, setError } = methods;
 
   const { mutateAsync: getPresignedUrl } = useUploadFileToS3();
-  const { mutate: signup } = useSignup();
+  const { mutateAsync: signup } = useSignup();
+  const { mutateAsync: getAuth } = useAuth();
 
   const onSubmit = async (data: SignupFormData) => {
     if (!signupToken) {
@@ -49,7 +53,10 @@ export function SignupContainer() {
       signupData.profileImageUrl = publicUrl;
     }
 
-    signup(signupData);
+    const { accessToken } = await signup(signupData);
+    await getAuth(accessToken);
+
+    router.replace(ROOT_PATH);
   };
   return (
     <FormProvider {...methods}>
