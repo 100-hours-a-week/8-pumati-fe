@@ -1,91 +1,10 @@
 import Image from 'next/image';
-import { ProjectDetail, TeamMember } from '../../schemas';
+import { ProjectDetail } from '../../schemas';
 import { Carousel } from '../carousel';
 import { Comments } from './Comments';
 import { Dashboard } from './Dashboard';
 import { Description } from './Description';
-import { TeamMemberList } from './TeamMemberList';
-
-const TEAM_MEMBER_DATA: TeamMember[] = [
-  {
-    id: 1,
-    teamId: 8,
-    name: '권덕재',
-    nickname: 'jay',
-    course: 'FULL_STACK',
-    profileImageUrl:
-      'https://s3-pumati-test.s3.ap-northeast-2.amazonaws.com/uploads/69f83a96-2e07-457a-84ba-27de234961f6.jpg',
-    state: 'ACTIVE',
-    createdAt: '2025-03-12T00:00:00Z',
-    modifiedAt: '2025-03-12T00:00:00Z',
-    deletedAt: null,
-  },
-  {
-    id: 2,
-    teamId: 8,
-    name: '윤강',
-    nickname: 'gray',
-    course: 'FULL_STACK',
-    profileImageUrl:
-      'https://s3-pumati-test.s3.ap-northeast-2.amazonaws.com/uploads/69f83a96-2e07-457a-84ba-27de234961f6.jpg',
-    state: 'ACTIVE',
-    createdAt: '2025-03-12T00:00:00Z',
-    modifiedAt: '2025-03-12T00:00:00Z',
-    deletedAt: null,
-  },
-  {
-    id: 3,
-    teamId: 8,
-    name: '김민선',
-    nickname: 'anna',
-    course: 'AI',
-    profileImageUrl:
-      'https://s3-pumati-test.s3.ap-northeast-2.amazonaws.com/uploads/69f83a96-2e07-457a-84ba-27de234961f6.jpg',
-    state: 'ACTIVE',
-    createdAt: '2025-03-12T00:00:00Z',
-    modifiedAt: '2025-03-12T00:00:00Z',
-    deletedAt: null,
-  },
-  {
-    id: 4,
-    teamId: 8,
-    name: '박효빈',
-    nickname: 'vicky',
-    course: 'AI',
-    profileImageUrl:
-      'https://s3-pumati-test.s3.ap-northeast-2.amazonaws.com/uploads/69f83a96-2e07-457a-84ba-27de234961f6.jpg',
-    state: 'ACTIVE',
-    createdAt: '2025-03-12T00:00:00Z',
-    modifiedAt: '2025-03-12T00:00:00Z',
-    deletedAt: null,
-  },
-  {
-    id: 5,
-    teamId: 8,
-    name: '김현식',
-    nickname: 'jacky',
-    course: 'CLOUD',
-    profileImageUrl:
-      'https://s3-pumati-test.s3.ap-northeast-2.amazonaws.com/uploads/69f83a96-2e07-457a-84ba-27de234961f6.jpg',
-    state: 'ACTIVE',
-    createdAt: '2025-03-12T00:00:00Z',
-    modifiedAt: '2025-03-12T00:00:00Z',
-    deletedAt: null,
-  },
-  {
-    id: 6,
-    teamId: 8,
-    name: '박열이',
-    nickname: 'rowan',
-    course: 'CLOUD',
-    profileImageUrl:
-      'https://s3-pumati-test.s3.ap-northeast-2.amazonaws.com/uploads/69f83a96-2e07-457a-84ba-27de234961f6.jpg',
-    state: 'ACTIVE',
-    createdAt: '2025-03-12T00:00:00Z',
-    modifiedAt: '2025-03-12T00:00:00Z',
-    deletedAt: null,
-  },
-];
+import { MemberList } from './MemberList';
 
 type ProjectDetailContainerProps = {
   project: ProjectDetail;
@@ -99,6 +18,7 @@ export function ProjectDetailContainer({
     title,
     modifiedAt,
     term,
+    teamId,
     introduction,
     deploymentUrl,
     detailedDescription,
@@ -137,7 +57,7 @@ export function ProjectDetailContainer({
           detailedDescription={detailedDescription}
           tags={tags}
         />
-        <TeamMemberList teamMembers={TEAM_MEMBER_DATA} />
+        <MemberList teamId={teamId} />
       </div>
       <div className="xs:py-10 xs:px-2 my-20 xs:my-10 bg-blue-white">
         <Dashboard
