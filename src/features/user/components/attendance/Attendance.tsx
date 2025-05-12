@@ -6,7 +6,7 @@ import { accessTokenAtom, isLoggedInAtom } from '@/store';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { useCheckAttendance } from '../../hooks';
+import { useAttendanceState, useCheckAttendance } from '../../hooks';
 
 export function Attendance() {
   const router = useRouter();
@@ -17,6 +17,7 @@ export function Attendance() {
   const accessToken = useAtomValue(accessTokenAtom);
 
   const { mutateAsync: checkAttendance } = useCheckAttendance();
+  const { data: attendanceState } = useAttendanceState();
 
   const handleAttendance = async () => {
     if (!isLoggedIn || !accessToken) {
@@ -34,8 +35,12 @@ export function Attendance() {
       <p className="text-center mb-4">
         하루 한 번, 출석 체크하고 <br /> 개발자의 운세도 받아가세요!
       </p>
-      <Button size="md" onClick={handleAttendance}>
-        출석 체크
+      <Button
+        size="md"
+        onClick={handleAttendance}
+        disabled={attendanceState?.today}
+      >
+        {attendanceState?.today ? '출석 체크 완료' : '출석 체크'}
       </Button>
       {isAttendanceModalOpen && (
         <ModalPortal>
