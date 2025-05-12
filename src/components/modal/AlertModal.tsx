@@ -4,22 +4,31 @@ import { useOutsideClick } from '@/hooks';
 import { ReactNode, useEffect, useRef } from 'react';
 import { Button } from '../button';
 
-type ConfirmModalProps = {
+type AlertModalProps = {
   children: ReactNode;
   buttonText: string;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm?: () => void;
 };
 
-export function ConfirmModal({
+export function AlertModal({
   children,
   buttonText,
   onClose,
   onConfirm,
-}: ConfirmModalProps) {
+}: AlertModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useOutsideClick(modalRef, onClose);
+
+  const handleConfirm = () => {
+    if (onConfirm) {
+      onConfirm();
+      return;
+    }
+
+    onClose();
+  };
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -32,15 +41,12 @@ export function ConfirmModal({
       <div className="relative flex justify-center items-center mx-auto max-w-[600px] w-full min-h-screen h-full backdrop-blur-xs bg-neutral-800/30">
         <div
           ref={modalRef}
-          className="flex flex-col items-center gap-4 p-4 w-11/12 xs:w-4/5 bg-white rounded-lg"
+          className="flex flex-col items-center gap-4 p-4 w-4/5 bg-white rounded-lg"
         >
           {children}
-          <div className="flex gap-1 w-full">
-            <Button variant="outline" onClick={onClose}>
-              취소
-            </Button>
-            <Button onClick={onConfirm}>{buttonText}</Button>
-          </div>
+          <Button size="md" onClick={handleConfirm}>
+            {buttonText}
+          </Button>
         </div>
       </div>
     </section>

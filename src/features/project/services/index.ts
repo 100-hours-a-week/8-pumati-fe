@@ -32,6 +32,46 @@ export const createProject = async (
   }
 };
 
+export const getProject = async (projectId: number) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/projects/${projectId}`);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data.data;
+  } catch (error) {
+    console.error('Failed to get project:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while getting a project');
+  }
+};
+
+export const getTeamMembers = async (teamId: number) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/teams/${teamId}/members`);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data.data;
+  } catch (error) {
+    console.error('Failed to get team members:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while getting team members');
+  }
+};
+
 export const getSnapshot = async () => {
   try {
     const response = await fetch(`${BASE_URL}/api/projects/snapshot`, {
