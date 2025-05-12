@@ -8,16 +8,27 @@ type ConfirmModalProps = {
   children: ReactNode;
   buttonText: string;
   onClose: () => void;
+  onConfirm?: () => void;
 };
 
 export function ConfirmModal({
   children,
   buttonText,
   onClose,
+  onConfirm,
 }: ConfirmModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useOutsideClick(modalRef, onClose);
+
+  const handleConfirm = () => {
+    if (onConfirm) {
+      onConfirm();
+      return;
+    }
+
+    onClose();
+  };
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -33,7 +44,9 @@ export function ConfirmModal({
           className="flex flex-col items-center gap-4 p-4 w-4/5 bg-white rounded-lg"
         >
           {children}
-          <Button size="md">{buttonText}</Button>
+          <Button size="md" onClick={handleConfirm}>
+            {buttonText}
+          </Button>
         </div>
       </div>
     </section>
