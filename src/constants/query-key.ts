@@ -3,6 +3,10 @@ export const AUTH_QUERY_KEY = Object.freeze({
   REFRESH: ['refresh'],
 });
 
+export const USER_QUERY_KEY = Object.freeze({
+  ATTENDANCE_STATE: ['attendance-state'],
+});
+
 export const PROJECT_QUERY_KEY = Object.freeze({
   RANKED_PROJECTS: ['projects', 'rank'],
 });
