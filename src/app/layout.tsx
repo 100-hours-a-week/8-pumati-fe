@@ -27,6 +27,7 @@ export default function RootLayout({
           <main className="relative mx-auto min-w-[375px] max-w-[600px] w-full min-h-screen bg-white shadow-md">
             {children}
           </main>
+          <div id="modal-portal" />
         </Providers>
       </body>
     </html>

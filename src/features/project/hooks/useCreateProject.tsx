@@ -18,7 +18,7 @@ export function useCreateProject() {
     mutationFn: (data) => createProject(data, accessToken as string),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: PROJECT_QUERY_KEY.PROJECTS,
+        queryKey: PROJECT_QUERY_KEY.RANKED_PROJECTS,
       });
       router.push(PROJECT_PATH.DETAIL(data.id.toString()));
     },

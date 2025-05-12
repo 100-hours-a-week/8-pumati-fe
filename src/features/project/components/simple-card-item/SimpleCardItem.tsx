@@ -50,7 +50,7 @@ export function SimpleCardItem({ project, rank }: SimpleCardItemProps) {
             </span>
           )}
         </div>
-        <div className="">
+        <div className="grow">
           <div className="flex justify-between items-center">
             <h3 className="font-bold text-lg truncate">{title}</h3>
             <span className="text-sm text-dark-grey font-semibold">
