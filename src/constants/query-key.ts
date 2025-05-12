@@ -4,6 +4,5 @@ export const AUTH_QUERY_KEY = Object.freeze({
 });
 
 export const PROJECT_QUERY_KEY = Object.freeze({
-  PROJECTS: ['projects'],
-  SNAPSHOT: ['projects', 'snapshot'],
+  RANKED_PROJECTS: ['projects', 'rank'],
 });

@@ -54,15 +54,43 @@ export const getSnapshot = async () => {
   }
 };
 
-export const getProjects = async (
-  sort: 'rank' | 'latest',
-  contextId?: number,
+export const getRankedProjects = async (
+  contextId: number,
   cursorId: number = 0,
   pageSize: number = 10,
 ) => {
   try {
     const response = await fetch(
-      `${BASE_URL}/api/projects?sort=${sort}${contextId ? `&context-id=${contextId}` : ''}&cursor-id=${cursorId}&page-size=${pageSize}`,
+      `${BASE_URL}/api/projects?sort=rank&context-id=${contextId}&cursor-id=${cursorId}&page-size=${pageSize}`,
+      {
+        method: 'GET',
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error('Failed to get projects:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while getting projects');
+  }
+};
+
+export const getLatestProjects = async (
+  cursorTime: string,
+  cursorId: number = 0,
+  pageSize: number = 10,
+) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/projects?sort=latest&cursor-time=${cursorTime}&cursor-id=${cursorId}&page-size=${pageSize}`,
       {
         method: 'GET',
       },

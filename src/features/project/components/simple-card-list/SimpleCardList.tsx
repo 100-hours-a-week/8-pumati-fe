@@ -18,7 +18,7 @@ export function SimpleCardList({ projects }: SimpleCardListProps) {
         </p>
       </div>
       <ul className="flex flex-col gap-5">
-        {projects.slice(0, 3).map((project, index) => (
+        {projects.map((project, index) => (
           <SimpleCardItem key={project.id} project={project} rank={index + 1} />
         ))}
       </ul>
