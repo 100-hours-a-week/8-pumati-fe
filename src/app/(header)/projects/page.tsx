@@ -3,6 +3,8 @@ import { ProjectsContainer } from '@/features/project/components';
 import { getProjects, getSnapshot } from '@/features/project/services';
 import { getQueryClient } from '@/libs/tanstack-query';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProjectsPage() {
   const { id } = await getSnapshot();
 
