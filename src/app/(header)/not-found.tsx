@@ -14,12 +14,12 @@ export default function NotFound() {
       </div>
       <div className="flex flex-col gap-2">
         <p className="text-lg font-semibold text-blue">
-          죄송합니다. 현재 페이지를 찾을 수 없습니다.
+          죄송합니다. 요청하신 프로젝트를 찾을 수 없습니다.
         </p>
         <p className="text-dark-grey">
-          페이지의 주소가 잘못 입력되었거나,
+          입력하신 프로젝트 ID가 올바르지 않거나,
           <br />
-          요청하신 페이지의 주소가 변경 또는 삭제되어 찾을 수 없습니다.
+          해당 프로젝트가 삭제되었을 수 있습니다.
         </p>
       </div>
       <NotFoundButtons />

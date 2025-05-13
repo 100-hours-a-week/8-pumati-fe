@@ -33,10 +33,16 @@ export const createProject = async (
 };
 
 export const getProject = async (projectId: number) => {
+  if (typeof projectId !== 'number' || isNaN(projectId)) return undefined;
+
   try {
     const response = await fetch(`${BASE_URL}/api/projects/${projectId}`);
 
     if (!response.ok) {
+      if (response.status === 404) {
+        return undefined;
+      }
+
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
