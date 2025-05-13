@@ -157,3 +157,71 @@ export const getLatestProjects = async (
       : new Error('An unexpected error occurred while getting projects');
   }
 };
+
+export const givePumati = async ({
+  token,
+  teamId,
+}: {
+  token: string;
+  teamId: number;
+}) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/teams/${teamId}/gived-pumati`,
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data.data;
+  } catch (error) {
+    console.error('Failed to give pumati:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while giving pumati');
+  }
+};
+
+export const receivePumati = async ({
+  token,
+  teamId,
+}: {
+  token: string;
+  teamId: number;
+}) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/teams/${teamId}/received-pumati`,
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data.data;
+  } catch (error) {
+    console.error('Failed to give pumati:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while receiving pumati');
+  }
+};
