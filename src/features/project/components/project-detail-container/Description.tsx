@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components';
+import { EditIcon } from '@/components/icons';
 import { accessTokenAtom, authAtom } from '@/store';
 import { dateYYYYMMDD } from '@/utils/date';
 import { useAtomValue } from 'jotai';
@@ -11,6 +12,7 @@ import { TagList } from '../tag';
 
 type DescriptionProps = Pick<
   ProjectDetail,
+  | 'id'
   | 'teamId'
   | 'title'
   | 'modifiedAt'
@@ -22,6 +24,7 @@ type DescriptionProps = Pick<
 >;
 
 export function Description({
+  id,
   teamId,
   title,
   modifiedAt,
@@ -39,6 +42,9 @@ export function Description({
   const { mutateAsync: givePumati } = useGivePumati();
   const { mutateAsync: receivePumati } = useReceivePumati();
 
+  const handleEditButtonClick = () => {
+    router.push(`/projects/${id}/edit`);
+  };
   const handleOpenProject = async () => {
     if (auth && auth.teamId && accessToken) {
       await givePumati({ token: accessToken, teamId: auth.teamId });
@@ -50,11 +56,21 @@ export function Description({
   };
   return (
     <section className="flex flex-col gap-4 mt-4">
-      <div className="flex items-start justify-between">
-        <h1 className="text-2xl font-bold mr-2">{title}</h1>
-        <div className="flex flex-col items-end">
-          <p className="text-sm text-grey">{dateYYYYMMDD(modifiedAt)}</p>
-          <p className="text-sm text-dark-grey">판교{term}기</p>
+      <div className="flex flex-col gap-1">
+        {auth?.teamId === teamId && (
+          <button
+            className="flex justify-center items-center self-end p-1 cursor-pointer hover:bg-light-blue rounded-lg transition-colors duration-150"
+            onClick={handleEditButtonClick}
+          >
+            <EditIcon width={20} height={20} />
+          </button>
+        )}
+        <div className="flex items-start justify-between">
+          <h1 className="text-2xl font-bold mr-2">{title}</h1>
+          <div className="flex flex-col items-end">
+            <p className="text-sm text-grey">{dateYYYYMMDD(modifiedAt)}</p>
+            <p className="text-sm text-dark-grey">판교{term}기</p>
+          </div>
         </div>
       </div>
       <p className="leading-5 mb-4">{introduction}</p>

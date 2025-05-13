@@ -13,6 +13,7 @@ export function ProjectDetailContainer({
   project,
 }: ProjectDetailContainerProps) {
   const {
+    id,
     images,
     title,
     modifiedAt,
@@ -48,6 +49,7 @@ export function ProjectDetailContainer({
           ))}
         </Carousel>
         <Description
+          id={id}
           teamId={teamId}
           title={title}
           modifiedAt={modifiedAt}
