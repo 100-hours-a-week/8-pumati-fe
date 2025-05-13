@@ -37,3 +37,9 @@ body {
 .swiper-pagination-bullet.swiper-pagination-bullet-active {
   @apply bg-soft-blue;
 }
+
+pre {
+  font-family:
+    var(--font-pretendard), 'Pretendard', 'Apple SD Gothic Neo',
+    'Malgun Gothic', sans-serif;
+}

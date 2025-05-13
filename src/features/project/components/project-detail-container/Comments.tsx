@@ -1,10 +1,10 @@
 'use client';
 
 import { CallToAction } from '@/components';
-import { COURSE } from '@/constants';
-import { dateYYYYMMDD } from '@/utils/date';
-import Image from 'next/image';
+import { useState } from 'react';
 import { CommentItem } from '../../schemas';
+import { CommentList } from './CommentList';
+import { CreateCommentModalContent } from './CreateCommentModalContent';
 
 const COMMENTS: CommentItem[] = [
   {
@@ -45,7 +45,13 @@ const COMMENTS: CommentItem[] = [
   },
 ];
 
-export function Comments() {
+type CommentsProps = {
+  title: string;
+};
+
+export function Comments({ title }: CommentsProps) {
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-lg font-semibold">
@@ -54,43 +60,15 @@ export function Comments() {
       <CallToAction
         text="후기를 작성해보세요!"
         buttonText="후기 작성"
-        action={() => {
-          // 후기 작성 모달 오픈
-        }}
+        action={() => setIsCommentModalOpen(true)}
       />
-      <ul className="flex flex-col gap-4">
-        {COMMENTS.map((comment) => (
-          <li key={comment.id} className="border-b border-light-grey">
-            <div className="flex justify-start items-start gap-4 py-3 mx-1">
-              <Image
-                src={comment.author.profileImageUrl}
-                alt={comment.author.name}
-                width={52}
-                height={52}
-                className="rounded-full object-cover"
-              />
-              <div className="flex flex-col gap-1">
-                <div className="w-full">
-                  <div className="flex gap-1">
-                    <p className="font-medium">
-                      {comment.author.nickname}({comment.author.name})
-                    </p>
-                    <p className="text-sm text-dark-grey">
-                      {comment.author.course
-                        ? COURSE[comment.author.course]
-                        : '외부인'}
-                    </p>
-                  </div>
-                  <p className="text-sm text-grey">
-                    {dateYYYYMMDD(comment.createdAt)}
-                  </p>
-                </div>
-                <p>{comment.content}</p>
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <CommentList comments={COMMENTS} />
+      {isCommentModalOpen && (
+        <CreateCommentModalContent
+          title={title}
+          onClose={() => setIsCommentModalOpen(false)}
+        />
+      )}
     </section>
   );
 }

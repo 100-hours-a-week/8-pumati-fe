@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, ConfirmModal, ModalPortal } from '@/components';
+import { AlertModal, Button, ModalPortal } from '@/components';
 import { AUTH_PATH } from '@/constants';
 import { accessTokenAtom, isLoggedInAtom } from '@/store';
 import { useAtomValue } from 'jotai';
@@ -44,13 +44,13 @@ export function Attendance() {
       </Button>
       {isAttendanceModalOpen && (
         <ModalPortal>
-          <ConfirmModal
+          <AlertModal
             onClose={() => setIsAttendanceModalOpen(false)}
             buttonText="확인"
           >
             <h3 className="text-lg font-semibold">오늘의 코딩 운세</h3>
             <p className="text-center w-full break-words">{luckMessage}</p>
-          </ConfirmModal>
+          </AlertModal>
         </ModalPortal>
       )}
     </article>
