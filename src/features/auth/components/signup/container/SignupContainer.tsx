@@ -1,6 +1,6 @@
 'use client';
 
-import { ROOT_PATH } from '@/constants';
+import { AUTH_PATH, ROOT_PATH } from '@/constants';
 import { useAuth, useSignup, useSignupForm } from '@/features/auth/hooks';
 import {
   SignupData,
@@ -10,6 +10,7 @@ import { useUploadFileToS3 } from '@/hooks';
 import { isCodeVerifiedAtom, signupTokenAtom } from '@/store';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { FormProvider } from 'react-hook-form';
 import { SignupForm } from '../form';
 
@@ -58,6 +59,13 @@ export function SignupContainer() {
 
     router.replace(ROOT_PATH);
   };
+
+  useEffect(() => {
+    if (!signupToken) {
+      alert('죄송합니다. 처음부터 다시 회원가입을 진행해주세요.');
+      router.replace(AUTH_PATH.LOGIN);
+    }
+  }, [signupToken, router]);
   return (
     <FormProvider {...methods}>
       <form

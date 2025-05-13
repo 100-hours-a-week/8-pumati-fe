@@ -1,5 +1,6 @@
 import { ProjectDetailContainer } from '@/features/project/components';
 import { getProject } from '@/features/project/services';
+import { notFound } from 'next/navigation';
 
 type ProjectDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -11,6 +12,9 @@ export default async function ProjectDetailPage({
   const { id } = await params;
   const project = await getProject(Number(id));
 
+  if (!project) {
+    notFound();
+  }
   return (
     <section className="pb-25">
       <ProjectDetailContainer project={project} />

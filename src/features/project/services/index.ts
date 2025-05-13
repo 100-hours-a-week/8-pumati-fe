@@ -2,6 +2,34 @@ import { NewProject } from '../schemas';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+export const checkProjectExists = async (token: string) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/members/teams/projects/existence`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data.data;
+  } catch (error) {
+    console.error('Failed to check project existence:', error);
+    throw error instanceof Error
+      ? error
+      : new Error(
+          'An unexpected error occurred while checking project existence',
+        );
+  }
+};
+
 export const createProject = async (
   newProjectData: NewProject,
   accessToken: string,
@@ -33,10 +61,16 @@ export const createProject = async (
 };
 
 export const getProject = async (projectId: number) => {
+  if (typeof projectId !== 'number' || isNaN(projectId)) return undefined;
+
   try {
     const response = await fetch(`${BASE_URL}/api/projects/${projectId}`);
 
     if (!response.ok) {
+      if (response.status === 404) {
+        return undefined;
+      }
+
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
