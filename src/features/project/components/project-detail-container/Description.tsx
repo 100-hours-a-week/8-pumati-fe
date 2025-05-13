@@ -1,12 +1,17 @@
 'use client';
 
 import { Button } from '@/components';
+import { accessTokenAtom, authAtom } from '@/store';
 import { dateYYYYMMDD } from '@/utils/date';
+import { useAtomValue } from 'jotai';
+import { useRouter } from 'next/navigation';
+import { useGivePumati, useReceivePumati } from '../../hooks';
 import { ProjectDetail } from '../../schemas';
 import { TagList } from '../tag';
 
 type DescriptionProps = Pick<
   ProjectDetail,
+  | 'teamId'
   | 'title'
   | 'modifiedAt'
   | 'term'
@@ -17,6 +22,7 @@ type DescriptionProps = Pick<
 >;
 
 export function Description({
+  teamId,
   title,
   modifiedAt,
   term,
@@ -25,6 +31,23 @@ export function Description({
   detailedDescription,
   tags,
 }: DescriptionProps) {
+  const router = useRouter();
+
+  const auth = useAtomValue(authAtom);
+  const accessToken = useAtomValue(accessTokenAtom);
+
+  const { mutateAsync: givePumati } = useGivePumati();
+  const { mutateAsync: receivePumati } = useReceivePumati();
+
+  const handleOpenProject = async () => {
+    if (auth && auth.teamId && accessToken) {
+      await givePumati({ token: accessToken, teamId: auth.teamId });
+      await receivePumati({ token: accessToken, teamId: teamId });
+      router.refresh();
+    }
+
+    window.open(deploymentUrl, '_blank', 'noopener,noreferrer');
+  };
   return (
     <section className="flex flex-col gap-4 mt-4">
       <div className="flex items-start justify-between">
@@ -35,19 +58,13 @@ export function Description({
         </div>
       </div>
       <p className="leading-5 mb-4">{introduction}</p>
-      <Button
-        onClick={() =>
-          window.open(deploymentUrl, '_blank', 'noopener,noreferrer')
-        }
-      >
-        프로젝트 바로가기
-      </Button>
+      <Button onClick={handleOpenProject}>프로젝트 바로가기</Button>
       <TagList tags={tags.map((tag) => tag.content)} />
       <div className="flex flex-col gap-4 mt-16 mb-10">
         <h2 className="text-lg font-semibold">프로젝트 상세 설명</h2>
-        <p className="leading-5 p-4 bg-light-grey rounded-lg">
+        <pre className="leading-5 p-4 bg-light-grey rounded-lg whitespace-pre-wrap">
           {detailedDescription}
-        </p>
+        </pre>
       </div>
     </section>
   );
