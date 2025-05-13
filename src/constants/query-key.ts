@@ -9,4 +9,5 @@ export const USER_QUERY_KEY = Object.freeze({
 
 export const PROJECT_QUERY_KEY = Object.freeze({
   RANKED_PROJECTS: ['projects', 'rank'],
+  CHECK_PROJECT_EXISTS: ['projects', 'existence'],
 });
