@@ -12,7 +12,7 @@ export function FirstStep({ onNext }: FirstStepProps) {
   const { trigger } = useFormContext();
 
   const handleNext = async () => {
-    const valid = await trigger(['name', 'nickname']);
+    const valid = await trigger(['profileImageUrl', 'name', 'nickname']);
 
     if (valid) onNext();
   };

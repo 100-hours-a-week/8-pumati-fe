@@ -22,11 +22,16 @@ export function SignupContainer() {
   const methods = useSignupForm();
   const { handleSubmit, setError } = methods;
 
-  const { mutateAsync: getPresignedUrl } = useUploadFileToS3();
-  const { mutateAsync: signup } = useSignup();
-  const { mutateAsync: getAuth } = useAuth();
+  const { mutateAsync: getPresignedUrl, isPending: isUploadingImage } =
+    useUploadFileToS3();
+  const { mutateAsync: signup, isPending: isSigningUp } = useSignup();
+  const { mutateAsync: getAuth, isPending: isGettingAuth } = useAuth();
 
   const onSubmit = async (data: SignupFormData) => {
+    if (isUploadingImage || isSigningUp || isGettingAuth) {
+      return;
+    }
+
     if (!signupToken) {
       throw new Error('Signup token is not found');
     }
