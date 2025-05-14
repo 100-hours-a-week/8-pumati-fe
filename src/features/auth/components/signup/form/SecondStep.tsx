@@ -2,11 +2,15 @@
 
 import type { DropdownOption } from '@/components';
 import { Button, Dropdown, TextInput } from '@/components';
-import { useTeamList } from '@/features/auth/hooks';
-import { isCodeVerifiedAtom } from '@/store';
+import { ROOT_PATH } from '@/constants';
+import { useAuth, useSignup, useTeamList } from '@/features/auth/hooks';
+import { NonTraineeSignupData } from '@/features/auth/schemas';
+import { useUploadFileToS3 } from '@/hooks';
+import { isCodeVerifiedAtom, signupTokenAtom } from '@/store';
 import { useAtomValue } from 'jotai';
+import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 type SecondStepProps = {
   onPrev: () => void;
@@ -25,9 +29,18 @@ export function SecondStep({
   isVerifying,
   onCodeVerification,
 }: SecondStepProps) {
+  const router = useRouter();
+
   const isCodeVerified = useAtomValue(isCodeVerifiedAtom);
-  const { data: teamList } = useTeamList();
+  const signupToken = useAtomValue(signupTokenAtom);
+
   const { term } = useWatch();
+  const { getValues } = useFormContext();
+
+  const { data: teamList } = useTeamList();
+  const { mutateAsync: getAuth } = useAuth();
+  const { mutateAsync: getPresignedUrl } = useUploadFileToS3();
+  const { mutateAsync: signup } = useSignup();
 
   const termOptions = useMemo(
     () =>
@@ -51,6 +64,32 @@ export function SecondStep({
       ),
     [teamList],
   );
+
+  const handleNonTraineeSignup = async () => {
+    const values = getValues();
+
+    const signupData: NonTraineeSignupData = {
+      name: values.name,
+      nickname: values.nickname,
+      signupToken,
+      term: null,
+      teamNumber: null,
+      course: null,
+      role: 'USER',
+      mailConsent: true,
+      profileImageUrl: null,
+    };
+
+    if (values.profileImageUrl) {
+      const { publicUrl } = await getPresignedUrl(values.profileImageUrl);
+      signupData.profileImageUrl = publicUrl;
+    }
+
+    const { accessToken } = await signup(signupData);
+    await getAuth(accessToken);
+
+    router.replace(ROOT_PATH);
+  };
   return (
     <>
       {isTrainee ? (
@@ -128,7 +167,7 @@ export function SecondStep({
               type="button"
               size="full"
               variant="outline"
-              onClick={() => alert('회원가입 요청')}
+              onClick={handleNonTraineeSignup}
             >
               아니요, 회원가입을 진행할게요
             </Button>

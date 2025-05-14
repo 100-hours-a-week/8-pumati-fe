@@ -1,4 +1,4 @@
-import { LoginProvider, SignupData } from '../schemas';
+import { LoginProvider, NonTraineeSignupData, SignupData } from '../schemas';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -71,7 +71,7 @@ export const getTeamList = async () => {
   }
 };
 
-export const signup = async (signupData: SignupData) => {
+export const signup = async (signupData: SignupData | NonTraineeSignupData) => {
   try {
     const response = await fetch(`${BASE_URL}/api/members/social`, {
       method: 'POST',

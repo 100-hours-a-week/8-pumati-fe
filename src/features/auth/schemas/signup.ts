@@ -42,6 +42,14 @@ export const signupFormSchema = z.object({
 
 export type SignupForm = z.infer<typeof signupFormSchema>;
 
+export const nonTraineeSignupFormSchema = signupFormSchema.pick({
+  profileImageUrl: true,
+  name: true,
+  nickname: true,
+});
+
+export type NonTraineeSignupForm = z.infer<typeof nonTraineeSignupFormSchema>;
+
 export const teamListSchema = z.array(
   z.object({
     term: z.number(),
@@ -58,9 +66,19 @@ export const signupDataSchema = z.object({
   teamNumber: z.number(),
   course: z.string(),
   signupToken: z.string(),
-  role: z.literal('TRAINEE'),
+  role: z.enum(['TRAINEE', 'USER']),
   mailConsent: z.boolean(),
   profileImageUrl: z.string().url().nullable(),
 });
 
 export type SignupData = z.infer<typeof signupDataSchema>;
+
+export const nonTraineeSignupDataSchema = signupDataSchema.extend({
+  term: z.number().nullable(),
+  teamNumber: z.number().nullable(),
+  course: z.string().nullable(),
+  signupToken: z.string().nullable(),
+  profileImageUrl: z.string().url().nullable(),
+});
+
+export type NonTraineeSignupData = z.infer<typeof nonTraineeSignupDataSchema>;
