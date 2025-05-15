@@ -83,21 +83,22 @@ export function CreateForm() {
           name="deploymentUrl"
           label="배포 링크"
           required
-          placeholder="배포된 프로젝트의 URL을 입력해주세요"
+          placeholder="배포된 프로젝트의 URL을 입력해주세요. (https://~)"
           disabled={isSubmitting}
         />
         <TextInput
           name="githubUrl"
           label="GitHub 링크"
           required
-          placeholder="GitHub 링크를 입력해주세요."
+          placeholder="GitHub 링크를 입력해주세요. (https://~)"
           disabled={isSubmitting}
+          description="예시: https://github.com/orgs/100-hours-a-week/teams/8"
         />
         <Textarea
           name="detailedDescription"
           label="상세 설명"
           required
-          placeholder="목적, 기능, 개발 과정 등을 상세하게 작성해주세요."
+          placeholder="목적, 기능, 개발 과정 등을 상세하게 작성해주세요! (마크다운은 지원하지 않습니다)"
           rows={6}
           disabled={isSubmitting}
         />

@@ -8,6 +8,7 @@ type ControlledTextInputProps = TextInputProps & {
   name: string;
   label?: string;
   required?: boolean;
+  description?: string;
 };
 
 export function ControlledTextInput({
@@ -17,6 +18,7 @@ export function ControlledTextInput({
   placeholder,
   maxLength,
   disabled,
+  description,
 }: ControlledTextInputProps) {
   const { control } = useFormContext();
 
@@ -33,6 +35,7 @@ export function ControlledTextInput({
             onChange={field.onChange}
             maxLength={maxLength}
             disabled={disabled}
+            description={description}
           />
         </FormFieldWrapper>
       )}
