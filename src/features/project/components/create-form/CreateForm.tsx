@@ -59,7 +59,7 @@ export function CreateForm() {
       },
       {
         onSuccess: ({ id }) => {
-          router.push(PROJECT_PATH.DETAIL(id.toString()));
+          router.replace(PROJECT_PATH.DETAIL(id.toString()));
         },
         onSettled: () => {
           setIsSubmitting(false);
