@@ -1,11 +1,13 @@
 'use client';
 
 import { Button, Textarea, TextInput } from '@/components';
+import { PROJECT_PATH, STORAGE_KEY } from '@/constants';
 import { useMultiFilesToS3 } from '@/hooks';
 import { authAtom } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAtomValue } from 'jotai';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useCreateProject } from '../../hooks';
 import { NewProjectForm, newProjectFormSchema } from '../../schemas';
@@ -13,9 +15,12 @@ import { ImageUploader } from '../image-uploader';
 import { TagInput } from '../tag';
 
 export function CreateForm() {
+  const router = useRouter();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const auth = useAtomValue(authAtom);
+
   const methods = useForm<NewProjectForm>({
     defaultValues: {
       images: [],
@@ -28,9 +33,10 @@ export function CreateForm() {
     },
     resolver: zodResolver(newProjectFormSchema),
   });
+  const { reset } = methods;
 
   const { mutateAsync: uploadMultiFilesToS3 } = useMultiFilesToS3();
-  const { mutateAsync: createProject } = useCreateProject();
+  const { mutate: createProject } = useCreateProject();
 
   const onSubmit = async (data: NewProjectForm) => {
     if (!auth?.teamId) {
@@ -45,13 +51,39 @@ export function CreateForm() {
       sequence: index + 1,
     }));
 
-    await createProject({
-      ...data,
-      images,
-      teamId: auth.teamId,
-    });
-    setIsSubmitting(false);
+    createProject(
+      {
+        ...data,
+        images,
+        teamId: auth.teamId,
+      },
+      {
+        onSuccess: ({ id }) => {
+          router.replace(PROJECT_PATH.DETAIL(id.toString()));
+        },
+        onSettled: () => {
+          setIsSubmitting(false);
+        },
+      },
+    );
   };
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem(STORAGE_KEY);
+
+    if (saved) {
+      reset(JSON.parse(saved));
+    }
+  }, [reset]);
+
+  useEffect(() => {
+    const subscription = methods.watch((value) => {
+      delete value.images;
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+    });
+
+    return () => subscription.unsubscribe();
+  }, [methods]);
   return (
     <FormProvider {...methods}>
       <form
@@ -83,21 +115,22 @@ export function CreateForm() {
           name="deploymentUrl"
           label="배포 링크"
           required
-          placeholder="배포된 프로젝트의 URL을 입력해주세요"
+          placeholder="배포된 프로젝트의 URL을 입력해주세요. (https://~)"
           disabled={isSubmitting}
         />
         <TextInput
           name="githubUrl"
           label="GitHub 링크"
           required
-          placeholder="GitHub 링크를 입력해주세요."
+          placeholder="GitHub 링크를 입력해주세요. (https://~)"
           disabled={isSubmitting}
+          description="예시: https://github.com/orgs/100-hours-a-week/teams/8"
         />
         <Textarea
           name="detailedDescription"
           label="상세 설명"
           required
-          placeholder="목적, 기능, 개발 과정 등을 상세하게 작성해주세요."
+          placeholder="목적, 기능, 개발 과정 등을 상세하게 작성해주세요! (마크다운은 지원하지 않습니다)"
           rows={6}
           disabled={isSubmitting}
         />
