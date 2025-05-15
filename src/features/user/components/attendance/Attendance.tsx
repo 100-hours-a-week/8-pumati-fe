@@ -21,6 +21,8 @@ export function Attendance() {
     useCheckAttendance();
   const { data: attendanceState } = useAttendanceState();
 
+  const isAttendanceChecked = attendanceState?.today && isLoggedIn;
+
   const handleAttendance = async () => {
     if (!isLoggedIn || !accessToken) {
       router.push(AUTH_PATH.LOGIN);
@@ -40,9 +42,9 @@ export function Attendance() {
       <Button
         size="md"
         onClick={handleAttendance}
-        disabled={attendanceState?.today}
+        disabled={isAttendanceChecked}
       >
-        {attendanceState?.today ? '출석 체크 완료' : '출석 체크'}
+        {isAttendanceChecked ? '출석 체크 완료' : '출석 체크'}
       </Button>
       {isAttendanceModalOpen && (
         <ModalPortal>

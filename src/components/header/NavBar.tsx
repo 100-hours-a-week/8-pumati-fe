@@ -14,9 +14,10 @@ type NavbarProps = {
 
 export function NavBar({ triggerRef }: NavbarProps) {
   const navbarRef = useRef<HTMLElement>(null);
+  const refs = triggerRef ? [navbarRef, triggerRef] : navbarRef;
+
   const [isNavbarOpen, setIsNavbarOpen] = useAtom(navbarAtom);
   const isLoggedIn = useAtomValue(isLoggedInAtom);
-  const refs = triggerRef ? [navbarRef, triggerRef] : navbarRef;
 
   const { mutate: logout } = useLogout();
 
