@@ -57,7 +57,7 @@ export function SimpleCardItem({ project, rank }: SimpleCardItemProps) {
               {teamNumber}팀
             </span>
           </div>
-          <p className="mt-1 text-sm xs:text-[15px] text-dark-grey line-clamp-2">
+          <p className="mt-1 text-sm xs:text-[15px] text-dark-grey line-clamp-2 whitespace-pre-wrap break-all">
             {introduction}
           </p>
         </div>

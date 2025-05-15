@@ -37,7 +37,7 @@ export function CardItem({ project }: CardItemProps) {
           <h3 className="font-bold text-lg truncate">{title}</h3>
           <p className="ml-4 text-sm text-dark-grey shrink-0">판교{term}기</p>
         </div>
-        <p className="mt-1 text-sm xs:text-[15px] text-dark-grey line-clamp-2">
+        <p className="mt-1 text-sm xs:text-[15px] text-dark-grey line-clamp-2 whitespace-pre-wrap break-words">
           {introduction}
         </p>
         <div className="max-h-[76px] overflow-hidden">
