@@ -1,11 +1,13 @@
 'use client';
 
 import { Button, Textarea, TextInput } from '@/components';
+import { PROJECT_PATH, STORAGE_KEY } from '@/constants';
 import { useMultiFilesToS3 } from '@/hooks';
 import { authAtom } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAtomValue } from 'jotai';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useCreateProject } from '../../hooks';
 import { NewProjectForm, newProjectFormSchema } from '../../schemas';
@@ -13,9 +15,12 @@ import { ImageUploader } from '../image-uploader';
 import { TagInput } from '../tag';
 
 export function CreateForm() {
+  const router = useRouter();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const auth = useAtomValue(authAtom);
+
   const methods = useForm<NewProjectForm>({
     defaultValues: {
       images: [],
@@ -28,9 +33,10 @@ export function CreateForm() {
     },
     resolver: zodResolver(newProjectFormSchema),
   });
+  const { reset } = methods;
 
   const { mutateAsync: uploadMultiFilesToS3 } = useMultiFilesToS3();
-  const { mutateAsync: createProject } = useCreateProject();
+  const { mutate: createProject } = useCreateProject();
 
   const onSubmit = async (data: NewProjectForm) => {
     if (!auth?.teamId) {
@@ -45,13 +51,39 @@ export function CreateForm() {
       sequence: index + 1,
     }));
 
-    await createProject({
-      ...data,
-      images,
-      teamId: auth.teamId,
-    });
-    setIsSubmitting(false);
+    createProject(
+      {
+        ...data,
+        images,
+        teamId: auth.teamId,
+      },
+      {
+        onSuccess: ({ id }) => {
+          router.push(PROJECT_PATH.DETAIL(id.toString()));
+        },
+        onSettled: () => {
+          setIsSubmitting(false);
+        },
+      },
+    );
   };
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem(STORAGE_KEY);
+
+    if (saved) {
+      reset(JSON.parse(saved));
+    }
+  }, [reset]);
+
+  useEffect(() => {
+    const subscription = methods.watch((value) => {
+      delete value.images;
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+    });
+
+    return () => subscription.unsubscribe();
+  }, [methods]);
   return (
     <FormProvider {...methods}>
       <form

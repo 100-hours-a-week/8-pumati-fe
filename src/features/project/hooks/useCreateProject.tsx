@@ -1,4 +1,4 @@
-import { PROJECT_PATH } from '@/constants';
+import { STORAGE_KEY } from '@/constants';
 import { PROJECT_QUERY_KEY } from '@/constants/query-key';
 import { getQueryClient } from '@/libs/tanstack-query';
 import { accessTokenAtom } from '@/store';
@@ -16,14 +16,15 @@ export function useCreateProject() {
 
   return useMutation<{ id: number }, Error, NewProject>({
     mutationFn: (data) => createProject(data, accessToken as string),
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: PROJECT_QUERY_KEY.RANKED_PROJECTS,
       });
-      router.push(PROJECT_PATH.DETAIL(data.id.toString()));
+      sessionStorage.removeItem(STORAGE_KEY);
     },
     onError: (error) => {
       console.error(error);
+      alert('죄송합니다.프로젝트 생성에 실패했습니다.');
     },
   });
 }
