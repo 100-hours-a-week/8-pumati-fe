@@ -1,6 +1,7 @@
 'use client';
 
 import { AlertModal, Button, ModalPortal } from '@/components';
+import { SmallIcon } from '@/components/icons/SmallIcon';
 import { AUTH_PATH } from '@/constants';
 import { accessTokenAtom, isLoggedInAtom } from '@/store';
 import { useAtomValue } from 'jotai';
@@ -11,13 +12,16 @@ import { useAttendanceState, useCheckAttendance } from '../../hooks';
 export function Attendance() {
   const router = useRouter();
 
-  const [luckMessage, setLuckMessage] = useState('잠시만 기다려주세요..!');
+  const [luckMessage, setLuckMessage] = useState('운세 생성중...');
   const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
   const isLoggedIn = useAtomValue(isLoggedInAtom);
   const accessToken = useAtomValue(accessTokenAtom);
 
-  const { mutateAsync: checkAttendance } = useCheckAttendance();
+  const { mutateAsync: checkAttendance, isPending: isCheckingAttendance } =
+    useCheckAttendance();
   const { data: attendanceState } = useAttendanceState();
+
+  const isAttendanceChecked = attendanceState?.today && isLoggedIn;
 
   const handleAttendance = async () => {
     if (!isLoggedIn || !accessToken) {
@@ -38,18 +42,24 @@ export function Attendance() {
       <Button
         size="md"
         onClick={handleAttendance}
-        disabled={attendanceState?.today}
+        disabled={isAttendanceChecked}
       >
-        {attendanceState?.today ? '출석 체크 완료' : '출석 체크'}
+        {isAttendanceChecked ? '출석 체크 완료' : '출석 체크'}
       </Button>
       {isAttendanceModalOpen && (
         <ModalPortal>
           <AlertModal
             onClose={() => setIsAttendanceModalOpen(false)}
             buttonText="확인"
+            isLoading={isCheckingAttendance}
           >
-            <h3 className="text-lg font-semibold">오늘의 코딩 운세</h3>
-            <p className="text-center w-full break-words">{luckMessage}</p>
+            <div className="flex flex-col items-center mt-2">
+              <SmallIcon width={24} height={24} />
+              <h3 className="text-lg font-semibold">오늘의 코딩 운세</h3>
+            </div>
+            <p className="text-center font-medium w-full break-words">
+              {luckMessage}
+            </p>
           </AlertModal>
         </ModalPortal>
       )}
