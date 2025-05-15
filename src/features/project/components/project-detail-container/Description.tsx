@@ -78,7 +78,7 @@ export function Description({
       <TagList tags={tags.map((tag) => tag.content)} />
       <div className="flex flex-col gap-4 mt-16 mb-10">
         <h2 className="text-lg font-semibold">프로젝트 상세 설명</h2>
-        <pre className="leading-5 p-4 bg-light-grey rounded-lg whitespace-pre-wrap">
+        <pre className="leading-5 py-6 px-4 bg-light-grey rounded-lg whitespace-pre-wrap break-words">
           {detailedDescription}
         </pre>
       </div>
