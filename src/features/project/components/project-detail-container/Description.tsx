@@ -73,12 +73,14 @@ export function Description({
           </div>
         </div>
       </div>
-      <p className="leading-5 mb-4">{introduction}</p>
+      <p className="leading-5 mb-4 whitespace-pre-wrap break-words">
+        {introduction}
+      </p>
       <Button onClick={handleOpenProject}>프로젝트 바로가기</Button>
       <TagList tags={tags.map((tag) => tag.content)} />
       <div className="flex flex-col gap-4 mt-16 mb-10">
         <h2 className="text-lg font-semibold">프로젝트 상세 설명</h2>
-        <pre className="leading-5 p-4 bg-light-grey rounded-lg whitespace-pre-wrap">
+        <pre className="leading-5 py-6 px-4 bg-light-grey rounded-lg whitespace-pre-wrap break-words">
           {detailedDescription}
         </pre>
       </div>
