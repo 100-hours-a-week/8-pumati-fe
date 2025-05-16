@@ -9,7 +9,7 @@ export function SimpleCardList({ projects }: SimpleCardListProps) {
   return (
     <article className="w-full max-w-[25rem] mx-auto my-10">
       <div className="flex flex-col gap-2 mb-8 text-center">
-        <h2 className="text-xl font-bold">
+        <h2 className="text-2xl font-bold">
           품앗이 상위 <span className="text-blue">TOP3</span> 프로젝트
         </h2>
         <p className="font-medium text-dark-grey">

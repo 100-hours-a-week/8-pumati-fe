@@ -21,10 +21,6 @@ export function Carousel({ children, pagination = true }: CarouselProps) {
         modules={pagination ? [Pagination, Navigation] : [Navigation]}
         spaceBetween={50}
         slidesPerView={1}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-        }}
         pagination={pagination ? { clickable: true } : false}
         grabCursor
         keyboard={{ enabled: true }}
@@ -33,8 +29,12 @@ export function Carousel({ children, pagination = true }: CarouselProps) {
         {children.map((child, index) => (
           <SwiperSlide key={index}>{child}</SwiperSlide>
         ))}
-        <SwipeButton direction="left" />
-        <SwipeButton direction="right" />
+        {children.length > 1 && (
+          <>
+            <SwipeButton direction="left" />
+            <SwipeButton direction="right" />
+          </>
+        )}
       </Swiper>
     </article>
   );

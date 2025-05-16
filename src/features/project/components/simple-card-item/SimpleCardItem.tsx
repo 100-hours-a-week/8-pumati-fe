@@ -26,7 +26,7 @@ export function SimpleCardItem({ project, rank }: SimpleCardItemProps) {
       onClick={handleClick}
     >
       <div className="flex gap-4">
-        <div className="relative aspect-square xs:aspect-[16/9] h-18 bg-black shrink-0 rounded-lg overflow-hidden">
+        <div className="relative aspect-square xs:aspect-[16/9] h-18 bg-blue-white shrink-0 rounded-lg">
           <Image
             src={representativeImageUrl}
             alt={title}
@@ -37,7 +37,7 @@ export function SimpleCardItem({ project, rank }: SimpleCardItemProps) {
           {rank && (
             <span
               className={cn(
-                'absolute overflow-hidden -top-1 -left-1 rounded-full w-6 h-6 z-10 border-2 flex items-center justify-center text-white text-sm font-bold',
+                'absolute overflow-hidden -top-2 -left-2 rounded-full w-7 h-7 z-10 border-2 flex items-center justify-center text-white font-bold',
                 rank === 1
                   ? 'bg-[#FFD700] border-[#E6C200]'
                   : rank === 2
