@@ -24,7 +24,7 @@ export function useCreateProject() {
     },
     onError: (error) => {
       console.error(error);
-      alert('죄송합니다.프로젝트 생성에 실패했습니다.');
+      alert('프로젝트 생성에 실패했습니다. 잠시후 다시 시도해주세요.');
     },
   });
 }

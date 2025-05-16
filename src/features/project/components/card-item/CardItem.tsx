@@ -23,7 +23,7 @@ export function CardItem({ project }: CardItemProps) {
       className="flex flex-col rounded-lg overflow-hidden shadow-lg group cursor-pointer"
       onClick={handleClick}
     >
-      <div className="relative w-full aspect-[2/1] overflow-hidden bg-black">
+      <div className="relative w-full aspect-[16/9] overflow-hidden bg-black">
         <Image
           src={representativeImageUrl}
           alt={title}
