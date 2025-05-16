@@ -4,12 +4,10 @@ import { getQueryClient } from '@/libs/tanstack-query';
 import { accessTokenAtom } from '@/store';
 import { useMutation } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
-import { useRouter } from 'next/navigation';
 import { NewProject } from '../schemas';
 import { createProject } from '../services';
 
 export function useCreateProject() {
-  const router = useRouter();
   const accessToken = useAtomValue(accessTokenAtom);
 
   const queryClient = getQueryClient();
