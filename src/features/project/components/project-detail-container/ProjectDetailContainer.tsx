@@ -35,7 +35,7 @@ export function ProjectDetailContainer({
           {images.map(({ id, url }) => (
             <div
               key={id}
-              className="relative w-full aspect-[4/3] max-h-[300px] overflow-hidden bg-blue-white"
+              className="relative w-full aspect-[16/9] max-h-[300px] overflow-hidden bg-blue-white"
             >
               <Image
                 src={url}

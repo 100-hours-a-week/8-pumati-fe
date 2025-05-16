@@ -26,13 +26,13 @@ export function SimpleCardItem({ project, rank }: SimpleCardItemProps) {
       onClick={handleClick}
     >
       <div className="flex gap-4">
-        <div className="relative w-18 xs:w-22 h-18 xs:h-22 shrink-0">
+        <div className="relative aspect-square xs:aspect-[16/9] h-18 bg-black shrink-0 rounded-lg overflow-hidden">
           <Image
             src={representativeImageUrl}
             alt={title}
             fill
             sizes="100%"
-            className="object-cover rounded-lg"
+            className="object-contain"
           />
           {rank && (
             <span

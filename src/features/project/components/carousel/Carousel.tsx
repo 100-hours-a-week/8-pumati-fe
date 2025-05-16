@@ -16,7 +16,7 @@ type CarouselProps = {
 
 export function Carousel({ children, pagination = true }: CarouselProps) {
   return (
-    <article className="relative">
+    <article className="relative mt-6">
       <Swiper
         modules={pagination ? [Pagination, Navigation] : [Navigation]}
         spaceBetween={50}
