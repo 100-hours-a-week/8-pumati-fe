@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { FormImageType } from '../components/image-uploader/ImageUploader';
 
-export function useImageUploader(
-  value: File[],
-  onChange: (files: File[]) => void,
+export function useImageUploader<T extends FormImageType>(
+  value: T[],
+  onChange: (files: T[]) => void,
   maxImages: number,
 ) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -20,9 +21,8 @@ export function useImageUploader(
     const files = e.target.files;
     if (!files) return;
 
-    const newFiles = Array.from(files);
+    const newFiles = Array.from(files).map((file) => ({ file })) as T[];
     const currentFiles = [...value];
-
     const combinedFiles = [...currentFiles, ...newFiles].slice(0, maxImages);
 
     onChange(combinedFiles);
@@ -40,7 +40,12 @@ export function useImageUploader(
 
   // URL 해제에 대한 최적화 필요
   useEffect(() => {
-    const newPreviews = value.map((file) => URL.createObjectURL(file));
+    const newPreviews = value.map((item) => {
+      if (item instanceof File) {
+        return URL.createObjectURL(item);
+      }
+      return item.url || URL.createObjectURL(item.file!);
+    });
     setPreviews(newPreviews);
 
     return () => {

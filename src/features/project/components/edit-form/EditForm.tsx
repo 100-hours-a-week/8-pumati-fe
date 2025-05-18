@@ -1,66 +1,93 @@
 'use client';
 
 import { Button, Textarea, TextInput } from '@/components';
-import { PROJECT_PATH, STORAGE_KEY } from '@/constants';
+import { PROJECT_PATH } from '@/constants';
 import { useMultiFilesToS3 } from '@/hooks';
 import { authAtom } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useCreateProject } from '../../hooks';
-import { NewProjectForm, newProjectFormSchema } from '../../schemas';
+import { useEditProject } from '../../hooks';
+import {
+  EditProjectForm,
+  editProjectFormSchema,
+  NewProject,
+  ProjectDetail,
+} from '../../schemas';
 import { ImageUploader } from '../image-uploader';
 import { TagInput } from '../tag';
 
-export function CreateForm() {
-  const router = useRouter();
+type EditFormProps = {
+  project: ProjectDetail;
+};
 
+export function EditForm({ project }: EditFormProps) {
+  const {
+    id,
+    images,
+    title,
+    introduction,
+    deploymentUrl,
+    githubUrl,
+    detailedDescription,
+    tags,
+  } = project;
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const auth = useAtomValue(authAtom);
 
-  const methods = useForm<NewProjectForm>({
+  const methods = useForm<EditProjectForm>({
     defaultValues: {
-      images: [],
-      title: '',
-      introduction: '',
-      deploymentUrl: '',
-      githubUrl: '',
-      detailedDescription: '',
-      tags: [],
+      images: images.map((image) => ({ url: image.url })),
+      title,
+      introduction,
+      deploymentUrl,
+      githubUrl,
+      detailedDescription,
+      tags: tags.map((tag) => tag.content),
     },
-    resolver: zodResolver(newProjectFormSchema),
+    resolver: zodResolver(editProjectFormSchema),
   });
-  const { reset } = methods;
 
   const { mutateAsync: uploadMultiFilesToS3 } = useMultiFilesToS3();
-  const { mutate: createProject } = useCreateProject();
+  const { mutate: editProject } = useEditProject(project.id);
 
-  const onSubmit = async (data: NewProjectForm) => {
+  const onSubmit = async (data: EditProjectForm) => {
     if (!auth?.teamId) {
       alert('팀 정보가 없습니다.');
       return;
     }
 
     setIsSubmitting(true);
-    const { urls } = await uploadMultiFilesToS3(
-      data.images.map((image) => image.file),
-    );
-    const images = urls.map(({ publicUrl }, index) => ({
-      url: publicUrl,
-      sequence: index + 1,
-    }));
+    const prevImageUrls = data.images
+      .filter((image) => image.url)
+      .map((image) => image.url);
+    const newFiles = data.images
+      .filter((image) => image.file)
+      .map((image) => image.file) as File[];
 
-    createProject(
+    let newUrls: string[] = [];
+    if (newFiles.length) {
+      const { urls } = await uploadMultiFilesToS3(newFiles);
+      newUrls = urls.map((url) => url.publicUrl);
+    }
+
+    const curImageUrls = [...prevImageUrls, ...newUrls].map((url, index) => ({
+      url,
+      sequence: index + 1,
+    })) as NewProject['images'];
+
+    editProject(
       {
         ...data,
-        images,
+        images: curImageUrls,
         teamId: auth.teamId,
       },
       {
-        onSuccess: ({ id }) => {
+        onSuccess: () => {
           router.replace(PROJECT_PATH.DETAIL(id.toString()));
         },
         onSettled: () => {
@@ -69,23 +96,6 @@ export function CreateForm() {
       },
     );
   };
-
-  useEffect(() => {
-    const saved = sessionStorage.getItem(STORAGE_KEY);
-
-    if (saved) {
-      reset(JSON.parse(saved));
-    }
-  }, [reset]);
-
-  useEffect(() => {
-    const subscription = methods.watch((value) => {
-      delete value.images;
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(value));
-    });
-
-    return () => subscription.unsubscribe();
-  }, [methods]);
   return (
     <FormProvider {...methods}>
       <form
@@ -144,7 +154,7 @@ export function CreateForm() {
           disabled={isSubmitting}
         />
         <Button type="submit" className="mt-3" isLoading={isSubmitting}>
-          생성하기
+          수정하기
         </Button>
       </form>
     </FormProvider>

@@ -60,6 +60,37 @@ export const createProject = async (
   }
 };
 
+export const editProject = async (
+  projectId: number,
+  projectData: NewProject,
+  accessToken: string,
+) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/projects/${projectId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(projectData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data.data;
+  } catch (error) {
+    console.error('Failed to edit project:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while editing a project');
+  }
+};
+
 export const getProject = async (projectId: number) => {
   if (typeof projectId !== 'number' || isNaN(projectId)) return undefined;
 
