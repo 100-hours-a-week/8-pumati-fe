@@ -8,3 +8,4 @@ export * from './PlusIcon';
 export * from './ProfileIcon';
 export * from './SpinnerIcon';
 export * from './UploadImageIcon';
+export * from './WarningIcon';

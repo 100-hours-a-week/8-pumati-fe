@@ -9,6 +9,7 @@ type ConfirmModalProps = {
   buttonText: string;
   onClose: () => void;
   onConfirm: () => void;
+  destructive?: boolean;
 };
 
 export function ConfirmModal({
@@ -16,6 +17,7 @@ export function ConfirmModal({
   buttonText,
   onClose,
   onConfirm,
+  destructive = false,
 }: ConfirmModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +41,12 @@ export function ConfirmModal({
             <Button variant="outline" onClick={onClose}>
               취소
             </Button>
-            <Button onClick={onConfirm}>{buttonText}</Button>
+            <Button
+              onClick={onConfirm}
+              variant={destructive ? 'destructive' : 'primary'}
+            >
+              {buttonText}
+            </Button>
           </div>
         </div>
       </div>
