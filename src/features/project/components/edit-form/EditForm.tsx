@@ -18,6 +18,7 @@ import {
 } from '../../schemas';
 import { ImageUploader } from '../image-uploader';
 import { TagInput } from '../tag';
+import { DeleteProjectModalContent } from './DeleteProjectModalContent';
 
 type EditFormProps = {
   project: ProjectDetail;
@@ -35,7 +36,9 @@ export function EditForm({ project }: EditFormProps) {
     tags,
   } = project;
   const router = useRouter();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const auth = useAtomValue(authAtom);
 
@@ -156,6 +159,21 @@ export function EditForm({ project }: EditFormProps) {
         <Button type="submit" className="mt-3" isLoading={isSubmitting}>
           수정하기
         </Button>
+        <div className="flex justify-center mt-3">
+          <button
+            type="button"
+            className="cursor-pointer text-sm text-grey hover:text-red-500 hover:underline"
+            onClick={() => setIsDeleteModalOpen(true)}
+          >
+            삭제하기
+          </button>
+          {isDeleteModalOpen && (
+            <DeleteProjectModalContent
+              projectId={id}
+              onClose={() => setIsDeleteModalOpen(false)}
+            />
+          )}
+        </div>
       </form>
     </FormProvider>
   );

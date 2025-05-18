@@ -91,6 +91,31 @@ export const editProject = async (
   }
 };
 
+export const deleteProject = async (projectId: number, token: string) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/projects/${projectId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data.data;
+  } catch (error) {
+    console.error('Failed to delete project:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while deleting a project');
+  }
+};
+
 export const getProject = async (projectId: number) => {
   if (typeof projectId !== 'number' || isNaN(projectId)) return undefined;
 

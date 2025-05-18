@@ -1,5 +1,6 @@
 export * from './useCheckProjectExists';
 export * from './useCreateProject';
+export * from './useDeleteProject';
 export * from './useEditProject';
 export * from './useGivePumati';
 export * from './useImageUploader';
