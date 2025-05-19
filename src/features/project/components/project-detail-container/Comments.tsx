@@ -34,11 +34,17 @@ export function Comments({ projectId, title }: CommentsProps) {
         buttonText="후기 작성"
         action={() => setIsCommentModalOpen(true)}
       />
-      <CommentList
-        ref={ref}
-        isFetchingNextPage={isFetchingNextPage}
-        comments={comments}
-      />
+      {comments.length === 0 ? (
+        <p className="text-center text-sm text-grey mt-4">
+          첫 번째 후기를 작성해주세요!
+        </p>
+      ) : (
+        <CommentList
+          ref={ref}
+          isFetchingNextPage={isFetchingNextPage}
+          comments={comments}
+        />
+      )}
       {isCommentModalOpen && (
         <CreateCommentModalContent
           projectId={projectId}
