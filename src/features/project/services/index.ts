@@ -344,3 +344,30 @@ export const createComment = async (
       : new Error('An unexpected error occurred while creating a comment');
   }
 };
+
+export const getComments = async (
+  projectId: number,
+  cursorTime: string,
+  cursorId: number = 0,
+  pageSize: number = 2,
+) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/projects/${projectId}/comments?cursor-id=${cursorId}&cursor-time=${cursorTime}&page-size=${pageSize}`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error('Failed to get comments:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while getting comments');
+  }
+};

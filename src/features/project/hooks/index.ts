@@ -1,4 +1,5 @@
 export * from './useCheckProjectExists';
+export * from './useComments';
 export * from './useCreateComment';
 export * from './useCreateProject';
 export * from './useDeleteProject';

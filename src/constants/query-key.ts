@@ -11,3 +11,7 @@ export const PROJECT_QUERY_KEY = Object.freeze({
   RANKED_PROJECTS: ['projects', 'rank'],
   CHECK_PROJECT_EXISTS: ['projects', 'existence'],
 });
+
+export const COMMENT_QUERY_KEY = Object.freeze({
+  COMMENTS: (projectId: number) => ['comments', projectId],
+});
