@@ -28,15 +28,15 @@ export function Comments({ projectId, title }: CommentsProps) {
   });
   return (
     <section className="flex flex-col gap-4 mt-14">
-      <h2 className="text-lg font-semibold">프로젝트 후기</h2>
+      <h2 className="text-lg font-semibold">댓글</h2>
       <CallToAction
-        text="후기를 작성해보세요!"
-        buttonText="후기 작성"
+        text="댓글을 작성해보세요!"
+        buttonText="댓글 작성"
         action={() => setIsCommentModalOpen(true)}
       />
       {comments.length === 0 ? (
         <p className="text-center text-sm text-grey mt-4">
-          첫 번째 후기를 작성해주세요!
+          첫 번째 댓글을 작성해주세요!
         </p>
       ) : (
         <CommentList

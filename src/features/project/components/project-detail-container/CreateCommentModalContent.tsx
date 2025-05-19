@@ -66,7 +66,7 @@ export function CreateCommentModalContent({
             onConfirm={() => {}}
             isLoading={isCreatingComment}
           >
-            <h2 className="text-lg font-semibold">후기 작성</h2>
+            <h2 className="text-lg font-semibold">댓글 작성</h2>
             <Textarea
               name="content"
               placeholder={`${title}에서 어떤 경험을 하셨나요? 솔직한 후기를 들려주세요!`}
