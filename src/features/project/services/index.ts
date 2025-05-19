@@ -347,9 +347,9 @@ export const createComment = async (
 
 export const getComments = async (
   projectId: number,
-  cursorTime: string,
+  cursorTime: string = new Date().toISOString(),
   cursorId: number = 0,
-  pageSize: number = 2,
+  pageSize: number = 10,
 ) => {
   try {
     const response = await fetch(

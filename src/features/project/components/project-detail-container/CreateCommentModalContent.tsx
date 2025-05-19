@@ -36,7 +36,7 @@ export function CreateCommentModalContent({
   } = methods;
 
   const { mutate: createComment, isPending: isCreatingComment } =
-    useCreateComment();
+    useCreateComment(projectId);
 
   const onSubmit = (data: CreateComment) => {
     if (!accessToken) {
@@ -46,7 +46,6 @@ export function CreateCommentModalContent({
 
     createComment(
       {
-        projectId,
         commentData: data,
         token: accessToken,
       },

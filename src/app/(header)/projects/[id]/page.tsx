@@ -21,10 +21,10 @@ export default async function ProjectDetailPage({
     queryKey: COMMENT_QUERY_KEY.COMMENTS(Number(id)),
     queryFn: ({ pageParam }) =>
       getComments(Number(id), pageParam.nextCursorTime, pageParam.nextCursorId),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60,
     initialPageParam: {
       nextCursorId: 0,
-      nextCursorTime: new Date().toISOString(),
+      nextCursorTime: undefined,
     },
   });
 

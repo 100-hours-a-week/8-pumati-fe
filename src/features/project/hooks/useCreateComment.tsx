@@ -1,20 +1,28 @@
+import { COMMENT_QUERY_KEY } from '@/constants/query-key';
+import { getQueryClient } from '@/libs/tanstack-query';
 import { useMutation } from '@tanstack/react-query';
 import { CreateComment } from '../schemas';
 import { createComment } from '../services';
 
-export function useCreateComment() {
+export function useCreateComment(projectId: number) {
+  const queryClient = getQueryClient();
+
   return useMutation({
     mutationFn: ({
-      projectId,
       commentData,
       token,
     }: {
-      projectId: number;
       commentData: CreateComment;
       token: string;
     }) => createComment(projectId, commentData, token),
     onSuccess: () => {
-      alert('후기가 작성되었습니다.');
+      queryClient.invalidateQueries({
+        queryKey: COMMENT_QUERY_KEY.COMMENTS(projectId),
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+      alert('댓글 작성에 실패했습니다.');
     },
   });
 }
