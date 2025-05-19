@@ -4,8 +4,8 @@ import { CallToAction } from '@/components';
 import { useIntersectionObserve } from '@/hooks';
 import { useState } from 'react';
 import { useComments } from '../../hooks';
-import { CommentList } from './CommentList';
-import { CreateCommentModalContent } from './CreateCommentModalContent';
+import { CommentList } from '../comment-list';
+import { CreateCommentModalContent } from '../create-comment-modal-content';
 
 type CommentsProps = {
   projectId: number;

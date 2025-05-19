@@ -1,7 +1,7 @@
 import { SpinnerIcon } from '@/components/icons';
 import { RefObject } from 'react';
 import { CommentItem as CommentItemType } from '../../schemas';
-import { CommentItem } from './CommentItem';
+import { CommentItem } from '../comment-item';
 
 type CommentListProps = {
   ref: RefObject<HTMLDivElement | null>;

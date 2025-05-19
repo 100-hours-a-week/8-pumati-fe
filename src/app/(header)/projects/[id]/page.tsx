@@ -1,6 +1,7 @@
 import { COMMENT_QUERY_KEY } from '@/constants/query-key';
+import { getComments } from '@/features/comment/services';
 import { ProjectDetailContainer } from '@/features/project/components';
-import { getComments, getProject } from '@/features/project/services';
+import { getProject } from '@/features/project/services';
 import { getQueryClient } from '@/libs/tanstack-query';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { notFound } from 'next/navigation';

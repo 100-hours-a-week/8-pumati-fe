@@ -1,7 +1,7 @@
 import Image from 'next/image';
+import { Comments } from '../../../comment/components/comments/Comments';
 import { ProjectDetail } from '../../schemas';
 import { Carousel } from '../carousel';
-import { Comments } from './Comments';
 import { Dashboard } from './Dashboard';
 import { Description } from './Description';
 import { MemberList } from './MemberList';

@@ -57,10 +57,12 @@ export function CommentItem({ comment }: CommentItemProps) {
                       ref={menuRef}
                       className="absolute right-0 top-full flex flex-col bg-white rounded-md shadow-md border border-light-grey"
                     >
-                      <button className="px-6 py-2 border-b border-light-grey cursor-pointer">
+                      <button className="px-6 py-2 border-b border-light-grey cursor-pointer hover:bg-light-grey transition-colors duration-150">
                         수정
                       </button>
-                      <button className="px-6 py-2 cursor-pointer">삭제</button>
+                      <button className="px-6 py-2 cursor-pointer hover:bg-light-grey transition-colors duration-150">
+                        삭제
+                      </button>
                     </div>
                   )}
                 </>
