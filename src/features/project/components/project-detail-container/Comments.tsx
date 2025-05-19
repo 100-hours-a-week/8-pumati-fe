@@ -46,10 +46,11 @@ const COMMENTS: CommentItem[] = [
 ];
 
 type CommentsProps = {
+  projectId: number;
   title: string;
 };
 
-export function Comments({ title }: CommentsProps) {
+export function Comments({ projectId, title }: CommentsProps) {
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
 
   return (
@@ -65,6 +66,7 @@ export function Comments({ title }: CommentsProps) {
       <CommentList comments={COMMENTS} />
       {isCommentModalOpen && (
         <CreateCommentModalContent
+          projectId={projectId}
           title={title}
           onClose={() => setIsCommentModalOpen(false)}
         />

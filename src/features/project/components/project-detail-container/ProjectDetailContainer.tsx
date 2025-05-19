@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { ProjectDetail } from '../../schemas';
 import { Carousel } from '../carousel';
+import { Comments } from './Comments';
 import { Dashboard } from './Dashboard';
 import { Description } from './Description';
 import { MemberList } from './MemberList';
@@ -68,9 +69,9 @@ export function ProjectDetailContainer({
           teamRank={teamRank}
         />
       </div>
-      {/* <div className="max-w-[25rem] w-full mx-auto">
-        <Comments title={title} />
-      </div> */}
+      <div className="max-w-[25rem] w-full mx-auto">
+        <Comments projectId={id} title={title} />
+      </div>
     </div>
   );
 }

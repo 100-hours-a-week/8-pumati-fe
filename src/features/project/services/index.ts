@@ -1,4 +1,4 @@
-import { NewProject } from '../schemas';
+import { CreateComment, NewProject } from '../schemas';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -22,6 +22,7 @@ export const checkProjectExists = async (token: string) => {
     return data.data;
   } catch (error) {
     console.error('Failed to check project existence:', error);
+
     throw error instanceof Error
       ? error
       : new Error(
@@ -307,5 +308,39 @@ export const receivePumati = async ({
     throw error instanceof Error
       ? error
       : new Error('An unexpected error occurred while receiving pumati');
+  }
+};
+
+export const createComment = async (
+  projectId: number,
+  commentData: CreateComment,
+  token: string,
+) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/projects/${projectId}/comments`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(commentData),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data.data;
+  } catch (error) {
+    console.error('Failed to create comment:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while creating a comment');
   }
 };
