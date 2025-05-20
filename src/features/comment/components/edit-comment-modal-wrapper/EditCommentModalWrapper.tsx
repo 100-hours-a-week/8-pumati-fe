@@ -65,7 +65,7 @@ export function EditCommentModalWrapper({
       <ModalPortal>
         <form onSubmit={handleSubmit(onSubmit)}>
           <UpdateCommentModalContent
-            title="댓글 작성"
+            title="댓글 수정"
             onClose={onClose}
             isSubmitting={isSubmitting || isEditingComment}
           />
