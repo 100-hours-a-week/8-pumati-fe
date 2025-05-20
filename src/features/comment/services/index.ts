@@ -63,6 +63,37 @@ export const getComments = async (
   }
 };
 
+export const editComment = async (
+  commentId: number,
+  content: CreateComment,
+  token: string,
+) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/comments/${commentId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(content),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error('Failed to edit comment:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while editing a comment');
+  }
+};
+
 export const deleteComment = async (commentId: number, token: string) => {
   try {
     const response = await fetch(`${BASE_URL}/api/comments/${commentId}`, {
