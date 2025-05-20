@@ -215,13 +215,13 @@ export const getRankedProjects = async (
 };
 
 export const getLatestProjects = async (
-  cursorTime: string,
+  cursorTime: string | null,
   cursorId: number = 0,
   pageSize: number = 10,
 ) => {
   try {
     const response = await fetch(
-      `${BASE_URL}/api/projects?sort=latest&cursor-time=${cursorTime}&cursor-id=${cursorId}&page-size=${pageSize}`,
+      `${BASE_URL}/api/projects?sort=latest${cursorTime ? `&cursor-time=${cursorTime}` : ''}&cursor-id=${cursorId}&page-size=${pageSize}`,
       {
         method: 'GET',
       },

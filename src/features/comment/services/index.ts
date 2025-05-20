@@ -38,13 +38,13 @@ export const createComment = async (
 
 export const getComments = async (
   projectId: number,
-  cursorTime: string = new Date().toISOString(),
+  cursorTime: string | null,
   cursorId: number = 0,
   pageSize: number = 10,
 ) => {
   try {
     const response = await fetch(
-      `${BASE_URL}/api/projects/${projectId}/comments?cursor-id=${cursorId}&cursor-time=${cursorTime}&page-size=${pageSize}`,
+      `${BASE_URL}/api/projects/${projectId}/comments?cursor-id=${cursorId}${cursorTime ? `&cursor-time=${cursorTime}` : ''}&page-size=${pageSize}`,
     );
 
     if (!response.ok) {

@@ -9,7 +9,7 @@ export function useComments(projectId: number) {
       getComments(projectId, pageParam.nextCursorTime, pageParam.nextCursorId),
     initialPageParam: {
       nextCursorId: 0,
-      nextCursorTime: new Date().toISOString(),
+      nextCursorTime: null,
     },
     getNextPageParam: (lastPage) => {
       if (
@@ -18,6 +18,7 @@ export function useComments(projectId: number) {
       ) {
         return null;
       }
+
       return {
         nextCursorId: lastPage.meta.nextCursorId,
         nextCursorTime: lastPage.meta.nextCursorTime,

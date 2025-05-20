@@ -25,7 +25,7 @@ export default async function ProjectDetailPage({
     staleTime: 1000 * 60,
     initialPageParam: {
       nextCursorId: 0,
-      nextCursorTime: undefined,
+      nextCursorTime: null,
     },
   });
 
