@@ -1,4 +1,3 @@
-import { DotMenuIcon } from '@/components/icons';
 import { COURSE } from '@/constants';
 import { useOutsideClick } from '@/hooks';
 import { authAtom } from '@/store';
@@ -7,22 +6,24 @@ import { useAtomValue } from 'jotai';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { CommentItem as CommentItemType } from '../../schemas';
+import { CommentMenu } from './CommentMenu';
 
 type CommentItemProps = {
   comment: CommentItemType;
 };
 
 export function CommentItem({ comment }: CommentItemProps) {
-  const { author, content, createdAt } = comment;
+  const { author, content, createdAt, id: commentId } = comment;
   const { nickname, name, course, profileImageUrl, id } = author;
 
   const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const auth = useAtomValue(authAtom);
 
-  useOutsideClick(menuRef, () => setIsMenuOpen(false));
+  useOutsideClick([menuRef, menuButtonRef], () => setIsMenuOpen(false));
   return (
     <li className="border-b border-light-grey last:border-b-0">
       <div className="flex justify-start items-start gap-4 pt-3 pb-6 mx-1">
@@ -45,27 +46,13 @@ export function CommentItem({ comment }: CommentItemProps) {
                 </p>
               </div>
               {auth?.id === id && (
-                <>
-                  <button
-                    className="cursor-pointer"
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  >
-                    <DotMenuIcon width={20} height={18} />
-                  </button>
-                  {isMenuOpen && (
-                    <div
-                      ref={menuRef}
-                      className="absolute right-0 top-full flex flex-col bg-white rounded-md shadow-md border border-light-grey"
-                    >
-                      <button className="px-6 py-2 border-b border-light-grey cursor-pointer hover:bg-light-grey transition-colors duration-150">
-                        수정
-                      </button>
-                      <button className="px-6 py-2 cursor-pointer hover:bg-light-grey transition-colors duration-150">
-                        삭제
-                      </button>
-                    </div>
-                  )}
-                </>
+                <CommentMenu
+                  ref={menuRef}
+                  menuButtonRef={menuButtonRef}
+                  commentId={commentId}
+                  isMenuOpen={isMenuOpen}
+                  onToggleMenu={() => setIsMenuOpen((prev) => !prev)}
+                />
               )}
             </div>
             <p className="text-sm font-light text-grey">

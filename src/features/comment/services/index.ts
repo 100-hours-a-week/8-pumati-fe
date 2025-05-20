@@ -62,3 +62,28 @@ export const getComments = async (
       : new Error('An unexpected error occurred while getting comments');
   }
 };
+
+export const deleteComment = async (commentId: number, token: string) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data.data;
+  } catch (error) {
+    console.error('Failed to delete comment:', error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while deleting a comment');
+  }
+};
