@@ -20,7 +20,7 @@ export const createCommentSchema = z.object({
 export type CreateComment = z.infer<typeof createCommentSchema>;
 
 export const commentItemSchema = z.object({
-  id: z.union([z.number(), z.string()]),
+  id: z.number(),
   projectId: z.number(),
   fromAi: z.boolean(),
   content: z.string(),

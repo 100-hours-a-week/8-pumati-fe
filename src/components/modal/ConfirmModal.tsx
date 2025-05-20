@@ -7,14 +7,16 @@ import { Button } from '../button';
 type ConfirmModalProps = {
   children: ReactNode;
   buttonText: string;
+  isLoading?: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm?: () => void;
   destructive?: boolean;
 };
 
 export function ConfirmModal({
   children,
   buttonText,
+  isLoading = false,
   onClose,
   onConfirm,
   destructive = false,
@@ -38,12 +40,13 @@ export function ConfirmModal({
         >
           {children}
           <div className="flex gap-1 w-full">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} disabled={isLoading}>
               취소
             </Button>
             <Button
               onClick={onConfirm}
               variant={destructive ? 'destructive' : 'primary'}
+              isLoading={isLoading}
             >
               {buttonText}
             </Button>

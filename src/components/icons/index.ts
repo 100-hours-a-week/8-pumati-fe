@@ -1,5 +1,6 @@
 export * from './ArrowIcon';
 export * from './CancelIcon';
+export * from './DotMenuIcon';
 export * from './EditIcon';
 export * from './KakaoIcon';
 export * from './LogoIcon';

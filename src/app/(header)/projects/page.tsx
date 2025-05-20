@@ -2,6 +2,7 @@ import { PROJECT_QUERY_KEY } from '@/constants/query-key';
 import { ProjectsContainer } from '@/features/project/components';
 import { getRankedProjects, getSnapshot } from '@/features/project/services';
 import { getQueryClient } from '@/libs/tanstack-query';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +19,9 @@ export default async function ProjectsPage() {
   });
   return (
     <section className="flex justify-center">
-      <ProjectsContainer contextId={id} />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <ProjectsContainer contextId={id} />
+      </HydrationBoundary>
     </section>
   );
 }

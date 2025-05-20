@@ -53,6 +53,7 @@ export const projectDetailSchema = z.object({
   title: z.string(),
   term: z.number(),
   teamNumber: z.number(),
+  commentCount: z.number(),
   introduction: z.string(),
   detailedDescription: z.string(),
   representativeImageUrl: z.string().url(),

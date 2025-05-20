@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { Comments } from '../../../comment/components/comments/Comments';
 import { ProjectDetail } from '../../schemas';
 import { Carousel } from '../carousel';
 import { Dashboard } from './Dashboard';
@@ -68,9 +69,9 @@ export function ProjectDetailContainer({
           teamRank={teamRank}
         />
       </div>
-      {/* <div className="max-w-[25rem] w-full mx-auto">
-        <Comments title={title} />
-      </div> */}
+      <div className="max-w-[25rem] w-full mx-auto">
+        <Comments projectId={id} />
+      </div>
     </div>
   );
 }
