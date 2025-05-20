@@ -6,11 +6,13 @@ import { useAtomValue } from 'jotai';
 import { useParams, useRouter } from 'next/navigation';
 import { RefObject, useState } from 'react';
 import { useDeleteComment } from '../../hooks';
+import { EditCommentModalWrapper } from '../edit-comment-modal-wrapper';
 
 type CommentMenuProps = {
   ref: RefObject<HTMLDivElement | null>;
   menuButtonRef: RefObject<HTMLButtonElement | null>;
   commentId: number;
+  commentContent: string;
   isMenuOpen: boolean;
   onToggleMenu: () => void;
 };
@@ -19,12 +21,14 @@ export function CommentMenu({
   ref,
   menuButtonRef,
   commentId,
+  commentContent,
   isMenuOpen,
   onToggleMenu,
 }: CommentMenuProps) {
   const router = useRouter();
   const params = useParams<{ id: string }>();
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const accessToken = useAtomValue(accessTokenAtom);
@@ -49,13 +53,15 @@ export function CommentMenu({
       >
         <DotMenuIcon width={20} height={18} />
       </button>
-
       {isMenuOpen && (
         <div
           ref={ref}
           className="absolute right-0 top-full flex flex-col bg-white rounded-md shadow-md border border-light-grey"
         >
-          <button className="px-6 py-2 border-b border-light-grey cursor-pointer hover:bg-light-grey transition-colors duration-150">
+          <button
+            className="px-6 py-2 border-b border-light-grey cursor-pointer hover:bg-light-grey transition-colors duration-150"
+            onClick={() => setIsEditModalOpen(true)}
+          >
             수정
           </button>
           <button
@@ -65,6 +71,14 @@ export function CommentMenu({
             삭제
           </button>
         </div>
+      )}
+      {isEditModalOpen && (
+        <EditCommentModalWrapper
+          projectId={Number(params.id)}
+          commentContent={commentContent}
+          commentId={commentId}
+          onClose={() => setIsEditModalOpen(false)}
+        />
       )}
       {isDeleteModalOpen && (
         <ModalPortal>

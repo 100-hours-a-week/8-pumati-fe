@@ -5,14 +5,13 @@ import { useIntersectionObserve } from '@/hooks';
 import { useState } from 'react';
 import { useComments } from '../../hooks';
 import { CommentList } from '../comment-list';
-import { CreateCommentModalContent } from '../create-comment-modal-content';
+import { CreateCommentModalWrapper } from '../create-comment-modal-wrapper';
 
 type CommentsProps = {
   projectId: number;
-  title: string;
 };
 
-export function Comments({ projectId, title }: CommentsProps) {
+export function Comments({ projectId }: CommentsProps) {
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
 
   const { data, hasNextPage, isFetchingNextPage, fetchNextPage } =
@@ -46,9 +45,8 @@ export function Comments({ projectId, title }: CommentsProps) {
         />
       )}
       {isCommentModalOpen && (
-        <CreateCommentModalContent
+        <CreateCommentModalWrapper
           projectId={projectId}
-          title={title}
           onClose={() => setIsCommentModalOpen(false)}
         />
       )}

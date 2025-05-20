@@ -9,7 +9,7 @@ type ConfirmModalProps = {
   buttonText: string;
   isLoading?: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm?: () => void;
   destructive?: boolean;
 };
 

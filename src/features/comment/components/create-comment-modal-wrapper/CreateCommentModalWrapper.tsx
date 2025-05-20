@@ -1,6 +1,6 @@
 'use client';
 
-import { ConfirmModal, ModalPortal, Textarea } from '@/components';
+import { ModalPortal } from '@/components';
 import { AUTH_PATH } from '@/constants';
 import { accessTokenAtom } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,18 +9,17 @@ import { useRouter } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useCreateComment } from '../../hooks';
 import { CreateComment, createCommentSchema } from '../../schemas';
+import UpdateCommentModalContent from '../update-comment-modal-content/UpdateCommentModalContent';
 
-type CreateCommentModalContentProps = {
+type CreateCommentModalWrapperProps = {
   projectId: number;
-  title: string;
   onClose: () => void;
 };
 
-export function CreateCommentModalContent({
+export function CreateCommentModalWrapper({
   projectId,
-  title,
   onClose,
-}: CreateCommentModalContentProps) {
+}: CreateCommentModalWrapperProps) {
   const router = useRouter();
 
   const accessToken = useAtomValue(accessTokenAtom);
@@ -60,20 +59,11 @@ export function CreateCommentModalContent({
     <FormProvider {...methods}>
       <ModalPortal>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <ConfirmModal
-            buttonText="작성"
+          <UpdateCommentModalContent
+            title="댓글 작성"
             onClose={onClose}
-            onConfirm={() => {}}
-            isLoading={isCreatingComment}
-          >
-            <h2 className="text-lg font-semibold">댓글 작성</h2>
-            <Textarea
-              name="content"
-              placeholder={`${title}에서 어떤 경험을 하셨나요? 솔직한 후기를 들려주세요!`}
-              rows={6}
-              disabled={isSubmitting}
-            />
-          </ConfirmModal>
+            isSubmitting={isSubmitting || isCreatingComment}
+          />
         </form>
       </ModalPortal>
     </FormProvider>

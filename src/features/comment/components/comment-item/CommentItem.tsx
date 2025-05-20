@@ -50,6 +50,7 @@ export function CommentItem({ comment }: CommentItemProps) {
                   ref={menuRef}
                   menuButtonRef={menuButtonRef}
                   commentId={commentId}
+                  commentContent={content}
                   isMenuOpen={isMenuOpen}
                   onToggleMenu={() => setIsMenuOpen((prev) => !prev)}
                 />

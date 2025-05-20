@@ -70,7 +70,7 @@ export function ProjectDetailContainer({
         />
       </div>
       <div className="max-w-[25rem] w-full mx-auto">
-        <Comments projectId={id} title={title} />
+        <Comments projectId={id} />
       </div>
     </div>
   );
