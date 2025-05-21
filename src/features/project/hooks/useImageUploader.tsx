@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { FormImageType } from '../components/image-uploader/ImageUploader';
+import { newProjectFormSchema } from '../schemas';
 
 export function useImageUploader<T extends FormImageType>(
   value: T[],
@@ -10,6 +12,7 @@ export function useImageUploader<T extends FormImageType>(
 ) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previews, setPreviews] = useState<string[]>([]);
+  const { setError, clearErrors } = useFormContext();
 
   const handleFileInputClick = () => {
     if (value.length >= maxImages) return;
@@ -22,9 +25,20 @@ export function useImageUploader<T extends FormImageType>(
     if (!files) return;
 
     const newFiles = Array.from(files).map((file) => ({ file })) as T[];
+    const result = newProjectFormSchema.shape.images.safeParse(newFiles);
+    if (!result.success) {
+      const firstError = result.error.errors[0];
+      setError('images', {
+        type: 'manual',
+        message: firstError.message,
+      });
+      return;
+    }
+
     const currentFiles = [...value];
     const combinedFiles = [...currentFiles, ...newFiles].slice(0, maxImages);
 
+    clearErrors('images');
     onChange(combinedFiles);
 
     if (fileInputRef.current) {

@@ -10,6 +10,19 @@ export const tagSchema = z
     message: '태그는 특수문자를 포함할 수 없습니다.',
   });
 
+export const imageSchema = z.object({
+  file: z
+    .instanceof(File, { message: '이미지를 업로드해 주세요.' })
+    .refine(
+      (file) => file.size <= MAX_FILE_SIZE,
+      '이미지 용량은 최대 10MB 까지 가능합니다.',
+    )
+    .refine(
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+      '지원하지 않는 이미지 형식입니다.',
+    ),
+});
+
 export const newProjectFormSchema = z.object({
   title: z
     .string()
@@ -37,15 +50,13 @@ export const newProjectFormSchema = z.object({
     .array(
       z.object({
         file: z
-          .instanceof(File)
-          .refine(
-            (file) => file.size <= MAX_FILE_SIZE,
-            '이미지 용량은 최대 10MB 까지 가능합니다.',
-          )
-          .refine(
-            (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
-            '지원하지 않는 이미지 형식입니다.',
-          ),
+          .instanceof(File, { message: '이미지를 업로드해 주세요.' })
+          .refine((file) => file.size <= MAX_FILE_SIZE, {
+            message: '이미지 용량은 최대 10MB 까지 가능합니다.',
+          })
+          .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), {
+            message: '지원하지 않는 이미지 형식입니다.',
+          }),
       }),
     )
     .min(1, '프로젝트 이미지를 1장 이상 업로드해 주세요.')
