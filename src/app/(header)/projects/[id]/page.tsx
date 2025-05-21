@@ -4,17 +4,35 @@ import { ProjectDetailContainer } from '@/features/project/components';
 import { getProject } from '@/features/project/services';
 import { getQueryClient } from '@/libs/tanstack-query';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 
 type ProjectDetailPageProps = {
   params: Promise<{ id: string }>;
 };
 
+const getProjectData = cache(async (projectId: string) =>
+  getProject(Number(projectId)),
+);
+
+export async function generateMetadata({
+  params,
+}: ProjectDetailPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const project = await getProjectData(id);
+
+  return {
+    title: project?.title,
+    description: project?.introduction,
+  };
+}
+
 export default async function ProjectDetailPage({
   params,
 }: ProjectDetailPageProps) {
   const { id } = await params;
-  const project = await getProject(Number(id));
+  const project = await getProjectData(id);
 
   const queryClient = getQueryClient();
 
