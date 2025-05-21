@@ -3,6 +3,13 @@ import { SignupContainer } from '@/features/auth/components';
 import { getTeamList } from '@/features/auth/services';
 import { getQueryClient } from '@/libs/tanstack-query';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '회원가입',
+  description:
+    '품앗이 회원가입 페이지입니다. 품앗이에 회원가입하고 프로젝트를 공유하세요.',
+};
 
 export default async function SignupPage() {
   const queryClient = getQueryClient();

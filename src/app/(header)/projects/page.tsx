@@ -3,8 +3,15 @@ import { ProjectsContainer } from '@/features/project/components';
 import { getRankedProjects, getSnapshot } from '@/features/project/services';
 import { getQueryClient } from '@/libs/tanstack-query';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: '프로젝트 목록',
+  description:
+    '프로젝트 목록 페이지입니다. 품앗이에서 카테부 교육생들의 프로젝트를 확인할 수 있습니다.',
+};
 
 export default async function ProjectsPage() {
   const { id } = await getSnapshot();

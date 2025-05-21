@@ -4,6 +4,7 @@ export * from './create-form';
 export * from './edit-form';
 export * from './image-uploader';
 export * from './latest-projects';
+export * from './new-project-content';
 export * from './project-detail-container';
 export * from './project-gallery';
 export * from './projects-container';
