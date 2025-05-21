@@ -17,7 +17,7 @@ export default async function ProjectEditPage({
   }
   return (
     <section className="flex flex-col items-center min-h-[calc(100vh-6rem)]">
-      <h1 className="text-xl font-semibold mt-9">프로젝트 생성</h1>
+      <h1 className="text-xl font-semibold mt-9">프로젝트 수정</h1>
       <EditForm project={project} />
     </section>
   );

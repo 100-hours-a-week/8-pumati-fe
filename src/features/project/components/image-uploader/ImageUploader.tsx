@@ -33,7 +33,7 @@ export function ImageUploader({
   return (
     <div className="flex flex-col gap-2">
       <p className="text-grey text-sm absolute top-9 left-0">
-        * 첫 번째 이미지가 대표 이미지로 설정됩니다. (최대 5장)
+        * PNG, JPG, JPEG 형식, 최대 10MB, 최대 5장
       </p>
       <UploadBox
         onClick={handleFileInputClick}
