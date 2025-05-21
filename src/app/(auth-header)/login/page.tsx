@@ -1,13 +1,10 @@
 import { LogoIcon } from '@/components/icons';
+import { METADATA } from '@/constants';
 import { LoginButton } from '@/features/auth/components';
 import { Metadata } from 'next';
 import Link from 'next/link';
 
-export const metadata: Metadata = {
-  title: '로그인',
-  description:
-    '품앗이 로그인 페이지입니다. 품앗이에 로그인하고 프로젝트를 공유하세요.',
-};
+export const metadata: Metadata = METADATA.LOGIN;
 
 export default function LoginPage() {
   return (
