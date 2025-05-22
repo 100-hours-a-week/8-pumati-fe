@@ -1,3 +1,5 @@
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
 export const METADATA = Object.freeze({
   ROOT_LAYOUT: {
     title: {
@@ -26,7 +28,7 @@ export const METADATA = Object.freeze({
       },
       description:
         '카카오테크 부트캠프 교육생들을 위한 트래픽 품앗이 플랫폼, 품앗이는 프로젝트 홍보를 통해 교육생들이 서로의 성공을 함께 만들어가는 공간입니다.',
-      url: 'https://local.test.tebutebu.com:3000',
+      url: BASE_URL,
       siteName: '품앗이',
       images: [
         {
@@ -38,6 +40,16 @@ export const METADATA = Object.freeze({
       ],
       locale: 'ko_KR',
       type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: {
+        default: '품앗이',
+        template: '품앗이 | %s',
+      },
+      description:
+        '카카오테크 부트캠프 교육생들을 위한 트래픽 품앗이 플랫폼, 품앗이는 프로젝트 홍보를 통해 교육생들이 서로의 성공을 함께 만들어가는 공간입니다.',
+      images: ['/opengraph-image.png'],
     },
   },
   ROOT: {
