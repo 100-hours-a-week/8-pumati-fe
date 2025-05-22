@@ -12,13 +12,8 @@ type CardListProps = {
 
 export function CardList({ ref, isFetchingNextPage, projects }: CardListProps) {
   return (
-    <article className="w-full">
-      <ul
-        className={cn(
-          'flex flex-col gap-5',
-          isFetchingNextPage ? 'mb-8' : 'mb-20',
-        )}
-      >
+    <article className={cn('w-full', isFetchingNextPage ? 'pb-8' : 'pb-20')}>
+      <ul className="flex flex-col gap-5 mb-4">
         {projects.map((project) => (
           <CardItem key={project.id} project={project} />
         ))}
