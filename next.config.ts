@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 's3-pumati-test.s3.ap-northeast-2.amazonaws.com',
+        hostname: 's3-pumati-prod.s3.ap-northeast-2.amazonaws.com',
       },
     ],
   },
