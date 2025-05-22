@@ -1,8 +1,12 @@
+import { METADATA } from '@/constants';
 import { AUTH_QUERY_KEY } from '@/constants/query-key';
 import { SignupContainer } from '@/features/auth/components';
 import { getTeamList } from '@/features/auth/services';
 import { getQueryClient } from '@/libs/tanstack-query';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = METADATA.SIGNUP;
 
 export default async function SignupPage() {
   const queryClient = getQueryClient();

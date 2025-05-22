@@ -1,9 +1,10 @@
-'use client';
-
-import { Button } from '@/components';
-import { KakaoIcon, LogoIcon } from '@/components/icons';
-import { loginWithProvider } from '@/features/auth/services';
+import { LogoIcon } from '@/components/icons';
+import { METADATA } from '@/constants';
+import { LoginButton } from '@/features/auth/components';
+import { Metadata } from 'next';
 import Link from 'next/link';
+
+export const metadata: Metadata = METADATA.LOGIN;
 
 export default function LoginPage() {
   return (
@@ -13,14 +14,7 @@ export default function LoginPage() {
           <LogoIcon width={120} />
         </Link>
       </h1>
-      <Button
-        variant="kakao"
-        size="lg"
-        icon={<KakaoIcon width={20} height={20} />}
-        onClick={() => loginWithProvider('kakao')}
-      >
-        카카오 로그인
-      </Button>
+      <LoginButton />
     </section>
   );
 }
