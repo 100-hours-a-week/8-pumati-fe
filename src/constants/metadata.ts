@@ -21,6 +21,7 @@ export const METADATA = Object.freeze({
       '프로젝트 포트폴리오',
       '프로젝트 탐색',
     ].join(', '),
+    metadataBase: new URL(BASE_URL!),
     openGraph: {
       title: {
         default: '품앗이',
