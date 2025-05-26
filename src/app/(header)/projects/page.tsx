@@ -1,10 +1,11 @@
 import { METADATA } from '@/constants';
-import { PROJECT_QUERY_KEY } from '@/constants/query-key';
-import { ProjectsContainer } from '@/features/project/components';
-import { getRankedProjects, getSnapshot } from '@/features/project/services';
-import { getQueryClient } from '@/libs/tanstack-query';
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import {
+  ProjectsFallback,
+  ProjectsFetcher,
+} from '@/features/project/components';
+import { getSnapshot } from '@/features/project/services';
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,19 +14,14 @@ export const metadata: Metadata = METADATA.PROJECTS;
 export default async function ProjectsPage() {
   const { id } = await getSnapshot();
 
-  const queryClient = getQueryClient();
-
-  await queryClient.prefetchInfiniteQuery({
-    queryKey: PROJECT_QUERY_KEY.RANKED_PROJECTS,
-    queryFn: () => getRankedProjects(id),
-    staleTime: 1000 * 60 * 5,
-    initialPageParam: 0,
-  });
   return (
     <section className="flex justify-center">
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <ProjectsContainer contextId={id} />
-      </HydrationBoundary>
+      <div className="flex flex-col items-center gap-4 w-full max-w-[25rem]">
+        <h1 className="text-xl font-semibold my-9">프로젝트 둘러보기</h1>
+        <Suspense fallback={<ProjectsFallback />}>
+          <ProjectsFetcher contextId={id} />
+        </Suspense>
+      </div>
     </section>
   );
 }
