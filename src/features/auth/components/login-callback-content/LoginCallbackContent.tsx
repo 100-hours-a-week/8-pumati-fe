@@ -1,12 +1,12 @@
 'use client';
 
-import { SpinnerIcon } from '@/components/icons';
 import { AUTH_PATH, ROOT_PATH } from '@/constants';
 import { accessTokenAtom, signupTokenAtom } from '@/store';
 import { useSetAtom } from 'jotai';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { useAuth } from '../../hooks';
+import { LoginFallback } from '../login-fallback';
 
 export function LoginCallbackContent() {
   const router = useRouter();
@@ -35,14 +35,5 @@ export function LoginCallbackContent() {
       router.push(AUTH_PATH.LOGIN);
     }
   }, [message, getAuth, router, searchParams, setAccessToken, setSignupToken]);
-  return (
-    <section className="flex h-screen w-full items-center justify-center">
-      <SpinnerIcon
-        width={32}
-        height={32}
-        fill="var(--color-blue)"
-        className="animate-spin"
-      />
-    </section>
-  );
+  return <LoginFallback />;
 }

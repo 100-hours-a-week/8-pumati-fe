@@ -1,12 +1,14 @@
 'use client';
 
-import { SpinnerIcon } from '@/components/icons';
-import { LoginCallbackContent } from '@/features/auth/components';
+import {
+  LoginCallbackContent,
+  LoginFallback,
+} from '@/features/auth/components';
 import { Suspense } from 'react';
 
 export default function LoginCallbackPage() {
   return (
-    <Suspense fallback={<SpinnerIcon />}>
+    <Suspense fallback={<LoginFallback />}>
       <LoginCallbackContent />
     </Suspense>
   );
