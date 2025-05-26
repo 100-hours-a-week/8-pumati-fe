@@ -20,6 +20,7 @@ export function ProjectDetailContainer({
     modifiedAt,
     term,
     teamId,
+    teamNumber,
     introduction,
     deploymentUrl,
     detailedDescription,
@@ -52,6 +53,7 @@ export function ProjectDetailContainer({
         <Description
           id={id}
           teamId={teamId}
+          teamNumber={teamNumber}
           title={title}
           modifiedAt={modifiedAt}
           term={term}
