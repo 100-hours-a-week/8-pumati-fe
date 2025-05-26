@@ -28,7 +28,6 @@ export function Description({
   teamId,
   teamNumber,
   title,
-  modifiedAt,
   term,
   introduction,
   deploymentUrl,
