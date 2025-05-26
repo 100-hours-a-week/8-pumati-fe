@@ -11,4 +11,5 @@ export * from './projects-container';
 export * from './ranked-projects';
 export * from './simple-card-item';
 export * from './simple-card-list';
+export * from './simple-projects';
 export * from './tag';

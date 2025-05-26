@@ -11,7 +11,7 @@ type CardItemProps = {
 };
 
 export function CardItem({ project }: CardItemProps) {
-  const { id, representativeImageUrl, title, introduction, term, tags } =
+  const { id, representativeImageUrl, title, introduction, tags, teamNumber } =
     project;
   const router = useRouter();
 
@@ -35,7 +35,9 @@ export function CardItem({ project }: CardItemProps) {
       <div className="px-4 pt-2 pb-4">
         <div className="flex justify-between items-baseline">
           <h3 className="font-bold text-lg truncate">{title}</h3>
-          <p className="ml-4 text-sm text-dark-grey shrink-0">판교{term}기</p>
+          <p className="ml-4 text-dark-grey text-sm font-semibold shrink-0">
+            {teamNumber}팀
+          </p>
         </div>
         <p className="mt-1 text-sm xs:text-[15px] text-dark-grey line-clamp-2 whitespace-pre-wrap break-words">
           {introduction}

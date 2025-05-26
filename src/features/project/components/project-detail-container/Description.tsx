@@ -3,7 +3,6 @@
 import { Button } from '@/components';
 import { EditIcon } from '@/components/icons';
 import { accessTokenAtom, authAtom } from '@/store';
-import { dateYYYYMMDD } from '@/utils/date';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useGivePumati, useReceivePumati } from '../../hooks';
@@ -14,6 +13,7 @@ type DescriptionProps = Pick<
   ProjectDetail,
   | 'id'
   | 'teamId'
+  | 'teamNumber'
   | 'title'
   | 'modifiedAt'
   | 'term'
@@ -26,6 +26,7 @@ type DescriptionProps = Pick<
 export function Description({
   id,
   teamId,
+  teamNumber,
   title,
   modifiedAt,
   term,
@@ -68,8 +69,10 @@ export function Description({
         <div className="flex items-start justify-between">
           <h1 className="text-2xl font-bold mr-2">{title}</h1>
           <div className="flex flex-col items-end">
-            <p className="text-sm text-grey">{dateYYYYMMDD(modifiedAt)}</p>
-            <p className="text-sm text-dark-grey">판교{term}기</p>
+            <p className="text-sm text-dark-grey font-semibold">
+              {teamNumber}팀
+            </p>
+            <p className="text-sm text-grey">판교{term}기</p>
           </div>
         </div>
       </div>
