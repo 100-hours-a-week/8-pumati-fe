@@ -1,8 +1,3 @@
-'use client';
-
-import { Button } from '@/components';
-import { PROJECT_PATH } from '@/constants';
-import { useRouter } from 'next/navigation';
 import { ProjectItem } from '../../schemas';
 import { CardItem } from '../card-item';
 import { Carousel } from '../carousel';
@@ -12,11 +7,6 @@ type ProjectGalleryProps = {
 };
 
 export function ProjectGallery({ projects }: ProjectGalleryProps) {
-  const router = useRouter();
-
-  const handleBrowseProjectsClick = () => {
-    router.push(PROJECT_PATH.ROOT);
-  };
   return (
     <section className="flex flex-col gap-4 mx-auto my-10 max-w-[25rem] w-full">
       <div className="text-center">
@@ -32,7 +22,6 @@ export function ProjectGallery({ projects }: ProjectGalleryProps) {
           ))}
         </Carousel>
       </div>
-      <Button onClick={handleBrowseProjectsClick}>프로젝트 둘러보기</Button>
     </section>
   );
 }
