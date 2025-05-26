@@ -2,6 +2,7 @@ export * from './card-item';
 export * from './card-list';
 export * from './create-form';
 export * from './edit-form';
+export * from './fallback';
 export * from './image-uploader';
 export * from './latest-projects';
 export * from './new-project-content';

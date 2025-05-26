@@ -22,10 +22,8 @@ export default async function ProjectsPage() {
     initialPageParam: 0,
   });
   return (
-    <section className="flex justify-center">
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <ProjectsContainer contextId={id} />
-      </HydrationBoundary>
-    </section>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ProjectsContainer contextId={id} />
+    </HydrationBoundary>
   );
 }

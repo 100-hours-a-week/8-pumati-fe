@@ -26,8 +26,7 @@ export function ProjectsContainer({ contextId }: ProjectsContainerProps) {
     },
   });
   return (
-    <div className="flex flex-col items-center gap-4 w-full max-w-[25rem]">
-      <h1 className="text-xl font-semibold my-9">프로젝트 둘러보기</h1>
+    <>
       <CallToAction
         text="프로젝트를 생성해보세요!"
         buttonText="생성하기"
@@ -38,6 +37,6 @@ export function ProjectsContainer({ contextId }: ProjectsContainerProps) {
         isFetchingNextPage={isFetchingNextPage}
         projects={projects}
       />
-    </div>
+    </>
   );
 }
