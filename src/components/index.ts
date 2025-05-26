@@ -4,5 +4,6 @@ export * from './dropdown';
 export * from './form';
 export * from './header';
 export * from './modal';
+export * from './skeleton-box';
 export * from './text-input';
 export * from './textarea';

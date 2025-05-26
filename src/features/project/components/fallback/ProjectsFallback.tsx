@@ -1,3 +1,5 @@
+import { SkeletonBox } from '@/components';
+
 export function ProjectsFallback() {
   return (
     <>
@@ -16,16 +18,15 @@ export function ProjectsFallback() {
               key={index}
               className="flex flex-col rounded-lg h-[340px] bg-light-grey overflow-hidden"
             >
-              <div className="w-full aspect-[16/9] bg-soft-grey" />
+              <SkeletonBox className="aspect-[16/9]" />
               <div className="px-4 pt-2 pb-4">
-                <div className="w-full h-7 bg-soft-grey rounded-lg" />
-                <div className="mt-1 w-full h-6 bg-soft-grey rounded-lg" />
+                <SkeletonBox className="h-7" />
+                <SkeletonBox className="mt-1 h-6" />
                 <ul className="flex gap-2 mt-2">
                   {Array.from({ length: 3 }).map((_, index) => (
-                    <li
-                      key={index}
-                      className="w-16 h-8 bg-soft-grey rounded-full"
-                    />
+                    <li key={index}>
+                      <SkeletonBox className="w-16 h-8 rounded-full" />
+                    </li>
                   ))}
                 </ul>
               </div>
