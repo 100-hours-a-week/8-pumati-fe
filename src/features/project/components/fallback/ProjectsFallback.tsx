@@ -16,7 +16,7 @@ export function ProjectsFallback() {
           {Array.from({ length: 5 }).map((_, index) => (
             <li
               key={index}
-              className="flex flex-col rounded-lg h-[340px] bg-light-grey overflow-hidden"
+              className="flex flex-col rounded-lg h-fit bg-light-grey overflow-hidden"
             >
               <SkeletonBox className="aspect-[16/9]" />
               <div className="px-4 pt-2 pb-4">
