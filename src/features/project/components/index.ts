@@ -9,6 +9,7 @@ export * from './new-project-content';
 export * from './project-detail-container';
 export * from './project-gallery';
 export * from './projects-container';
+export * from './projects-fetcher';
 export * from './ranked-projects';
 export * from './simple-card-item';
 export * from './simple-card-list';
