@@ -1,9 +1,9 @@
 import { ArrowIcon } from '@/components/icons';
 import Image from 'next/image';
-import { MyData } from '../../schemas';
+import { AuthData } from '../../schemas';
 
 type InformationProps = {
-  user: MyData;
+  user: AuthData;
 };
 
 export function Information({ user }: InformationProps) {

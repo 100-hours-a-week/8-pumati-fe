@@ -9,7 +9,7 @@ export const authSchema = z.object({
   email: z.string().email(),
   name: z.string(),
   profileImageUrl: z.string().url(),
-  teamId: z.number(),
+  teamId: z.number().nullable(),
 });
 
 export type Auth = z.infer<typeof authSchema>;

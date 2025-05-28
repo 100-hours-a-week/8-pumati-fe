@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
-export const myDataSchema = z.object({
+export const authDataSchema = z.object({
   id: z.number(),
-  teamId: z.number(),
-  term: z.number(),
-  teamNumber: z.number(),
+  teamId: z.number().nullable(),
+  term: z.number().nullable(),
+  teamNumber: z.number().nullable(),
   email: z.string().email(),
   name: z.string(),
   nickname: z.string(),
@@ -19,4 +19,4 @@ export const myDataSchema = z.object({
   emailOptOutAt: z.string().datetime().nullable(),
 });
 
-export type MyData = z.infer<typeof myDataSchema>;
+export type AuthData = z.infer<typeof authDataSchema>;
