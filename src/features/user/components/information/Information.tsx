@@ -1,16 +1,24 @@
+'use client';
+
 import { ArrowIcon } from '@/components/icons';
+import { COURSE } from '@/constants';
+import { authAtom } from '@/store';
+import { useAtomValue } from 'jotai';
 import Image from 'next/image';
-import { AuthData } from '../../schemas';
 
-type InformationProps = {
-  user: AuthData;
-};
+export function Information() {
+  const authData = useAtomValue(authAtom);
 
-export function Information({ user }: InformationProps) {
-  const { term, teamNumber, email, name, nickname, profileImageUrl } = user;
+  if (!authData) {
+    // 에러 throw 하고 에러바운더리로 처리
+    return null;
+  }
+
+  const { term, teamNumber, email, name, nickname, profileImageUrl, course } =
+    authData;
 
   return (
-    <section className="flex flex-col gap-4 w-full">
+    <section className="flex flex-col gap-4 w-full mb-12">
       <h2 className="text-lg font-semibold">회원 정보</h2>
       <div className="flex gap-4">
         <div className="relative h-16 w-16 shrink-0">
@@ -24,7 +32,8 @@ export function Information({ user }: InformationProps) {
         <div className="flex flex-col justify-center gap-1 text-sm">
           <div className="flex items-center gap-4">
             <p className="text-base font-semibold">
-              {nickname}({name})
+              {nickname}({name})/
+              <span>{course ? COURSE[course] : '외부인'}</span>
             </p>
             <button>
               <ArrowIcon
@@ -36,10 +45,14 @@ export function Information({ user }: InformationProps) {
             </button>
           </div>
           <p className="flex flex-wrap gap-2">
-            <span className="text-dark-grey">
-              판교 {term}기, {teamNumber}팀
-            </span>
-            <span className="text-soft-grey">|</span>
+            {course && (
+              <>
+                <span className="text-dark-grey">
+                  판교 {term}기, {teamNumber}팀
+                </span>
+                <span className="text-soft-grey">|</span>
+              </>
+            )}
             <span className="text-dark-grey whitespace-pre-wrap break-all">
               {email}
             </span>

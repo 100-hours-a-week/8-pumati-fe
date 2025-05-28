@@ -11,15 +11,7 @@ export function useAuth() {
 
   return useMutation<AuthData, Error, string>({
     mutationFn: getMe,
-    onSuccess: ({ id, email, name, profileImageUrl, teamId }) => {
-      setAuth({
-        id,
-        email,
-        name,
-        profileImageUrl,
-        teamId,
-      });
-    },
+    onSuccess: setAuth,
     onError: (error) => {
       console.error(error);
     },
