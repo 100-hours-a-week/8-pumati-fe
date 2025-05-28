@@ -1,12 +1,11 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 's3-pumati-prod.s3.ap-northeast-2.amazonaws.com',
+        hostname: process.env.NEXT_PUBLIC_S3_HOSTNAME!,
       },
     ],
   },
