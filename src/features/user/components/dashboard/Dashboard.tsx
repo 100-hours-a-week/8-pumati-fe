@@ -55,29 +55,19 @@ export function Dashboard({ dashboard }: DashboardProps) {
     },
   ];
   return (
-    <section className="flex flex-col gap-4 w-full">
-      <div className="flex justify-between items-end">
-        <h2 className="text-lg font-semibold">대시보드</h2>
-        <button className="text-sm text-blue cursor-pointer hover:underline">
-          프로젝트 보러가기
-        </button>
-      </div>
-      <ul className="grid grid-cols-2 gap-2">
-        {dashboardItems.map(({ title, item, itemStyle }) => (
-          <li
-            key={itemStyle}
-            className={cn(
-              'flex flex-col items-center px-4 py-3 border rounded-xl h-28',
-              itemStyle,
-            )}
-          >
-            <p className="self-start font-semibold">{title}</p>
-            <div className="flex justify-center items-center h-full">
-              {item}
-            </div>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <ul className="grid grid-cols-2 gap-2">
+      {dashboardItems.map(({ title, item, itemStyle }) => (
+        <li
+          key={itemStyle}
+          className={cn(
+            'flex flex-col items-center px-4 py-3 border rounded-xl h-28',
+            itemStyle,
+          )}
+        >
+          <p className="self-start font-semibold">{title}</p>
+          <div className="flex justify-center items-center h-full">{item}</div>
+        </li>
+      ))}
+    </ul>
   );
 }
