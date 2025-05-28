@@ -50,3 +50,23 @@ export const getAttendanceState = async (token: string) => {
         );
   }
 };
+
+export const getDashboard = async (teamId: number) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/teams/${teamId}`);
+
+    if (!response.ok) {
+      throw new Error('Failed to get dashboard');
+    }
+
+    const data = await response.json();
+
+    return data.data;
+  } catch (error) {
+    console.error(error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while getting dashboard');
+  }
+};

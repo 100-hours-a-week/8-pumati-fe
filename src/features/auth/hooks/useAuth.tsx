@@ -1,6 +1,6 @@
 'use client';
 
-import { MyData } from '@/features/user/schemas';
+import { AuthData } from '@/features/user/schemas';
 import { authAtom } from '@/store/atoms/user';
 import { useMutation } from '@tanstack/react-query';
 import { useSetAtom } from 'jotai';
@@ -9,17 +9,9 @@ import { getMe } from '../services';
 export function useAuth() {
   const setAuth = useSetAtom(authAtom);
 
-  return useMutation<MyData, Error, string>({
+  return useMutation<AuthData, Error, string>({
     mutationFn: getMe,
-    onSuccess: ({ id, email, name, profileImageUrl, teamId }) => {
-      setAuth({
-        id,
-        email,
-        name,
-        profileImageUrl,
-        teamId,
-      });
-    },
+    onSuccess: setAuth,
     onError: (error) => {
       console.error(error);
     },

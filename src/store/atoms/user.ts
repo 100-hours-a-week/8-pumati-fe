@@ -1,4 +1,4 @@
-import { Auth } from '@/features/auth/schemas';
+import { AuthData } from '@/features/user/schemas';
 import { atom } from 'jotai';
 
-export const authAtom = atom<Auth | null>(null);
+export const authAtom = atom<AuthData | null>(null);
