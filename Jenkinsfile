@@ -21,7 +21,7 @@ pipeline {
             env.ENV_LABEL = 'prod'
           } else if (branchName == 'dev') {
             env.ENV_LABEL = 'dev'
-          } else if (branchName == 'test-a') {
+          } else if (branchName.startsWith('test-')) {
             env.ENV_LABEL = 'test'
             echo "🧪 테스트 브랜치에서 실행 중입니다 (${branchName})"
           } else {
@@ -39,7 +39,7 @@ pipeline {
               description: "🚀 배포가 곧 시작됩니다: ${env.SERVICE_NAME} - ${env.ENV_LABEL} 환경",
               link: env.BUILD_URL,
               title: "배포 시작",
-              webhookURL: "$DISCORD"
+              webhookURL: DISCORD
             )
           }
         }
@@ -53,9 +53,13 @@ pipeline {
     }
 
     stage('Install Dependencies') {
-      steps {
-        sh 'corepack enable && corepack prepare pnpm@latest --activate'
-        sh 'pnpm install'
+       steps {
+         sh '''
+          curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+          npm install -g pnpm
+          pnpm install
+        '''
       }
     }
 
@@ -108,7 +112,7 @@ pipeline {
             description: "✅ ${env.SERVICE_NAME} (${env.ENV_LABEL}) 빌드 성공 및 S3 업로드 완료",
             link: env.BUILD_URL,
             title: "S3 업로드 성공",
-            webhookURL: "$DISCORD"
+            webhookURL: DISCORD
           )
         }
       }
@@ -121,7 +125,7 @@ pipeline {
             description: "❌ ${env.SERVICE_NAME} (${env.ENV_LABEL}) 빌드 실패",
             link: env.BUILD_URL,
             title: "빌드 실패",
-            webhookURL: "$DISCORD"
+            webhookURL: DISCORD
           )
         }
       }
