@@ -1,11 +1,9 @@
 'use client';
 
-import { EditProjectFormImage } from '@/schemas';
+import { FormImageType } from '@/schemas';
 import { useImageUploader } from '../../hooks';
 import { ImageList } from './ImageList';
 import { UploadBox } from './UploadBox';
-
-export type FormImageType = File | EditProjectFormImage;
 
 type ImageUploaderProps = {
   name: string;

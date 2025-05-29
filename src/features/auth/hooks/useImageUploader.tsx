@@ -1,3 +1,4 @@
+import { FormImageType } from '@/schemas';
 import { useEffect, useRef, useState } from 'react';
 
 /**
@@ -7,8 +8,8 @@ import { useEffect, useRef, useState } from 'react';
  * @param onChange - 파일이 변경될 때 호출되는 콜백 함수
  */
 export function useImageUploader(
-  value: File | null,
-  onChange: (file: File | null) => void,
+  value: FormImageType | null,
+  onChange: (file: FormImageType | null) => void,
 ) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -19,13 +20,18 @@ export function useImageUploader(
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
 
-    onChange(file);
+    onChange({ file: file ?? undefined });
   };
 
   useEffect(() => {
     if (value) {
-      const url = URL.createObjectURL(value);
-      setPreview(url);
+      let url: string;
+      if (value instanceof File) {
+        url = URL.createObjectURL(value);
+        setPreview(url);
+      } else {
+        setPreview(value.url ?? URL.createObjectURL(value.file!));
+      }
 
       return () => URL.revokeObjectURL(url);
     } else {

@@ -30,3 +30,5 @@ export const editImageFormSchema = z
   );
 
 export type EditProjectFormImage = z.infer<typeof editImageFormSchema>;
+
+export type FormImageType = File | EditProjectFormImage;

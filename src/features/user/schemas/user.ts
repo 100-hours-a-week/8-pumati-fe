@@ -30,3 +30,15 @@ export const userProfileEditFormSchema = signupFormSchema
   });
 
 export type UserProfileEditForm = z.infer<typeof userProfileEditFormSchema>;
+
+export const userProfileEditDataSchema = z.object({
+  name: z.string(),
+  nickname: z.string(),
+  term: z.number().nullable(),
+  teamNumber: z.number().nullable(),
+  course: z.string().nullable(),
+  profileImageUrl: z.string().url().nullable(),
+  mailConsent: z.boolean(),
+});
+
+export type UserProfileEditData = z.infer<typeof userProfileEditDataSchema>;
