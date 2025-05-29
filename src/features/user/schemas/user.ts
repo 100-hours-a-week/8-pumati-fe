@@ -1,3 +1,5 @@
+import { signupFormSchema } from '@/features/auth/schemas';
+import { editImageFormSchema } from '@/schemas';
 import { z } from 'zod';
 
 export const authDataSchema = z.object({
@@ -20,3 +22,11 @@ export const authDataSchema = z.object({
 });
 
 export type AuthData = z.infer<typeof authDataSchema>;
+
+export const userProfileEditFormSchema = signupFormSchema
+  .omit({ code: true })
+  .extend({
+    profileImageUrl: editImageFormSchema,
+  });
+
+export type UserProfileEditForm = z.infer<typeof userProfileEditFormSchema>;

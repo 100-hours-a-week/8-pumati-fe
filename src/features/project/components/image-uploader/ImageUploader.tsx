@@ -1,7 +1,7 @@
 'use client';
 
+import { EditProjectFormImage } from '@/schemas';
 import { useImageUploader } from '../../hooks';
-import { EditProjectFormImage } from '../../schemas';
 import { ImageList } from './ImageList';
 import { UploadBox } from './UploadBox';
 

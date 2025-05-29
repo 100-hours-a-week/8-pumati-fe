@@ -1,1 +1,1 @@
-export * from './presigned-url';
+export * from './image';
