@@ -1,12 +1,14 @@
 'use client';
 
 import { ArrowIcon } from '@/components/icons';
-import { COURSE } from '@/constants';
+import { COURSE, USER_PATH } from '@/constants';
 import { authAtom } from '@/store';
 import { useAtomValue } from 'jotai';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export function Information() {
+  const router = useRouter();
   const authData = useAtomValue(authAtom);
 
   if (!authData) {
@@ -17,6 +19,9 @@ export function Information() {
   const { term, teamNumber, email, name, nickname, profileImageUrl, course } =
     authData;
 
+  const handleEditClick = () => {
+    router.push(USER_PATH.MY_PAGE_EDIT);
+  };
   return (
     <section className="flex flex-col gap-4 w-full mb-12">
       <h2 className="text-lg font-semibold">회원 정보</h2>
@@ -35,7 +40,7 @@ export function Information() {
               {nickname}({name})/
               <span>{course ? COURSE[course] : '외부인'}</span>
             </p>
-            <button>
+            <button onClick={handleEditClick} className="cursor-pointer">
               <ArrowIcon
                 width={20}
                 height={20}
