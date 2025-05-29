@@ -21,7 +21,7 @@ pipeline {
             env.ENV_LABEL = 'prod'
           } else if (branchName == 'dev') {
             env.ENV_LABEL = 'dev'
-          } else if (branchName.startsWith('test-')) {
+          } else if (branchName == 'test-a') {
             env.ENV_LABEL = 'test'
             echo "🧪 테스트 브랜치에서 실행 중입니다 (${branchName})"
           } else {
