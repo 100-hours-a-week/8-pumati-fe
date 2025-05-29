@@ -14,19 +14,25 @@ pipeline {
     stage('Set Branch & Environment') {
       steps {
         script {
+          // Git 브랜치명 가져오기 (origin/ 접두사 제거)
           def branchName = env.BRANCH_NAME ?: env.GIT_BRANCH?.replaceFirst(/^origin\//, '')
-          env.BRANCH = branchName
+          def label = ''
 
+          // 브랜치명에 따라 환경 라벨 설정
           if (branchName == 'main') {
-            env.ENV_LABEL = 'prod'
+            label = 'prod'
           } else if (branchName == 'dev') {
-            env.ENV_LABEL = 'dev'
-          } else if (branchName.startsWith('test-')) {
-            env.ENV_LABEL = 'test'
+            label = 'dev'
+          } else if (branchName == 'test-a') {
+            label = 'test'
             echo "🧪 테스트 브랜치에서 실행 중입니다 (${branchName})"
           } else {
             error "⛔ 지원되지 않는 브랜치입니다: ${branchName}"
           }
+
+          // 공유 환경 변수에 반영
+          env.BRANCH = branchName
+          env.ENV_LABEL = label
         }
       }
     }
@@ -53,13 +59,8 @@ pipeline {
     }
 
     stage('Install Dependencies') {
-       steps {
-         sh '''
-          curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-          sudo apt-get install -y nodejs
-          npm install -g pnpm
-          pnpm install
-        '''
+      steps {
+        sh 'pnpm install'
       }
     }
 
@@ -107,26 +108,34 @@ pipeline {
   post {
     success {
       script {
-        withCredentials([string(credentialsId: 'Discord-Webhook', variable: 'DISCORD')]) {
-          discordSend(
-            description: "✅ ${env.SERVICE_NAME} (${env.ENV_LABEL}) 빌드 성공 및 S3 업로드 완료",
-            link: env.BUILD_URL,
-            title: "S3 업로드 성공",
+        if (env.BRANCH in ['main', 'dev']) {
+          withCredentials([string(credentialsId: 'Discord-Webhook', variable: 'DISCORD')]) {
+            discordSend description: """
+            제목 : ${currentBuild.displayName}
+            결과 : ${currentBuild.result}
+            실행 시간 : ${currentBuild.duration / 1000}s
+            """,
+            link: env.BUILD_URL, result: currentBuild.currentResult,
+            title: "${env.JOB_NAME} : ${currentBuild.displayName} 성공",
             webhookURL: DISCORD
-          )
+          }
         }
       }
     }
 
     failure {
       script {
-        withCredentials([string(credentialsId: 'Discord-Webhook', variable: 'DISCORD')]) {
-          discordSend(
-            description: "❌ ${env.SERVICE_NAME} (${env.ENV_LABEL}) 빌드 실패",
-            link: env.BUILD_URL,
-            title: "빌드 실패",
+        if (env.BRANCH in ['main', 'dev']) {
+          withCredentials([string(credentialsId: 'Discord-Webhook', variable: 'DISCORD')]) {
+            discordSend description: """
+            제목 : ${currentBuild.displayName}
+            결과 : ${currentBuild.result}
+            실행 시간 : ${currentBuild.duration / 1000}s
+            """,
+            link: env.BUILD_URL, result: currentBuild.currentResult,
+            title: "${env.JOB_NAME} : ${currentBuild.displayName} 실패",
             webhookURL: DISCORD
-          )
+          }
         }
       }
     }
