@@ -24,10 +24,8 @@ export const editImageFormSchema = z
       )
       .optional(),
   })
-  .refine(
-    (data) => data.url || data.file,
-    '이미지 URL 또는 파일이 필요합니다.',
-  );
+  .refine((data) => data.url || data.file, '이미지 URL 또는 파일이 필요합니다.')
+  .optional();
 
 export type EditProjectFormImage = z.infer<typeof editImageFormSchema>;
 
