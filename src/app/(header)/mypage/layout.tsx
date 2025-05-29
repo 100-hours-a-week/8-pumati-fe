@@ -1,4 +1,4 @@
-import { ROOT_PATH } from '@/constants';
+import { AUTH_PATH } from '@/constants';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -11,7 +11,7 @@ export default async function MyPageLayout({
   const refreshToken = cookieStore.get('refreshToken')?.value;
 
   if (!refreshToken) {
-    redirect(ROOT_PATH);
+    redirect(AUTH_PATH.LOGIN);
   }
   return (
     <section className="flex justify-center">
