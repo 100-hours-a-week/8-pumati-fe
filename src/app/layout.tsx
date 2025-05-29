@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={cn(pretendard.className, 'min-h-screen w-full bg-green')}
+        className={cn(pretendard.className, 'min-h-screen w-full bg-black')}
       >
         <Providers>
           <main className="relative mx-auto min-w-[375px] max-w-[600px] w-full min-h-screen bg-white shadow-md">
