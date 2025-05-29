@@ -5,6 +5,7 @@ import { useTeamList } from '@/features/auth/hooks';
 import { useUploadFileToS3 } from '@/hooks';
 import { accessTokenAtom, authAtom } from '@/store';
 import { useAtomValue } from 'jotai';
+import { useState } from 'react';
 import { FormProvider, useWatch } from 'react-hook-form';
 import { useEditUserProfile, useUserProfileEditForm } from '../../hooks';
 import {
@@ -14,6 +15,8 @@ import {
 import { ImageUploader } from '../image-uploader';
 
 export function UserProfileEditForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const authData = useAtomValue(authAtom);
   const accessToken = useAtomValue(accessTokenAtom);
   const { termOptions, teamNumberOptions } = useTeamList();
@@ -27,10 +30,13 @@ export function UserProfileEditForm() {
   const { handleSubmit, control } = methods;
   const { term } = useWatch({ control });
 
-  const { mutate: editUserProfile } = useEditUserProfile(accessToken);
-  const { mutateAsync: getPresignedUrl } = useUploadFileToS3();
+  const { mutateAsync: editUserProfile, isPending: isEditingUserProfile } =
+    useEditUserProfile(accessToken);
+  const { mutateAsync: getPresignedUrl, isPending: isUploadingImage } =
+    useUploadFileToS3();
 
   const onSubmit = async (data: UserProfileEditFormType) => {
+    setIsSubmitting(true);
     const userData: UserProfileEditData = {
       ...data,
       profileImageUrl: authData.profileImageUrl,
@@ -42,7 +48,8 @@ export function UserProfileEditForm() {
       userData.profileImageUrl = publicUrl;
     }
 
-    editUserProfile(userData);
+    await editUserProfile(userData);
+    setIsSubmitting(false);
   };
   return (
     <FormProvider {...methods}>
@@ -52,12 +59,14 @@ export function UserProfileEditForm() {
           label="이름"
           name="name"
           placeholder="이름을 입력해주세요."
+          disabled={isSubmitting}
           required
         />
         <TextInput
           label="닉네임"
           name="nickname"
           placeholder="닉네임을 입력해주세요."
+          disabled={isSubmitting}
           required
         />
         {authData.course && (
@@ -68,13 +77,14 @@ export function UserProfileEditForm() {
               options={termOptions || []}
               placeholder="기수를 선택해주세요."
               required
+              disabled={isSubmitting}
             />
             <Dropdown
               label="팀(조)"
               name="teamNumber"
               options={teamNumberOptions[term ?? 0] || []}
               placeholder="팀(조)을 선택해주세요."
-              disabled={!term}
+              disabled={!term || isSubmitting}
               required
             />
             <Dropdown
@@ -87,10 +97,13 @@ export function UserProfileEditForm() {
               ]}
               placeholder="과정을 선택해주세요."
               required
+              disabled={isSubmitting}
             />
           </>
         )}
-        <Button type="submit">수정하기</Button>
+        <Button type="submit" isLoading={isSubmitting}>
+          수정하기
+        </Button>
       </form>
     </FormProvider>
   );
