@@ -30,10 +30,14 @@ export function NavBar({ triggerRef }: NavbarProps) {
       label: '프로젝트',
       href: PROJECT_PATH.ROOT,
     },
-    {
-      label: '마이페이지',
-      href: USER_PATH.MY_PAGE,
-    },
+    ...(isLoggedIn
+      ? [
+          {
+            label: '마이페이지',
+            href: USER_PATH.MY_PAGE,
+          },
+        ]
+      : []),
   ];
   const menuHeight = `${1 + 3 * (menuList.length + 1)}rem`;
 

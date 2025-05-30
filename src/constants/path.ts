@@ -13,4 +13,5 @@ export const PROJECT_PATH = Object.freeze({
 
 export const USER_PATH = Object.freeze({
   MY_PAGE: '/mypage',
+  MY_PAGE_EDIT: '/mypage/edit',
 });

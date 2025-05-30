@@ -55,7 +55,7 @@ export function Dashboard({ dashboard }: DashboardProps) {
     },
   ];
   return (
-    <ul className="grid grid-cols-2 gap-2">
+    <ul className="grid grid-cols-2 gap-2 w-full">
       {dashboardItems.map(({ title, item, itemStyle }) => (
         <li
           key={itemStyle}

@@ -21,7 +21,7 @@ const DASHBOARDITEMS = [
 
 export function DashboardFallback() {
   return (
-    <ul className="grid grid-cols-2 gap-2">
+    <ul className="grid grid-cols-2 gap-2 w-full">
       {DASHBOARDITEMS.map(({ title, itemStyle }) => (
         <li
           key={itemStyle}
