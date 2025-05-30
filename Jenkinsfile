@@ -67,21 +67,16 @@ pipeline {
         checkout scm
       }
     }
-
+    
     stage('Install Dependencies') {
       steps {
         sh '''
-          # pnpm 설치 확인 분기 및 설치
-          if ! command -v pnpm &> /dev/null; then
-            echo "pnpm not found, installing..."
-            npm install -g pnpm
-          fi
-
-          # pnpm 설치 후 의존성 설치
+          echo "Installing dependencies using pre-installed pnpm..."
           pnpm install
         '''
       }
     }
+
 
     stage('Fetch .env from AWS Secrets Manager') {
       steps {
