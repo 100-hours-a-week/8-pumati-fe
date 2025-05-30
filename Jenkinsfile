@@ -119,29 +119,30 @@ pipeline {
       }
     }
 
-  stage('Archive & Upload to S3') {
-    steps {
-      script {
-        // 1. 타임스탬프 및 커밋 해시로 파일 이름 생성
-        def timestamp = new Date().format("yyyyMMdd-HHmmss", TimeZone.getTimeZone('Asia/Seoul'))
-        def shortHash = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-        env.BUILD_FILE = "output-${timestamp}-${shortHash}.zip"
+    stage('Archive & Upload to S3') {
+      steps {
+        script {
+          // 1. 타임스탬프 및 커밋 해시로 파일 이름 생성
+          def timestamp = new Date().format("yyyyMMdd-HHmmss", TimeZone.getTimeZone('Asia/Seoul'))
+          def shortHash = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+          env.BUILD_FILE = "output-${timestamp}-${shortHash}.zip"
 
-        // 2. .env 삭제 후 압축 및 업로드
-        echo "📦 압축 대상: .next/, public/, package.json"
+          // 2. .env 삭제 후 압축 및 업로드
+          echo "📦 압축 대상: .next/, public/, package.json"
 
-        sh """
-          rm -f .env
+          sh """
+            rm -f .env
 
-          zip -r ${env.BUILD_FILE} .next public package.json
+            zip -r ${env.BUILD_FILE} .next public package.json
 
-          echo "✅ 압축 완료: ${env.BUILD_FILE}"
+            echo "✅ 압축 완료: ${env.BUILD_FILE}"
 
-          aws s3 cp ${env.BUILD_FILE} s3://${env.S3_BUCKET}/CI/${env.ENV_LABEL}/${env.SERVICE_NAME}/${env.BUILD_FILE} \
-            --region ${env.AWS_REGION}
+            aws s3 cp ${env.BUILD_FILE} s3://${env.S3_BUCKET}/CI/${env.ENV_LABEL}/${env.SERVICE_NAME}/${env.BUILD_FILE} \
+              --region ${env.AWS_REGION}
 
-          echo "✅ S3 업로드 완료: s3://${env.S3_BUCKET}/CI/${env.ENV_LABEL}/${env.SERVICE_NAME}/${env.BUILD_FILE}"
-        """
+            echo "✅ S3 업로드 완료: s3://${env.S3_BUCKET}/CI/${env.ENV_LABEL}/${env.SERVICE_NAME}/${env.BUILD_FILE}"
+          """
+        }
       }
     }
   }
