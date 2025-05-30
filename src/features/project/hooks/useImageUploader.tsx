@@ -55,10 +55,12 @@ export function useImageUploader<T extends FormImageType>(
   // URL 해제에 대한 최적화 필요
   useEffect(() => {
     const newPreviews = value.map((item) => {
+      if (!item) return '';
+
       if (item instanceof File) {
         return URL.createObjectURL(item);
       }
-      return item?.url || URL.createObjectURL(item?.file!);
+      return item.url || URL.createObjectURL(item.file!);
     });
     setPreviews(newPreviews);
 
