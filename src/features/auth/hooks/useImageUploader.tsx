@@ -1,7 +1,9 @@
 'use client';
 
+import { userProfileEditFormSchema } from '@/features/user/schemas';
 import { FormImageType } from '@/schemas';
 import { useEffect, useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 /**
  * 이미지 파일 업로드를 처리하고 미리보기를 관리하는 커스텀 훅입니다.
@@ -15,14 +17,29 @@ export function useImageUploader(
 ) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const { setError, clearErrors } = useFormContext();
 
   const handleFileInputClick = () => {
     fileInputRef.current?.click();
   };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
+    if (!file) return;
 
-    onChange({ file: file ?? undefined });
+    const result = userProfileEditFormSchema.shape.profileImageUrl.safeParse({
+      file,
+    });
+    if (!result.success) {
+      const firstError = result.error.errors[0];
+      setError('profileImageUrl', {
+        type: 'manual',
+        message: firstError.message,
+      });
+      return;
+    }
+
+    clearErrors('profileImageUrl');
+    onChange({ file });
   };
 
   useEffect(() => {
@@ -32,7 +49,7 @@ export function useImageUploader(
         url = URL.createObjectURL(value);
         setPreview(url);
       } else {
-        setPreview(value.url ?? URL.createObjectURL(value.file!));
+        setPreview(value?.url ?? URL.createObjectURL(value?.file!));
       }
 
       return () => URL.revokeObjectURL(url);

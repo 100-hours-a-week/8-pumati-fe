@@ -1,7 +1,12 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { AuthData, UserProfileEditForm } from '../schemas';
+import {
+  AuthData,
+  UserProfileEditForm,
+  userProfileEditFormSchema,
+} from '../schemas';
 
 export function useUserProfileEditForm(authData: AuthData | null) {
   const { name, nickname, profileImageUrl, teamNumber, course, term } =
@@ -25,5 +30,6 @@ export function useUserProfileEditForm(authData: AuthData | null) {
       teamNumber: teamNumber ?? undefined,
       course: course ?? undefined,
     },
+    resolver: zodResolver(userProfileEditFormSchema),
   });
 }

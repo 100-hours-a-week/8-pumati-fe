@@ -58,7 +58,7 @@ export function useImageUploader<T extends FormImageType>(
       if (item instanceof File) {
         return URL.createObjectURL(item);
       }
-      return item.url || URL.createObjectURL(item.file!);
+      return item?.url || URL.createObjectURL(item?.file!);
     });
     setPreviews(newPreviews);
 
