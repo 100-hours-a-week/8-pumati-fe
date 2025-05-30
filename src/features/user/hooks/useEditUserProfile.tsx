@@ -1,3 +1,5 @@
+'use client';
+
 import { USER_PATH } from '@/constants';
 import { useAuth } from '@/features/auth/hooks';
 import { authAtom } from '@/store';
@@ -21,6 +23,10 @@ export function useEditUserProfile(token: string) {
 
       setAuthData(user);
       router.push(USER_PATH.MY_PAGE);
+    },
+    onError: (error) => {
+      console.error(error);
+      alert('회원정보 수정에 실패했습니다. 다시 시도해주세요.');
     },
   });
 }

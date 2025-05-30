@@ -1,11 +1,13 @@
 'use client';
 
 import { Button, Dropdown, TextInput } from '@/components';
+import { AUTH_PATH } from '@/constants';
 import { useTeamList } from '@/features/auth/hooks';
 import { useUploadFileToS3 } from '@/hooks';
 import { accessTokenAtom, authAtom } from '@/store';
 import { useAtomValue } from 'jotai';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { FormProvider, useWatch } from 'react-hook-form';
 import { useEditUserProfile, useUserProfileEditForm } from '../../hooks';
 import {
@@ -13,33 +15,30 @@ import {
   UserProfileEditForm as UserProfileEditFormType,
 } from '../../schemas';
 import { ImageUploader } from '../image-uploader';
+import { WithdrawModalContent } from '../withdraw-modal-content';
 
 export function UserProfileEditForm() {
+  const router = useRouter();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
   const authData = useAtomValue(authAtom);
   const accessToken = useAtomValue(accessTokenAtom);
   const { termOptions, teamNumberOptions } = useTeamList();
 
-  if (!authData || !accessToken) {
-    // 에러 throw 하고 에러바운더리로 처리
-    return null;
-  }
-
   const methods = useUserProfileEditForm(authData);
   const { handleSubmit, control } = methods;
   const { term } = useWatch({ control });
 
-  const { mutateAsync: editUserProfile, isPending: isEditingUserProfile } =
-    useEditUserProfile(accessToken);
-  const { mutateAsync: getPresignedUrl, isPending: isUploadingImage } =
-    useUploadFileToS3();
+  const { mutateAsync: editUserProfile } = useEditUserProfile(accessToken!);
+  const { mutateAsync: getPresignedUrl } = useUploadFileToS3();
 
   const onSubmit = async (data: UserProfileEditFormType) => {
     setIsSubmitting(true);
     const userData: UserProfileEditData = {
       ...data,
-      profileImageUrl: authData.profileImageUrl,
+      profileImageUrl: authData ? authData.profileImageUrl : null,
       mailConsent: true,
     };
 
@@ -51,6 +50,12 @@ export function UserProfileEditForm() {
     await editUserProfile(userData);
     setIsSubmitting(false);
   };
+
+  useEffect(() => {
+    if (!authData || !accessToken) {
+      router.push(AUTH_PATH.LOGIN);
+    }
+  }, [authData, accessToken, router]);
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)} className="mb-9">
@@ -69,7 +74,7 @@ export function UserProfileEditForm() {
           disabled={isSubmitting}
           required
         />
-        {authData.course && (
+        {authData && authData.course && (
           <>
             <Dropdown
               label="기수"
@@ -101,9 +106,28 @@ export function UserProfileEditForm() {
             />
           </>
         )}
-        <Button type="submit" isLoading={isSubmitting}>
-          수정하기
-        </Button>
+        <div className="flex gap-1">
+          <Button type="button" variant="outline" onClick={() => router.back()}>
+            취소
+          </Button>
+          <Button type="submit" isLoading={isSubmitting}>
+            수정하기
+          </Button>
+        </div>
+        <div className="flex justify-center mt-8">
+          <button
+            type="button"
+            className="text-sm text-grey hover:text-red transition-colors duration-150 cursor-pointer"
+            onClick={() => setIsWithdrawModalOpen(true)}
+          >
+            탈퇴하기
+          </button>
+          {isWithdrawModalOpen && (
+            <WithdrawModalContent
+              onClose={() => setIsWithdrawModalOpen(false)}
+            />
+          )}
+        </div>
       </form>
     </FormProvider>
   );

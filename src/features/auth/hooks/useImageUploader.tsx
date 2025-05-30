@@ -1,3 +1,5 @@
+'use client';
+
 import { FormImageType } from '@/schemas';
 import { useEffect, useRef, useState } from 'react';
 

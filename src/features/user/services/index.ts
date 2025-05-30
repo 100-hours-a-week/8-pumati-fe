@@ -102,3 +102,29 @@ export const editUserProfile = async (
       : new Error('An unexpected error occurred while editing user profile');
   }
 };
+
+export const withdraw = async (token: string) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/members/me`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to withdraw');
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error(error);
+
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred while withdrawing');
+  }
+};
