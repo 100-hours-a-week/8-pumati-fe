@@ -49,7 +49,12 @@ export function useImageUploader(
         url = URL.createObjectURL(value);
         setPreview(url);
       } else {
-        setPreview(value?.url ?? URL.createObjectURL(value?.file!));
+        setPreview(
+          value?.url ??
+            (value?.file instanceof Blob
+              ? URL.createObjectURL(value.file)
+              : ''),
+        );
       }
 
       return () => URL.revokeObjectURL(url);
