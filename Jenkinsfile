@@ -81,16 +81,8 @@ pipeline {
     stage('Fetch .env from AWS Secrets Manager') {
       steps {
         script {
-          // 1. aws CLI 설치 여부 확인
-          sh '''
-            if ! command -v aws &> /dev/null; then
-              echo "❌ aws CLI not found"
-              exit 1
-            fi
-          '''
-
           try {
-            // 2. Secrets Manager에서 .env 내용 가져오기
+            // 1. Secrets Manager에서 .env 내용 가져오기
             def secret = sh(
               script: """
                 aws secretsmanager get-secret-value \
@@ -102,10 +94,10 @@ pipeline {
               returnStdout: true
             ).trim()
 
-            // 3. .env 파일로 저장
+            // 2. .env 파일로 저장
             writeFile file: '.env', text: secret
 
-            // 4. 보안 강화를 위한 퍼미션 제한
+            // 3. 보안 강화를 위한 퍼미션 제한
             sh 'chmod 600 .env'
 
             echo "✅ .env 파일 로딩 완료"
@@ -127,27 +119,29 @@ pipeline {
       }
     }
 
+  stage('Archive & Upload to S3') {
+    steps {
+      script {
+        // 1. 타임스탬프 및 커밋 해시로 파일 이름 생성
+        def timestamp = new Date().format("yyyyMMdd-HHmmss", TimeZone.getTimeZone('Asia/Seoul'))
+        def shortHash = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+        env.BUILD_FILE = "output-${timestamp}-${shortHash}.zip"
 
-    stage('Archive & Upload to S3') {
-      steps {
-        script {
-          // 1. 타임스탬프 및 커밋 해시로 파일 이름 생성
-          def timestamp = new Date().format("yyyyMMdd-HHmmss", TimeZone.getTimeZone('Asia/Seoul'))
-          def shortHash = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-          env.BUILD_FILE = "output-${timestamp}-${shortHash}.zip"
+        // 2. .env 삭제 후 압축 및 업로드
+        echo "📦 압축 대상: .next/, public/, package.json"
 
-          // 2. 압축 + S3 업로드
-          echo "📦 압축 대상: .next/, public/, package.json, .env"
-          sh """
-            zip -r ${env.BUILD_FILE} .next public package.json .env
-            echo "✅ 압축 완료: ${env.BUILD_FILE}"
+        sh """
+          rm -f .env
 
-            aws s3 cp ${env.BUILD_FILE} s3://${env.S3_BUCKET}/CI/${env.ENV_LABEL}/${env.SERVICE_NAME}/${env.BUILD_FILE} \
-              --region ${env.AWS_REGION}
+          zip -r ${env.BUILD_FILE} .next public package.json
 
-            echo "✅ S3 업로드 완료: s3://${env.S3_BUCKET}/CI/${env.ENV_LABEL}/${env.SERVICE_NAME}/${env.BUILD_FILE}"
-          """
-        }
+          echo "✅ 압축 완료: ${env.BUILD_FILE}"
+
+          aws s3 cp ${env.BUILD_FILE} s3://${env.S3_BUCKET}/CI/${env.ENV_LABEL}/${env.SERVICE_NAME}/${env.BUILD_FILE} \
+            --region ${env.AWS_REGION}
+
+          echo "✅ S3 업로드 완료: s3://${env.S3_BUCKET}/CI/${env.ENV_LABEL}/${env.SERVICE_NAME}/${env.BUILD_FILE}"
+        """
       }
     }
   }
