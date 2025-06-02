@@ -1,4 +1,6 @@
+import { BadgeFetcher } from '@/features/badge/components';
 import { DashboardFetcher, Information } from '@/features/user/components';
+import { Suspense } from 'react';
 
 export default async function MyPage() {
   return (
@@ -7,6 +9,11 @@ export default async function MyPage() {
       <Information />
       <div className="mb-12 w-full">
         <DashboardFetcher />
+      </div>
+      <div className="mb-12 w-full">
+        <Suspense>
+          <BadgeFetcher />
+        </Suspense>
       </div>
     </>
   );
