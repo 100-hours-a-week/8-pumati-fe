@@ -1,6 +1,7 @@
 'use client';
 
 import { PROJECT_PATH } from '@/constants';
+import { abbreviateCountToK } from '@/utils/count';
 import Link from 'next/link';
 import { Badge as BadgeType } from '../../schemas';
 import { Badge } from '../badge/Badge';
@@ -23,7 +24,9 @@ export function BadgeItem({ badge }: BadgeItemProps) {
           <p className="text-white font-semibold">{teamNumber}팀</p>
         </div>
       </Link>
-      <p className="text-sm text-dark-grey">{acquiredCount}</p>
+      <p className="text-sm text-dark-grey">
+        x {abbreviateCountToK(acquiredCount)}
+      </p>
     </li>
   );
 }

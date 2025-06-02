@@ -1,3 +1,4 @@
+import { abbreviateCountToK } from '@/utils/count';
 import { ProjectDashboard } from '../../schemas';
 
 type DashboardProps = ProjectDashboard;
@@ -35,7 +36,7 @@ export function Dashboard({
           >
             <p className="text-sm text-grey font-medium">{data.title}</p>
             <p className="font-bold text-blue">
-              {data.value}
+              {abbreviateCountToK(data.value)}
               <span className="text-xs">{data.unit}</span>
             </p>
           </li>
