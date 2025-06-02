@@ -4,6 +4,7 @@ import { Button } from '@/components';
 import { EditIcon } from '@/components/icons';
 import { accessTokenAtom, authAtom } from '@/store';
 import { useAtomValue } from 'jotai';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useGivePumati, useReceivePumati } from '../../hooks';
 import { ProjectDetail } from '../../schemas';
@@ -18,6 +19,7 @@ type DescriptionProps = Pick<
   | 'modifiedAt'
   | 'term'
   | 'introduction'
+  | 'badgeImageUrl'
   | 'deploymentUrl'
   | 'detailedDescription'
   | 'tags'
@@ -30,6 +32,7 @@ export function Description({
   title,
   term,
   introduction,
+  badgeImageUrl,
   deploymentUrl,
   detailedDescription,
   tags,
@@ -65,9 +68,20 @@ export function Description({
             <EditIcon width={20} height={20} />
           </button>
         )}
-        <div className="flex items-start justify-between">
-          <h1 className="text-2xl font-bold mr-2">{title}</h1>
-          <div className="flex flex-col items-end">
+        <div className="flex justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative flex items-center justify-center w-12 h-12 z-40 rounded-full overflow-hidden shadow-sm">
+              <Image
+                src={badgeImageUrl}
+                alt="프로젝트 뱃지"
+                fill
+                sizes="100%"
+                className="object-contain"
+              />
+            </div>
+            <h1 className="text-2xl font-bold mr-2">{title}</h1>
+          </div>
+          <div className="flex flex-col justify-end items-end">
             <p className="text-sm text-dark-grey font-semibold">
               {teamNumber}팀
             </p>
