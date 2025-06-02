@@ -2,6 +2,7 @@
 
 import { Button, Textarea, TextInput } from '@/components';
 import { PROJECT_PATH } from '@/constants';
+import { EditBadge } from '@/features/badge/components';
 import { useMultiFilesToS3 } from '@/hooks';
 import { authAtom } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,7 +20,6 @@ import {
 import { ImageUploader } from '../image-uploader';
 import { TagInput } from '../tag';
 import { DeleteProjectModalContent } from './DeleteProjectModalContent';
-import { EditBadge } from './EditBadge';
 
 type EditFormProps = {
   project: ProjectDetail;

@@ -2,9 +2,9 @@
 
 import { Button } from '@/components';
 import { EditIcon } from '@/components/icons';
+import { Badge } from '@/features/badge/components';
 import { accessTokenAtom, authAtom } from '@/store';
 import { useAtomValue } from 'jotai';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useGivePumati, useReceivePumati } from '../../hooks';
 import { ProjectDetail } from '../../schemas';
@@ -70,15 +70,7 @@ export function Description({
         )}
         <div className="flex justify-between">
           <div className="flex items-center gap-3">
-            <div className="relative flex items-center justify-center w-12 h-12 z-40 rounded-full overflow-hidden shadow-sm">
-              <Image
-                src={badgeImageUrl}
-                alt="프로젝트 뱃지"
-                fill
-                sizes="100%"
-                className="object-contain"
-              />
-            </div>
+            <Badge imageUrl={badgeImageUrl} />
             <h1 className="text-2xl font-bold mr-2">{title}</h1>
           </div>
           <div className="flex flex-col justify-end items-end">
