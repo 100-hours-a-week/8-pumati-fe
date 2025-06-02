@@ -1,13 +1,12 @@
 'use client';
 
 import { Button, Dropdown, TextInput } from '@/components';
-import { AUTH_PATH } from '@/constants';
 import { useTeamList } from '@/features/auth/hooks';
 import { useUploadFileToS3 } from '@/hooks';
 import { accessTokenAtom, authAtom } from '@/store';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FormProvider, useWatch } from 'react-hook-form';
 import { useEditUserProfile, useUserProfileEditForm } from '../../hooks';
 import {
@@ -28,17 +27,20 @@ export function UserProfileEditForm() {
   const { termOptions, teamNumberOptions } = useTeamList();
 
   const methods = useUserProfileEditForm(authData);
-  const { handleSubmit, control } = methods;
+  const { handleSubmit, control, trigger, getValues } = methods;
   const { term } = useWatch({ control });
 
   const { mutateAsync: editUserProfile } = useEditUserProfile(accessToken!);
   const { mutateAsync: getPresignedUrl } = useUploadFileToS3();
 
-  const onSubmit = async (data: UserProfileEditFormType) => {
-    setIsSubmitting(true);
+  const getEditData = async (data: UserProfileEditFormType) => {
     const userData: UserProfileEditData = {
-      ...data,
-      profileImageUrl: authData ? authData.profileImageUrl : null,
+      name: data.name,
+      nickname: data.nickname,
+      profileImageUrl: null,
+      term: data.term ?? null,
+      teamNumber: data.teamNumber ?? null,
+      course: data.course ?? null,
       mailConsent: true,
     };
 
@@ -47,18 +49,36 @@ export function UserProfileEditForm() {
       userData.profileImageUrl = publicUrl;
     }
 
-    await editUserProfile(userData);
+    return userData;
+  };
+  const handleTraineeEditProfile = async (data: UserProfileEditFormType) => {
+    const editData = await getEditData(data);
+
+    await editUserProfile(editData);
+  };
+  const handleNonTraineeEditProfile = async () => {
+    const valid = await trigger(['profileImageUrl', 'name', 'nickname']);
+    if (valid) {
+      const values = getValues();
+      const editData = await getEditData(values);
+
+      await editUserProfile(editData);
+    }
+  };
+  const handleEditClick = async () => {
+    setIsSubmitting(true);
+
+    if (authData && !authData.course) {
+      await handleNonTraineeEditProfile();
+    } else {
+      await handleSubmit(handleTraineeEditProfile)();
+    }
+
     setIsSubmitting(false);
   };
-
-  useEffect(() => {
-    if (!authData || !accessToken) {
-      router.push(AUTH_PATH.LOGIN);
-    }
-  }, [authData, accessToken, router]);
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="mb-9">
+      <form className="mb-9">
         <ImageUploader label="프로필 이미지" name="profileImageUrl" />
         <TextInput
           label="이름"
@@ -110,7 +130,11 @@ export function UserProfileEditForm() {
           <Button type="button" variant="outline" onClick={() => router.back()}>
             취소
           </Button>
-          <Button type="submit" isLoading={isSubmitting}>
+          <Button
+            type="button"
+            isLoading={isSubmitting}
+            onClick={handleEditClick}
+          >
             수정하기
           </Button>
         </div>
