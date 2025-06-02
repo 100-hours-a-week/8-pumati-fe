@@ -19,6 +19,7 @@ import {
 import { ImageUploader } from '../image-uploader';
 import { TagInput } from '../tag';
 import { DeleteProjectModalContent } from './DeleteProjectModalContent';
+import { EditBadge } from './EditBadge';
 
 type EditFormProps = {
   project: ProjectDetail;
@@ -32,6 +33,7 @@ export function EditForm({ project }: EditFormProps) {
     introduction,
     deploymentUrl,
     githubUrl,
+    badgeImageUrl,
     detailedDescription,
     tags,
   } = project;
@@ -112,6 +114,7 @@ export function EditForm({ project }: EditFormProps) {
           maxImages={5}
           disabled={isSubmitting}
         />
+        <EditBadge badgeImageUrl={badgeImageUrl} />
         <TextInput
           name="title"
           label="프로젝트 이름"
