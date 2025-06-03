@@ -10,7 +10,7 @@ export function Badge({ imageUrl, size = 'md' }: BadgeProps) {
   return (
     <div
       className={cn(
-        'relative flex items-center justify-center z-40 rounded-full overflow-hidden shadow-sm',
+        'relative flex items-center justify-center z-30 rounded-full overflow-hidden shadow-sm',
         size === 'md' ? 'w-12 h-12 ' : 'w-16 h-16',
       )}
     >
