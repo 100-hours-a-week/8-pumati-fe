@@ -1,0 +1,58 @@
+# 의존성 폴더들 (가장 큰 용량 차지)
+node_modules
+.pnpm-store
+.npm
+.yarn
+
+# 빌드 결과물
+.next
+out
+dist
+build
+
+# Git 관련 (큰 용량)
+.git
+.gitignore
+
+# 개발 도구들
+.vscode
+.idea
+.github
+
+# 로그 파일들
+*.log
+logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# 임시 파일들
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+.cache
+
+# 테스트 관련
+coverage
+.nyc_output
+test-results
+
+# 문서들
+README.md
+*.md
+docs/
+
+# 큰 미디어 파일들 (있다면)
+*.mp4
+*.mov
+*.avi
+*.zip
+*.tar.gz
+
+# CI/CD 파일들
+cicd/
+!cicd/dev/Dockerfile.dev
+!cicd/dev/.env

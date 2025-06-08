@@ -1,0 +1,135 @@
+pipeline {
+    agent any
+
+    // 환경 변수 설정 - ECR 관련 정보만
+    environment {
+        AWS_REGION = 'ap-northeast-2'                    // AWS 리전 (서울)
+        ECR_REPOSITORY = 'pumati-fe'                     // ECR 리포지토리 이름
+        IMAGE_TAG = "${BUILD_NUMBER}"                    // 이미지 태그 (빌드 번호 사용)
+        AWS_ACCOUNT_ID = credentials('aws-account-id')   // AWS 계정 ID (Jenkins credentials에서 가져옴)
+        ECR_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+    }
+
+    stages {
+        stage('브랜치 확인') {
+            steps {
+                script {
+                    // 현재 브랜치 정보 출력
+                    echo "현재 브랜치: ${env.BRANCH_NAME}"
+                    if (env.BRANCH_NAME != 'dev') {
+                        echo '⚠️  dev 브랜치가 아닙니다. 빌드를 건너뜁니다.'
+                        echo "현재 브랜치: ${env.BRANCH_NAME}"
+                        currentBuild.result = 'ABORTED'
+                        error('dev 브랜치가 아니므로 빌드를 중단합니다.')
+                    } else {
+                        echo '✅ dev 브랜치 확인됨. 빌드를 계속 진행합니다.'
+                    }
+                }
+            }
+        }
+
+        stage('체크아웃') {
+            steps {
+                // Git 리포지토리에서 소스 코드 체크아웃
+                checkout scm
+            }
+        }
+
+        stage('.env 파일 준비') {
+            steps {
+                script {
+                    // Jenkins Credentials에서 .env 파일 가져와서 적절한 위치에 복사
+                    echo '.env 파일 준비 중...'
+                    withCredentials([file(credentialsId: 'pumati-test-frontend-env', variable: 'ENV_FILE')]) {
+                        sh """
+                            # cicd/dev/ 디렉토리 생성 (혹시 없을 경우를 대비)
+                            mkdir -p cicd/dev/
+
+                            # Jenkins credentials에서 가져온 .env 파일을 적절한 위치에 복사
+                            cp \$ENV_FILE cicd/dev/.env
+
+                            # .env 파일이 제대로 복사되었는지 확인 (보안상 내용은 출력하지 않음)
+                            if [ -f "cicd/dev/.env" ]; then
+                                echo "✅ .env 파일 준비 완료"
+                                echo "파일 크기: \$(wc -l < cicd/dev/.env) 줄"
+                            else
+                                echo "❌ .env 파일 준비 실패"
+                                exit 1
+                            fi
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Docker 이미지 빌드') {
+            steps {
+                script {
+                    // Dockerfile.dev를 사용하여 Docker 이미지 빌드 (의존성 설치 + 빌드 모두 포함)
+                    echo 'Docker 이미지 빌드 시작...'
+                    sh """
+                        docker build -f cicd/dev/Dockerfile.dev \
+                            -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} \
+                            -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest \
+                            .
+                    """
+                    echo '✅ Docker 이미지 빌드 완료'
+                }
+            }
+        }
+
+        stage('ECR 로그인') {
+            steps {
+                script {
+                    // AWS ECR에 로그인
+                    echo 'ECR 로그인 중...'
+                    sh """
+                        aws ecr get-login-password --region ${AWS_REGION} | \
+                        docker login --username AWS --password-stdin ${ECR_REGISTRY}
+                    """
+                }
+            }
+        }
+
+        stage('ECR에 이미지 푸시') {
+            steps {
+                script {
+                    // 빌드된 이미지를 ECR에 푸시
+                    echo 'ECR에 이미지 푸시 중...'
+                    sh """
+                        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+                        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                if (env.BRANCH_NAME == 'dev') {
+                    echo '🎉 이미지 빌드 및 업로드 성공!'
+                    echo "✅ 이미지: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"
+                    echo "✅ 최신 이미지: ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
+                } else {
+                    echo '✅ dev 브랜치가 아니므로 빌드를 건너뛰었습니다.'
+                }
+            }
+        }
+        failure {
+            echo '❌ 이미지 빌드 또는 업로드 실패! 로그를 확인해주세요.'
+        }
+        always {
+            script {
+                if (env.BRANCH_NAME == 'dev') {
+                    // 임시로 생성한 .env 파일 정리 (보안)
+                    sh '''
+                        rm -f cicd/dev/.env || true
+                        docker system prune -f || true
+                    '''
+                }
+            }
+        }
+    }
+}
