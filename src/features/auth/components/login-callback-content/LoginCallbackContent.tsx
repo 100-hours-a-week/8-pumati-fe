@@ -31,7 +31,7 @@ export function LoginCallbackContent() {
         },
       });
     } else {
-      // 로그인 실패 처리 Toast
+      alert('로그인에 실패했습니다.');
       router.push(AUTH_PATH.LOGIN);
     }
   }, [message, getAuth, router, searchParams, setAccessToken, setSignupToken]);

@@ -1,25 +1,33 @@
 'use client';
 
 import { Button } from '@/components';
+import { useState } from 'react';
 import { Badge } from '../badge';
+import { EditBadgeModalContent } from '../edit-badge-modal-content';
 
 type EditBadgeProps = {
   badgeImageUrl: string;
 };
 
 export function EditBadge({ badgeImageUrl }: EditBadgeProps) {
+  const [isBadgeEditModalOpen, setIsBadgeEditModalOpen] = useState(false);
+
   return (
     <article className="flex flex-col gap-2 pt-3 pb-7 w-full max-w-[540px]">
-      <div>
-        <p className="font-medium">뱃지</p>
-        <p></p>
-      </div>
-      <div className="flex items-center justify-between px-4 py-3 rounded-md border border-soft-grey bg-light-grey">
-        <Button type="button" size="sm">
+      <p className="font-medium">뱃지</p>
+      <div className="flex items-center justify-between px-4 py-3 rounded-md border border-grey ">
+        <Button
+          type="button"
+          size="sm"
+          onClick={() => setIsBadgeEditModalOpen(true)}
+        >
           뱃지 변경
         </Button>
         <Badge imageUrl={badgeImageUrl} />
       </div>
+      {isBadgeEditModalOpen && (
+        <EditBadgeModalContent onClose={() => setIsBadgeEditModalOpen(false)} />
+      )}
     </article>
   );
 }
