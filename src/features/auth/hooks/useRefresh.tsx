@@ -1,4 +1,4 @@
-import { AUTH_QUERY_KEY } from '@/constants/query-key';
+import { AUTH_QUERY_KEY } from '@/constants';
 import { useQuery } from '@tanstack/react-query';
 import { RefreshResponse } from '../schemas';
 import { refresh } from '../services';

@@ -1,4 +1,4 @@
-import { USER_QUERY_KEY } from '@/constants/query-key';
+import { USER_QUERY_KEY } from '@/constants';
 import { getQueryClient } from '@/libs/tanstack-query';
 import { useMutation } from '@tanstack/react-query';
 import { receiveBadge } from '../services';

@@ -1,4 +1,4 @@
-import { COMMENT_QUERY_KEY } from '@/constants/query-key';
+import { COMMENT_QUERY_KEY } from '@/constants';
 import { CreateComment } from '@/features/comment/schemas';
 import { getQueryClient } from '@/libs/tanstack-query';
 import { useMutation } from '@tanstack/react-query';

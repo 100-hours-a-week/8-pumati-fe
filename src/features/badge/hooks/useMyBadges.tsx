@@ -1,4 +1,4 @@
-import { USER_QUERY_KEY } from '@/constants/query-key';
+import { USER_QUERY_KEY } from '@/constants';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { getMyBadges } from '../services';
 

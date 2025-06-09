@@ -1,4 +1,4 @@
-import { PROJECT_QUERY_KEY } from '@/constants/query-key';
+import { PROJECT_QUERY_KEY } from '@/constants';
 import { getQueryClient } from '@/libs/tanstack-query';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { getRankedProjects } from '../../services';
