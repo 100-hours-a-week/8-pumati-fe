@@ -276,81 +276,109 @@ spec:
         // 5. Docker 이미지 빌드 및 푸시
         stage('Build and Push Docker Image') {
             steps {
-                container('aws-cli') {
-                    echo 'Docker 이미지 빌드 및 ECR 푸시 중...'
+                script {
+                    // ECR 로그인을 위한 토큰 생성
+                    def ecrToken = ''
+                    container('aws-cli') {
+                        echo 'ECR 로그인 토큰 생성 중...'
+                        withCredentials([
+                            string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID'),
+                            aws(credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
+                        ]) {
+                            // ECR 로그인 토큰 생성
+                            ecrToken = sh(
+                                script: "aws ecr get-login-password --region ${AWS_REGION}",
+                                returnStdout: true
+                            ).trim()
 
-                    withCredentials([
-                        string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID'),
-                        aws(credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
-                    ]) {
-                        script {
+                            // 환경 변수로 설정
+                            env.ECR_TOKEN = ecrToken
+                            env.ECR_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+                            echo '✅ ECR 로그인 토큰 생성 완료'
+                            echo "Registry: ${env.ECR_REGISTRY}"
+                        }
+                    }
+
+                    // Docker 컨테이너에서 빌드 및 푸시 수행
+                    container('docker') {
+                        echo 'Docker 이미지 빌드 및 ECR 푸시 중...'
+
+                        withCredentials([
+                            string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID')
+                        ]) {
                             sh '''
-                                # Docker 소켓 권한 확인 및 설정
-                                echo "🔧 Docker 소켓 권한 확인 중..."
+                                # Docker 데몬 연결 확인
+                                echo "🔧 Docker 환경 확인 중..."
+                                echo "Docker 소켓 상태:"
                                 ls -la /var/run/docker.sock
 
-                                # Docker 그룹 확인 및 권한 설정
-                                if ! groups | grep -q docker; then
-                                    echo "Docker 그룹에 사용자 추가 중..."
-                                    # Docker 소켓의 그룹 ID 확인
-                                    DOCKER_GID=$(stat -c '%g' /var/run/docker.sock)
-                                    echo "Docker 소켓 그룹 ID: $DOCKER_GID"
-
-                                    # 현재 사용자를 Docker 그룹에 추가 (임시적으로)
-                                    # root 사용자이므로 직접 접근 가능해야 함
+                                # Docker 데몬 상태 확인
+                                echo "🐳 Docker 데몬 연결 테스트..."
+                                if ! docker version; then
+                                    echo "❌ Docker 데몬에 연결할 수 없습니다."
+                                    echo "호스트의 Docker 데몬이 실행 중인지 확인해주세요."
+                                    exit 1
                                 fi
 
-                                # Docker 연결 테스트
-                                echo "🐳 Docker 연결 테스트 중..."
-                                docker version || {
-                                    echo "❌ Docker 연결 실패. 권한 문제 해결 시도 중..."
-                                    # Docker 소켓 권한을 임시로 변경 (보안상 주의 필요)
-                                    chmod 666 /var/run/docker.sock
-                                    echo "Docker 소켓 권한 변경 완료"
-                                    docker version
-                                }
-
-                                # AWS 환경변수 설정
-                                export AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID"
-                                export AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY"
-                                export AWS_DEFAULT_REGION="$AWS_REGION"
-
-                                echo "✅ AWS 환경변수 설정 완료"
-                                echo "Region: $AWS_REGION"
-                                echo "Registry: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+                                echo "✅ Docker 연결 성공"
 
                                 # 빌드 전 파일 확인
                                 echo "=== 빌드 전 파일 확인 ==="
                                 ls -la
-                                ls -la cicd/dev/ || echo "cicd/dev 디렉토리 확인"
+
+                                # Dockerfile.dev 존재 확인
+                                if [ ! -f "cicd/dev/Dockerfile.dev" ]; then
+                                    echo "❌ Dockerfile.dev를 찾을 수 없습니다."
+                                    echo "📁 cicd/dev/ 디렉토리 내용:"
+                                    ls -la cicd/dev/ || echo "디렉토리가 존재하지 않습니다."
+                                    exit 1
+                                fi
+
+                                echo "✅ Dockerfile.dev 확인 완료"
 
                                 # ECR 로그인
                                 echo "🔐 ECR 로그인 중..."
-                                aws ecr get-login-password --region "$AWS_REGION" | \\
-                                docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+                                echo "$ECR_TOKEN" | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
                                 # Docker 이미지 빌드
-                                echo "🔨 Docker 이미지 빌드 중..."
+                                echo "🔨 Docker 이미지 빌드 시작..."
+                                echo "빌드 컨텍스트: $(pwd)"
+                                echo "Dockerfile: cicd/dev/Dockerfile.dev"
+                                echo "이미지 태그: $DOCKER_IMAGE_NAME"
+
+                                # 빌드 실행 (상세한 로그 출력)
                                 docker build -f cicd/dev/Dockerfile.dev \\
                                     -t "$DOCKER_IMAGE_NAME" \\
                                     -t "$LATEST_IMAGE_NAME" \\
+                                    --progress=plain \\
                                     .
+
+                                echo "✅ Docker 이미지 빌드 완료"
+
+                                # 빌드된 이미지 확인
+                                echo "📋 빌드된 이미지 목록:"
+                                docker images | grep "$ECR_REPOSITORY" || echo "이미지를 찾을 수 없습니다."
 
                                 # 이미지 푸시
                                 echo "📤 ECR에 이미지 푸시 중..."
                                 docker push "$DOCKER_IMAGE_NAME"
                                 docker push "$LATEST_IMAGE_NAME"
 
+                                echo "✅ 이미지 푸시 완료"
+
                                 # 로컬 이미지 정리
                                 echo "🧹 로컬 이미지 정리 중..."
                                 docker rmi "$DOCKER_IMAGE_NAME" || true
                                 docker rmi "$LATEST_IMAGE_NAME" || true
-                            '''
 
-                            echo '✅ 이미지 빌드 및 푸시 완료!'
-                            echo "📦 이미지: ${env.DOCKER_IMAGE_NAME}"
-                            echo "📦 Latest: ${env.LATEST_IMAGE_NAME}"
+                                echo "✅ 정리 완료"
+                            '''
                         }
+
+                        echo '🎉 이미지 빌드 및 푸시 완료!'
+                        echo "📦 이미지: ${env.DOCKER_IMAGE_NAME}"
+                        echo "📦 Latest: ${env.LATEST_IMAGE_NAME}"
                     }
                 }
             }
