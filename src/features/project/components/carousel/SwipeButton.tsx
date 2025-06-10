@@ -1,4 +1,4 @@
-import { ArrowIcon } from '@/components/icons';
+import { NavArrowIcon } from '@/components/icons';
 import { cn } from '@/utils/style';
 import { useSwiper } from 'swiper/react';
 
@@ -24,7 +24,7 @@ export function SwipeButton({ direction }: SwipeButtonProps) {
       )}
       onClick={handleClick}
     >
-      <ArrowIcon
+      <NavArrowIcon
         width={32}
         height={32}
         className={direction === 'left' ? '-rotate-90' : 'rotate-90'}

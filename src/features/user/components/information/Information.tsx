@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowIcon } from '@/components/icons';
+import { NavArrowIcon } from '@/components/icons';
 import { COURSE, USER_PATH } from '@/constants';
 import { authAtom } from '@/store';
 import { useAtomValue } from 'jotai';
@@ -41,7 +41,7 @@ export function Information() {
               <span>{course ? COURSE[course] : '외부인'}</span>
             </p>
             <button onClick={handleEditClick} className="cursor-pointer">
-              <ArrowIcon
+              <NavArrowIcon
                 width={20}
                 height={20}
                 fill="var(--color-dark-grey)"

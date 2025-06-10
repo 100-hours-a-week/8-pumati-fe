@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowIcon } from '@/components/icons';
+import { NavArrowIcon } from '@/components/icons';
 import { useRef, useState } from 'react';
 import { MenuList } from './MenuList';
 import { DropdownOption, DropdownValue } from './types';
@@ -44,7 +44,7 @@ export function Dropdown({
         <p className={selectedLabel ? '' : 'text-grey'}>
           {selectedLabel || placeholder}
         </p>
-        <ArrowIcon
+        <NavArrowIcon
           width={24}
           height={24}
           fill="var(--color-grey)"

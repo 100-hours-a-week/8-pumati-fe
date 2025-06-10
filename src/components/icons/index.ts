@@ -5,6 +5,7 @@ export * from './EditIcon';
 export * from './KakaoIcon';
 export * from './LogoIcon';
 export * from './MenuIcon';
+export * from './NavArrowIcon';
 export * from './PlusIcon';
 export * from './ProfileIcon';
 export * from './SpinnerIcon';
