@@ -10,11 +10,11 @@ pipeline {
   }
 
   stages {
-    stage('Set Branch & Cron Trigger') {
+    stage('Set Environment') {
       steps {
         echo """
         ============================================
-        스테이지 시작: Set Branch & Cron Trigger
+        스테이지 시작: Set Environment
         ============================================
         """
         script {
@@ -22,28 +22,34 @@ pipeline {
           env.BRANCH = (env.BRANCH_NAME ?: env.GIT_BRANCH)?.replaceFirst(/^origin\//, '') ?: 'unknown'
 
           if (env.BRANCH == 'main') {
-            // prod는 매일 9시에 자동 실행
-            properties([pipelineTriggers([cron('0 9 * * *')])])  
-
-          // } else if (env.BRANCH == 'dev') {
-          //   properties([pipelineTriggers([])])
-
+            env.ENV_LABEL = 'prod'
+            env.FE_PRIVATE_IP = '10.3.0.228'
           } else {
-            properties([pipelineTriggers([])])  // 트리거 초기화
             echo "지원되지 않는 브랜치입니다: ${env.BRANCH}. 빌드를 중단합니다."
             currentBuild.result = 'NOT_BUILT'
             error("Unsupported branch: ${env.BRANCH}")
           }
 
+          // 타임스탬프 + 커밋 해시 생성
+          def timestamp = new Date().format("yyyyMMdd-HHmmss", TimeZone.getTimeZone('Asia/Seoul'))
+          def shortHash = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+
+          env.ECR_REPO  = "${env.PROJECT_NAME}-${env.ENV_LABEL}-${env.SERVICE_NAME}-ecr"
+          env.IMAGE_TAG = "${env.SERVICE_NAME}-${env.ENV_LABEL}-${env.BUILD_NUMBER}-${timestamp}-${shortHash}"
+          env.ECR_IMAGE = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.ECR_REPO}:${env.IMAGE_TAG}"
+
           // 설정 확인 로그
           echo "현재 브랜치: ${env.BRANCH}"
+          echo "환경 설정 완료"
+          echo "IMAGE_TAG: ${env.IMAGE_TAG}"
+          echo "ECR_IMAGE: ${env.ECR_IMAGE}"
         }
       }
     }
 
     stage('Notify Before Start') {
       when {
-          expression { env.BRANCH in ['main', 'dev'] }
+          expression { env.BRANCH == 'main' } // dev 브랜치 조건 제거
       }
       steps {
         echo """
@@ -77,39 +83,6 @@ pipeline {
         ============================================
         """
         checkout scm
-      }
-    }
-
-    stage('Set Environment by Branch') {
-      steps {
-        echo """
-        ============================================
-        스테이지 시작: Set Environment by Branch
-        ============================================
-        """
-        script {
-          // 타임스탬프 + 커밋 해시 생성
-          def timestamp = new Date().format("yyyyMMdd-HHmmss", TimeZone.getTimeZone('Asia/Seoul'))
-          def shortHash = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-
-          if (env.BRANCH == 'main') {
-            env.ENV_LABEL = 'prod'
-            // env.FE_PRIVATE_IP = '10.3.0.228'
-            env.FE_PRIVATE_IP = '10.3.0.197'
-
-          // } else {
-          //   env.ENV_LABEL = 'dev'
-          //   env.FE_PRIVATE_IP = '10.1.0.253'
-          }
-
-          env.ECR_REPO  = "${env.PROJECT_NAME}-${env.ENV_LABEL}-${env.SERVICE_NAME}-ecr"
-          env.IMAGE_TAG = "${env.SERVICE_NAME}-${env.ENV_LABEL}-${env.BUILD_NUMBER}-${timestamp}-${shortHash}"
-          env.ECR_IMAGE = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.ECR_REPO}:${env.IMAGE_TAG}"
-
-          echo "환경 설정 완료"
-          echo "IMAGE_TAG: ${env.IMAGE_TAG}"
-          echo "ECR_IMAGE: ${env.ECR_IMAGE}"
-        }
       }
     }
 
