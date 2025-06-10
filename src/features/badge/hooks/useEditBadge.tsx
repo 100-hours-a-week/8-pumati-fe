@@ -1,11 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
 import { EditBadge } from '../schemas';
 import { editBadge } from '../services';
-
+ 
 export function useEditBadge() {
-  const router = useRouter();
-
   return useMutation({
     mutationFn: ({
       token,
@@ -17,7 +14,7 @@ export function useEditBadge() {
       data: EditBadge;
     }) => editBadge(token, teamId, data),
     onSuccess: () => {
-      router.refresh();
+      alert('AI가 뱃지 생성을 시작했습니다!');
     },
     onError: (error) => {
       console.error('Failed to edit badge:', error);

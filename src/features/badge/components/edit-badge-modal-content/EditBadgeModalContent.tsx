@@ -33,7 +33,7 @@ export function EditBadgeModalContent({ onClose }: EditBadgeModalContentProps) {
 
   const accessToken = useAtomValue(accessTokenAtom);
   const authData = useAtomValue(authAtom);
-  const { mutate: editBadge, isPending: isEditingBadge } = useEditBadge();
+  const { mutateAsync: editBadge, isPending: isEditingBadge } = useEditBadge();
 
   const handleToggleTag = async (tag: string) => {
     if (tags.includes(tag)) {
@@ -46,18 +46,19 @@ export function EditBadgeModalContent({ onClose }: EditBadgeModalContentProps) {
       setValue('tags', [...tags, tag]);
     }
   };
-  const handleBadgeEdit = handleSubmit((data) => {
+  const handleBadgeEdit = handleSubmit(async (data) => {
     if (!accessToken || !authData?.teamId) {
       alert('팀 정보가 없습니다.');
       router.push(AUTH_PATH.LOGIN);
       return;
     }
 
-    editBadge({
+    await editBadge({
       token: accessToken,
       teamId: authData.teamId,
       data,
     });
+    onClose();
   });
   return (
     <ModalPortal>
@@ -82,23 +83,22 @@ export function EditBadgeModalContent({ onClose }: EditBadgeModalContentProps) {
           <form className="relative flex flex-col items-center gap-2 pb-6">
             <div className="text-center">
               <p>뱃지의 스타일을 선택해주세요.</p>
-              <p className="text-sm mt-1 text-dark-grey">
-                (새로운 뱃지를 생성하면 현재 뱃지로 돌이킬 수 없습니다.)
-              </p>
             </div>
             <TagList tags={tags} onToggleTag={handleToggleTag} />
             {errors.tags ? (
-              <p className="absolute -bottom-1 text-blue text-sm">
+              <p className="absolute -bottom-1 text-red-500 text-sm">
                 {String(errors.tags.message)}
               </p>
             ) : tags.length === 5 ? (
-              <p className="absolute -bottom-1 text-blue text-sm">
+              <p className="absolute -bottom-1 text-red-500 text-sm">
                 태그는 최대 5개까지 입력할 수 있습니다.
               </p>
             ) : null}
           </form>
         )}
-        <p className="text-sm text-grey">약 15초 정도 소요될 수 있습니다.</p>
+        <p className="text-sm text-grey">
+          새로운 뱃지를 생성하면 현재 뱃지로 돌이킬 수 없습니다.
+        </p>
       </ConfirmModal>
     </ModalPortal>
   );
