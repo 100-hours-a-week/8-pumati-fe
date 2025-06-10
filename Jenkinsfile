@@ -94,7 +94,8 @@ pipeline {
 
           if (env.BRANCH == 'main') {
             env.ENV_LABEL = 'prod'
-            env.FE_PRIVATE_IP = '10.3.0.228'
+            // env.FE_PRIVATE_IP = '10.3.0.228'
+            env.FE_PRIVATE_IP = '10.3.0.197'
 
           // } else {
           //   env.ENV_LABEL = 'dev'
@@ -187,8 +188,9 @@ pipeline {
         """
         script {
           sh """
+            set -eux
+
             # .env 파일에서 필요한 값 추출
-            set -e
             export \$(cat .env | grep NEXT_PUBLIC_BASE_URL)
             export \$(cat .env | grep NEXT_PUBLIC_API_BASE_URL)
             export \$(cat .env | grep NEXT_PUBLIC_S3_HOSTNAME)
@@ -202,12 +204,19 @@ pipeline {
               --build-arg NEXT_PUBLIC_KATEBOO_CODE=\$NEXT_PUBLIC_KATEBOO_CODE \\
               -t ${env.ECR_IMAGE} .
 
+            # latest 태그 지정: ECR_IMAGE에서 레포지토리만 추출해 붙이기
+            LATEST_TAG="${env.ECR_IMAGE%%:*}:latest"
+            docker tag ${env.ECR_IMAGE} \$LATEST_TAG
+
+            # 이미지 push
             docker push ${env.ECR_IMAGE}
+            docker push \$LATEST_TAG
           """
-          echo "Docker 이미지 빌드 및 ECR 푸시 완료"
+          echo "Docker 이미지 빌드 및 ECR push 완료 (${env.IMAGE_TAG} + latest)"
         }
       }
     }
+
 
     stage('Save Docker Image & Upload to S3') {
       steps {
@@ -271,11 +280,11 @@ ssh -o StrictHostKeyChecking=no -i \$KEY_FILE \$SSH_USER@${env.FE_PRIVATE_IP} <<
   aws ecr get-login-password --region ${env.AWS_REGION} | \\
     docker login --username AWS --password-stdin ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com
 
-  echo "ECR 이미지 Pull: ${env.ECR_IMAGE}"
-  docker pull ${env.ECR_IMAGE}
+  echo "ECR 이미지 Pull: ${env.ECR_REPO}:latest"
+  docker pull ${env.ECR_REPO}:latest
 
   echo "새 컨테이너 실행"
-  docker run -d --name ${env.SERVICE_NAME} -p 3000:3000 ${env.ECR_IMAGE}
+  docker run -d --name ${env.SERVICE_NAME} -p 3000:3000 ${env.ECR_REPO}:latest
 
   echo "사용하지 않는 이미지 정리"
   docker image prune -a -f
