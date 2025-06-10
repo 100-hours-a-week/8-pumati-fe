@@ -124,16 +124,6 @@ pipeline {
       }
     }
 
-    // .env 파일 내용 확인 
-    // stage('Check .env content') {
-    //   steps {
-    //     script {
-    //       echo ".env 파일 내용 확인 시작"
-    //       sh 'cat .env'
-    //     }
-    //   }
-    // }
-
     stage('Authorize Docker to ECR') {
       steps {
         echo """
@@ -165,12 +155,6 @@ pipeline {
 
             # .env 파일로부터 --build-arg 리스트 생성
             BUILD_ARGS=\$(cat .env | grep -v '^#' | grep -v '^\\s*\$' | sed 's/^/--build-arg /' | xargs)
-
-            # 환경변수 확인
-            echo "=== 환경변수 확인 ==="
-            echo "S3_HOSTNAME: \$(grep NEXT_PUBLIC_S3_HOSTNAME .env | cut -d'=' -f2)"
-            echo "BUILD_ARGS: \$BUILD_ARGS"
-            echo "==================="
 
             # Docker 빌드 및 ECR 푸시
             docker build \$BUILD_ARGS -t ${env.ECR_IMAGE} .
