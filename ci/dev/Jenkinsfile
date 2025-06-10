@@ -156,7 +156,7 @@ spec:
                 container('nodejs') {
                     echo '환경 설정 파일 및 AWS 정보 준비 중...'
 
-                script {
+                    script {
                         // AWS 계정 ID로 Docker 이미지 이름 설정
                         withCredentials([string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID')]) {
                             env.DOCKER_IMAGE_NAME = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${IMAGE_TAG}"
@@ -164,7 +164,7 @@ spec:
                             echo "Docker 이미지: ${env.DOCKER_IMAGE_NAME}"
                             echo "Latest 이미지: ${env.LATEST_IMAGE_NAME}"
                         }
-                }
+                    }
 
                     // Jenkins Credentials에서 .env 파일 가져와서 cicd/dev/ 디렉토리에 복사
                     withCredentials([file(credentialsId: 'fe-env', variable: 'ENV_FILE')]) {
@@ -338,11 +338,23 @@ EOF
                                 ls -la /shared/
                                 ls -la /shared/kaniko-config/ || echo "kaniko-config 디렉토리 없음"
 
-                                # 실제 소스 코드가 있는 workspace 디렉토리로 이동
-                                echo "📂 소스 코드 디렉토리 확인:"
-                                ls -la /workspace/
-                                cd /workspace/workspace/
-                                echo "최종 작업 디렉토리: $(pwd)"
+                                # 실제 소스 코드가 있는 디렉토리 찾기
+                                echo "📂 Jenkins 작업 디렉토리 구조 확인:"
+                                ls -la /workspace/workspace/
+
+                                # 실제 프로젝트 디렉토리로 이동
+                                PROJECT_DIR="/workspace/workspace/8-pumati-fe_jacky"
+                                if [ -d "$PROJECT_DIR" ]; then
+                                    cd "$PROJECT_DIR"
+                                    echo "✅ 프로젝트 디렉토리로 이동: $(pwd)"
+                                else
+                                    echo "❌ 프로젝트 디렉토리를 찾을 수 없습니다: $PROJECT_DIR"
+                                    echo "사용 가능한 디렉토리:"
+                                    ls -la /workspace/workspace/
+                                    exit 1
+                                fi
+
+                                echo "📋 현재 디렉토리 내용:"
                                 ls -la
 
                                 # Docker config 복사 및 설정
@@ -360,28 +372,40 @@ EOF
                                     exit 1
                                 fi
 
-                                # Dockerfile.dev 존재 확인
-                                if [ ! -f "cicd/dev/Dockerfile.dev" ]; then
-                                    echo "❌ Dockerfile.dev를 찾을 수 없습니다."
+                                # Dockerfile.dev 존재 확인 (올바른 경로로)
+                                DOCKERFILE_PATH="ci/dev/Dockerfile.dev"
+                                if [ ! -f "$DOCKERFILE_PATH" ]; then
+                                    echo "❌ Dockerfile.dev를 찾을 수 없습니다: $DOCKERFILE_PATH"
                                     echo "📁 현재 디렉토리 구조:"
                                     find . -name "Dockerfile*" -type f 2>/dev/null || echo "Dockerfile 없음"
-                                    echo "📁 cicd 디렉토리 확인:"
-                                    ls -la cicd/ 2>/dev/null || echo "cicd 디렉토리 없음"
+                                    echo "📁 ci 디렉토리 확인:"
+                                    ls -la ci/ 2>/dev/null || echo "ci 디렉토리 없음"
+                                    echo "📁 ci/dev 디렉토리 확인:"
+                                    ls -la ci/dev/ 2>/dev/null || echo "ci/dev 디렉토리 없음"
                                     exit 1
                                 fi
 
-                                echo "✅ Dockerfile.dev 확인 완료"
+                                echo "✅ Dockerfile.dev 확인 완료: $DOCKERFILE_PATH"
+
+                                # 추가 필수 파일 확인
+                                echo "📋 빌드에 필요한 파일들 확인:"
+                                echo "- package.json:"
+                                ls -la package.json && echo "  ✅ 존재" || echo "  ❌ 없음"
+                                echo "- .env 파일:"
+                                ls -la .env && echo "  ✅ 존재" || echo "  ⚠️ 없음 (선택적)"
+                                echo "- src 디렉토리:"
+                                ls -la src/ && echo "  ✅ 존재" || echo "  ❌ 없음"
 
                                 # Kaniko를 사용한 이미지 빌드 및 푸시
                                 echo "🔨 Kaniko 이미지 빌드 시작..."
                                 echo "빌드 컨텍스트: $(pwd)"
-                                echo "Dockerfile: cicd/dev/Dockerfile.dev"
+                                echo "Dockerfile: $DOCKERFILE_PATH"
                                 echo "이미지 태그: $DOCKER_IMAGE_NAME"
                                 echo "Latest 태그: $LATEST_IMAGE_NAME"
 
                                 # Kaniko executor 실행
                                 /kaniko/executor \\
-                                    --dockerfile=cicd/dev/Dockerfile.dev \\
+                                    --dockerfile="$DOCKERFILE_PATH" \\
                                     --context=dir://$(pwd) \\
                                     --destination="$DOCKER_IMAGE_NAME" \\
                                     --destination="$LATEST_IMAGE_NAME" \\
@@ -412,7 +436,7 @@ EOF
                         string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID'),
                         string(credentialsId: 'github-pat', variable: 'GITHUB_TOKEN')
                     ]) {
-                script {
+                        script {
                             try {
                                 sh '''
                                     # 작업 디렉토리 생성
@@ -445,7 +469,7 @@ EOF
                                 def newImageTag = "${env.IMAGE_TAG}"
                                 def fullImageName = "${env.DOCKER_IMAGE_NAME}"
 
-                    sh """
+                                sh """
                                     cd /tmp/gitops
 
                                     # values.yaml 파일 경로 설정 (frontend 디렉토리 내)
@@ -529,7 +553,7 @@ EOF
                                 // GitOps 실패는 전체 빌드를 실패시키지 않음
                                 currentBuild.result = 'UNSTABLE'
                             }
-                }
+                        }
                     }
                 }
             }
