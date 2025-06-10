@@ -234,8 +234,11 @@ spec:
                                 echo "📁 .env 파일을 루트 디렉토리에 복사 중..."
                                 cp cicd/dev/.env .env
                                 echo "✅ .env 파일 복사 완료"
-                                echo "파일 내용 확인 (첫 3줄):"
-                                head -3 .env || echo "파일이 비어있거나 읽을 수 없습니다"
+                                echo "=== 환경 변수 확인 ==="
+                                echo "S3 Hostname: $(grep NEXT_PUBLIC_S3_HOSTNAME .env || echo '설정되지 않음')"
+                                echo "API Base URL: $(grep NEXT_PUBLIC_API_BASE_URL .env || echo '설정되지 않음')"
+                                echo "Base URL: $(grep NEXT_PUBLIC_BASE_URL .env || echo '설정되지 않음')"
+                                echo "========================"
                             else
                                 echo "⚠️ .env 파일이 없습니다. 빌드는 계속 진행됩니다."
                             fi
