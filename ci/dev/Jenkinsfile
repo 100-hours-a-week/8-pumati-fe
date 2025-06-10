@@ -51,19 +51,20 @@ spec:
     - name: docker-sock
       mountPath: /var/run/docker.sock
   - name: docker
-    image: docker:24-dind
+    image: docker:24.0.7-cli
+    command: [cat]
+    tty: true
     securityContext:
-      privileged: true
       runAsUser: 0
       runAsGroup: 0
-    # t3.medium 스펙에 최적화된 리소스 설정 - Docker 빌드용
+    # t3.medium 스펙에 최적화된 리소스 설정 - Docker 클라이언트용
     resources:
       requests:
-        memory: "512Mi"    # 512MB 요청 (Docker 빌드 기본)
-        cpu: "300m"        # 0.3 CPU 요청
+        memory: "256Mi"    # 256MB 요청 (Docker 클라이언트용)
+        cpu: "200m"        # 0.2 CPU 요청
       limits:
-        memory: "1.5Gi"    # 1.5GB 제한 (Docker 빌드에 충분)
-        cpu: "800m"        # 0.8 CPU 제한
+        memory: "512Mi"    # 512MB 제한 (Docker 클라이언트에 충분)
+        cpu: "500m"        # 0.5 CPU 제한
     volumeMounts:
     - name: workspace-volume
       mountPath: /home/jenkins/agent
@@ -379,9 +380,17 @@ spec:
                                 export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                                 export AWS_DEFAULT_REGION=${AWS_REGION}
 
+                                # Docker 소켓 연결 확인
+                                export DOCKER_HOST=unix:///var/run/docker.sock
+
                                 echo "✅ AWS 환경변수 설정 완료"
                                 echo "Region: ${AWS_REGION}"
                                 echo "Registry: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+                                echo "Docker Host: \$DOCKER_HOST"
+
+                                # Docker 연결 테스트
+                                echo "🔍 Docker 연결 테스트..."
+                                docker version || echo "Docker 연결 실패"
 
                                 # 빌드 전 파일 확인
                                 echo "=== 빌드 전 파일 확인 ==="
@@ -572,15 +581,30 @@ spec:
     // 빌드 후 처리
     post {
         always {
-            script {
-                echo '빌드 파이프라인 완료. 작업 공간을 정리합니다.'
+            container('nodejs') {
+                script {
+                    echo '빌드 파이프라인 완료. 작업 공간을 정리합니다.'
 
-                // Jenkins 워크스페이스 정리
-                try {
-                    deleteDir()
-                    echo '작업 공간 정리 완료'
-                } catch (Exception e) {
-                    echo "작업 공간 정리 중 오류 (무시됨): ${e.getMessage()}"
+                    // Kubernetes Pod 환경에서는 수동으로 정리
+                    try {
+                        sh '''
+                            echo "작업 공간 정리 시작..."
+                            # 민감한 파일들 정리
+                            rm -f cicd/dev/.env || true
+                            rm -rf /home/jenkins/agent/.npm || true
+                            rm -rf /tmp/gitops || true
+
+                            # 빌드 결과물 정리 (선택적)
+                            rm -rf node_modules || true
+                            rm -rf build || true
+                            rm -rf dist || true
+                            rm -rf .next || true
+
+                            echo "✅ 작업 공간 정리 완료"
+                        '''
+                    } catch (Exception e) {
+                        echo "작업 공간 정리 중 오류 (무시됨): ${e.getMessage()}"
+                    }
                 }
             }
         }
