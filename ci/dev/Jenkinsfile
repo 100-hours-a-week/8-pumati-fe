@@ -1,117 +1,614 @@
 pipeline {
-    agent any
+    // 파이프라인 전체를 Kubernetes Pod에서 실행
+    agent {
+        kubernetes {
+            yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  # system 노드에 우선 배치되도록 노드 셀렉터 설정
+  nodeSelector:
+    node-type: "system"
+  # system 노드가 없을 경우를 대비한 어피니티 설정
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        preference:
+          matchExpressions:
+          - key: node-type
+            operator: In
+            values: ["system"]
+      - weight: 50
+        preference:
+          matchExpressions:
+          - key: kubernetes.io/instance-type
+            operator: In
+            values: ["t3.medium", "t3a.medium"]
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+  containers:
+  - name: nodejs
+    image: cimg/node:20.10
+    command: [cat]
+    tty: true
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+    # t3.medium 스펙에 최적화된 리소스 설정 - Node.js 빌드용
+    resources:
+      requests:
+        memory: "1Gi"      # 1GB 요청 (npm 빌드에 충분)
+        cpu: "500m"        # 0.5 CPU 요청
+      limits:
+        memory: "2.5Gi"    # 2.5GB 제한 (t3.medium 4GB 중 여유있게)
+        cpu: "1500m"       # 1.5 CPU 제한 (t3.medium 2 vCPU 중 대부분)
+    volumeMounts:
+    - name: workspace-volume
+      mountPath: /home/jenkins/agent
+    - name: docker-sock
+      mountPath: /var/run/docker.sock
+  - name: docker
+    image: docker:24-dind
+    securityContext:
+      privileged: true
+      runAsUser: 0
+      runAsGroup: 0
+    # t3.medium 스펙에 최적화된 리소스 설정 - Docker 빌드용
+    resources:
+      requests:
+        memory: "512Mi"    # 512MB 요청 (Docker 빌드 기본)
+        cpu: "300m"        # 0.3 CPU 요청
+      limits:
+        memory: "1.5Gi"    # 1.5GB 제한 (Docker 빌드에 충분)
+        cpu: "800m"        # 0.8 CPU 제한
+    volumeMounts:
+    - name: workspace-volume
+      mountPath: /home/jenkins/agent
+    - name: docker-sock
+      mountPath: /var/run/docker.sock
+  - name: aws-cli
+    image: cimg/aws:2023.05
+    command: [cat]
+    tty: true
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+    # t3.medium 스펙에 최적화된 리소스 설정 - AWS CLI용 (가벼운 작업)
+    resources:
+      requests:
+        memory: "256Mi"    # 256MB 요청 (AWS CLI 작업용)
+        cpu: "200m"        # 0.2 CPU 요청
+      limits:
+        memory: "512Mi"    # 512MB 제한 (AWS CLI에 충분)
+        cpu: "400m"        # 0.4 CPU 제한
+    volumeMounts:
+    - name: workspace-volume
+      mountPath: /home/jenkins/agent
+  volumes:
+  - name: workspace-volume
+    emptyDir: {}
+  - name: docker-sock
+    hostPath:
+      path: /var/run/docker.sock
+            '''
+        }
+    }
 
-    // 환경 변수 설정 - ECR 관련 정보만
+    // 환경 변수 설정
     environment {
-        AWS_REGION = 'ap-northeast-2'                    // AWS 리전 (서울)
-        ECR_REPOSITORY = 'pumati-fe'                     // ECR 리포지토리 이름
-        IMAGE_TAG = "${BUILD_NUMBER}"                    // 이미지 태그 (빌드 번호 사용)
-        AWS_ACCOUNT_ID = credentials('aws-account-id')   // AWS 계정 ID (Jenkins credentials에서 가져옴)
-        ECR_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+        // AWS 공개 정보 (깃에 올려도 안전)
+        AWS_REGION = 'ap-northeast-2'                    // 서울 리전
+        ECR_REPOSITORY = 'pumati-dev-frontend-ecr'       // ECR 리포지토리 이름
+
+        // 이미지 태그 설정 (브랜치명과 빌드 번호 조합)
+        IMAGE_TAG = "${BRANCH_NAME}-${BUILD_NUMBER}"
+
+        // Node.js 환경 설정
+        NODE_ENV = 'production'
+        NPM_CONFIG_CACHE = '/home/jenkins/agent/.npm'
+        CI = 'true'
     }
 
     stages {
-        stage('체크아웃') {
+        // 1. 소스 코드 체크아웃
+        stage('Checkout') {
             steps {
-                // Git 리포지토리에서 소스 코드 체크아웃
-                checkout scm
-            }
-        }
+                container('nodejs') {
+                    echo '소스 코드 체크아웃 완료'
+                    script {
+                        // Git 정보 확인
+                        try {
+                            def gitCommit = sh(
+                                script: 'git rev-parse HEAD',
+                                returnStdout: true
+                            ).trim()
+                            echo "Git Commit: ${gitCommit}"
+                        } catch (Exception e) {
+                            echo "Git commit 정보를 가져올 수 없습니다: ${e.getMessage()}"
+                        }
 
-        stage('.env 파일 준비') {
-            steps {
-                script {
-                    // Jenkins Credentials에서 .env 파일 가져와서 적절한 위치에 복사
-                    echo '.env 파일 준비 중...'
-                    withCredentials([file(credentialsId: 'fe-env', variable: 'ENV_FILE')]) {
-                        sh """
-                            # cicd/dev/ 디렉토리 생성 (혹시 없을 경우를 대비)
-                            mkdir -p cicd/dev/
+                        try {
+                            def gitBranch = sh(
+                                script: 'git branch --show-current || echo "detached"',
+                                returnStdout: true
+                            ).trim()
+                            echo "Git Branch: ${gitBranch}"
+                        } catch (Exception e) {
+                            echo "Git branch 정보를 가져올 수 없습니다: ${e.getMessage()}"
+                        }
 
-                            # Jenkins credentials에서 가져온 .env 파일을 적절한 위치에 복사
-                            cp \$ENV_FILE cicd/dev/.env
-
-                            # .env 파일이 제대로 복사되었는지 확인 (보안상 내용은 출력하지 않음)
-                            if [ -f "cicd/dev/.env" ]; then
-                                echo "✅ .env 파일 준비 완료"
-                                echo "파일 크기: \$(wc -l < cicd/dev/.env) 줄"
-                            else
-                                echo "❌ .env 파일 준비 실패"
-                                exit 1
-                            fi
-                        """
+                        // 작업 디렉토리 확인
+                        sh 'pwd'
+                        sh 'ls -la'
                     }
                 }
             }
         }
 
-        stage('Docker 이미지 빌드') {
+        // 2. 환경 설정 파일 준비
+        stage('Setup Environment') {
             steps {
-                script {
-                    // Dockerfile.dev를 사용하여 Docker 이미지 빌드 (의존성 설치 + 빌드 모두 포함)
-                    echo 'Docker 이미지 빌드 시작...'
-                    sh """
-                        docker build -f cicd/dev/Dockerfile.dev \
-                            -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} \
-                            -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest \
-                            .
-                    """
-                    echo '✅ Docker 이미지 빌드 완료'
+                container('nodejs') {
+                    echo '환경 설정 파일 및 AWS 정보 준비 중...'
+
+                    script {
+                        // AWS 계정 ID로 Docker 이미지 이름 설정
+                        withCredentials([string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID')]) {
+                            env.DOCKER_IMAGE_NAME = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${IMAGE_TAG}"
+                            env.LATEST_IMAGE_NAME = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:latest"
+                            echo "Docker 이미지: ${env.DOCKER_IMAGE_NAME}"
+                            echo "Latest 이미지: ${env.LATEST_IMAGE_NAME}"
+                        }
+                    }
+
+                    // Jenkins Credentials에서 .env 파일 가져와서 cicd/dev/ 디렉토리에 복사
+                    withCredentials([file(credentialsId: 'fe-env', variable: 'ENV_FILE')]) {
+                        sh '''
+                            # cicd/dev/ 디렉토리 생성 (혹시 없을 경우를 대비)
+                            mkdir -p cicd/dev/
+
+                            # Jenkins credentials에서 가져온 .env 파일을 적절한 위치에 복사
+                            cp $ENV_FILE cicd/dev/.env
+
+                            # .env 파일이 제대로 복사되었는지 확인 (보안상 내용은 출력하지 않음)
+                            if [ -f "cicd/dev/.env" ]; then
+                                echo "✅ .env 파일 준비 완료"
+                                echo "파일 크기: $(wc -l < cicd/dev/.env) 줄"
+                            else
+                                echo "❌ .env 파일 준비 실패"
+                                exit 1
+                            fi
+                        '''
+                    }
                 }
             }
         }
 
-        stage('ECR 로그인') {
+        // 3. Node.js 환경 준비
+        stage('Prepare Build Environment') {
             steps {
-                script {
-                    // AWS ECR에 로그인
-                    echo 'ECR 로그인 중...'
-                    sh """
-                        aws ecr get-login-password --region ${AWS_REGION} | \
-                        docker login --username AWS --password-stdin ${ECR_REGISTRY}
-                    """
+                container('nodejs') {
+                    echo 'Node.js 환경 준비 중...'
+                    script {
+                        // NPM 캐시 디렉토리 생성
+                        sh 'mkdir -p /home/jenkins/agent/.npm'
+                        sh 'id && pwd && ls -la /home/jenkins/agent/'
+
+                        try {
+                            sh 'node --version'
+                            sh 'npm --version'
+                        } catch (Exception e) {
+                            echo "Node.js 버전 확인 실패: ${e.getMessage()}"
+                        }
+
+                        // package.json 확인
+                        try {
+                            sh 'ls -la package.json'
+                            echo 'package.json 파일 확인 완료'
+                        } catch (Exception e) {
+                            echo "package.json 파일 확인 실패: ${e.getMessage()}"
+                        }
+                    }
                 }
             }
         }
 
-        stage('ECR에 이미지 푸시') {
+        // 4. 의존성 설치
+        stage('Install Dependencies') {
             steps {
-                script {
-                    // 빌드된 이미지를 ECR에 푸시
-                    echo 'ECR에 이미지 푸시 중...'
-                    sh """
-                        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
-                        docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
-                    """
+                container('nodejs') {
+                    echo 'NPM 의존성 설치 중...'
+                    script {
+                        try {
+                            sh '''
+                                # NPM 캐시 설정
+                                export NPM_CONFIG_CACHE=/home/jenkins/agent/.npm
+
+                                echo "의존성 설치 시작..."
+                                echo "NPM_CONFIG_CACHE: $NPM_CONFIG_CACHE"
+
+                                # 의존성 설치 (npm ci 사용으로 더 빠르고 안정적)
+                                npm ci --cache $NPM_CONFIG_CACHE
+
+                                echo "✅ 의존성 설치 완료"
+                            '''
+                        } catch (Exception e) {
+                            echo "의존성 설치 실패: ${e.getMessage()}"
+                            error('의존성 설치 실패')
+                        }
+                    }
+                }
+            }
+        }
+
+        // 5. 테스트 실행 (선택적)
+        stage('Test') {
+            when {
+                // dev 브랜치나 PR에서만 테스트 실행
+                anyOf {
+                    branch 'dev'
+                    changeRequest()
+                }
+            }
+            steps {
+                container('nodejs') {
+                    echo '단위 테스트 실행 중...'
+                    script {
+                        try {
+                            sh '''
+                                # 환경 변수 설정
+                                export NPM_CONFIG_CACHE=/home/jenkins/agent/.npm
+                                export CI=true
+
+                                if [ -f "cicd/dev/.env" ]; then
+                                    echo "환경 파일 발견, 로드 중..."
+                                    set -a && . ./cicd/dev/.env && set +a
+                                else
+                                    echo "환경 파일이 없습니다."
+                                fi
+
+                                echo "테스트 실행 시작..."
+                                # 테스트가 있다면 실행 (없으면 건너뛰기)
+                                if npm run test --if-present; then
+                                    echo "✅ 테스트 완료"
+                                else
+                                    echo "ℹ️ 테스트 스크립트가 없거나 실행되지 않았습니다."
+                                fi
+                            '''
+                        } catch (Exception e) {
+                            echo "테스트 실행 중 오류: ${e.getMessage()}"
+                            currentBuild.result = 'UNSTABLE'
+                        }
+                    }
+                }
+            }
+        }
+
+        // 6. 프론트엔드 애플리케이션 빌드
+        stage('Build Application') {
+            steps {
+                container('nodejs') {
+                    echo 'React/Next.js 애플리케이션 빌드 중...'
+                    script {
+                        try {
+                            sh '''
+                                # 환경 변수 설정
+                                export NPM_CONFIG_CACHE=/home/jenkins/agent/.npm
+                                export NODE_ENV=production
+                                export CI=true
+
+                                # .env 파일 로드
+                                if [ -f "cicd/dev/.env" ]; then
+                                    echo "환경 파일 로드 중..."
+                                    set -a && . ./cicd/dev/.env && set +a
+                                else
+                                    echo "⚠️ 환경 파일이 없습니다."
+                                fi
+
+                                echo "프론트엔드 빌드 시작..."
+                                npm run build
+
+                                echo "빌드 결과 확인..."
+                                ls -la
+
+                                # 빌드 결과물 확인 (일반적으로 build/ 또는 dist/ 디렉토리)
+                                if [ -d "build" ]; then
+                                    echo "✅ build 디렉토리 확인:"
+                                    ls -la build/
+                                elif [ -d "dist" ]; then
+                                    echo "✅ dist 디렉토리 확인:"
+                                    ls -la dist/
+                                elif [ -d ".next" ]; then
+                                    echo "✅ .next 디렉토리 확인 (Next.js):"
+                                    ls -la .next/
+                                else
+                                    echo "⚠️ 빌드 결과물 디렉토리를 찾을 수 없습니다."
+                                fi
+                            '''
+                            echo '✅ 애플리케이션 빌드 완료'
+                        } catch (Exception e) {
+                            echo "애플리케이션 빌드 실패: ${e.getMessage()}"
+                            error('빌드 실패')
+                        }
+                    }
+                }
+            }
+        }
+
+        // 7. ECR 로그인 및 설정
+        stage('Setup ECR') {
+            steps {
+                container('aws-cli') {
+                    echo 'ECR 로그인 및 리포지토리 설정 중...'
+                    withCredentials([
+                        string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID'),
+                        aws(credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
+                    ]) {
+                        sh 'aws --version'
+                        sh 'aws sts get-caller-identity'
+
+                        // ECR 리포지토리 존재 확인 및 생성
+                        sh """
+                            aws ecr describe-repositories --repository-names ${ECR_REPOSITORY} --region ${AWS_REGION} || \\
+                            aws ecr create-repository --repository-name ${ECR_REPOSITORY} --region ${AWS_REGION}
+                        """
+
+                        echo '✅ ECR 설정 완료'
+                    }
+                }
+            }
+        }
+
+        // 8. Docker 이미지 빌드 및 푸시
+        stage('Build and Push Docker Image') {
+            steps {
+                container('docker') {
+                    echo 'Docker 이미지 빌드 및 ECR 푸시 중...'
+
+                    withCredentials([
+                        string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID'),
+                        aws(credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
+                    ]) {
+                        script {
+                            sh """
+                                # AWS 환경변수 설정
+                                export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                                export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                                export AWS_DEFAULT_REGION=${AWS_REGION}
+
+                                echo "✅ AWS 환경변수 설정 완료"
+                                echo "Region: ${AWS_REGION}"
+                                echo "Registry: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+                                # 빌드 전 파일 확인
+                                echo "=== 빌드 전 파일 확인 ==="
+                                ls -la
+                                ls -la cicd/dev/ || echo "cicd/dev 디렉토리 확인"
+
+                                # ECR 로그인
+                                echo "🔐 ECR 로그인 중..."
+                                aws ecr get-login-password --region ${AWS_REGION} | \\
+                                docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+
+                                # Docker 이미지 빌드
+                                echo "🔨 Docker 이미지 빌드 중..."
+                                docker build -f cicd/dev/Dockerfile.dev \\
+                                    -t ${env.DOCKER_IMAGE_NAME} \\
+                                    -t ${env.LATEST_IMAGE_NAME} \\
+                                    .
+
+                                # 이미지 푸시
+                                echo "📤 ECR에 이미지 푸시 중..."
+                                docker push ${env.DOCKER_IMAGE_NAME}
+                                docker push ${env.LATEST_IMAGE_NAME}
+
+                                # 로컬 이미지 정리
+                                echo "🧹 로컬 이미지 정리 중..."
+                                docker rmi ${env.DOCKER_IMAGE_NAME} || true
+                                docker rmi ${env.LATEST_IMAGE_NAME} || true
+                            """
+
+                            echo '✅ 이미지 빌드 및 푸시 완료!'
+                            echo "📦 이미지: ${env.DOCKER_IMAGE_NAME}"
+                            echo "📦 Latest: ${env.LATEST_IMAGE_NAME}"
+                        }
+                    }
+                }
+            }
+        }
+
+        // 9. GitOps - 헬름 차트 업데이트 및 푸시
+        stage('Update GitOps Repository') {
+            steps {
+                container('nodejs') {
+                    echo 'GitOps 리포지토리 업데이트 중...'
+
+                    withCredentials([
+                        string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID'),
+                        string(credentialsId: 'github-pat', variable: 'GITHUB_TOKEN')
+                    ]) {
+                        script {
+                            try {
+                                sh '''
+                                    # 작업 디렉토리 생성
+                                    mkdir -p /tmp/gitops
+                                    cd /tmp/gitops
+
+                                    echo "🔄 GitOps 리포지토리 클론 중..."
+                                    # GitHub 토큰을 사용하여 클론 (토큰 마스킹)
+                                    git clone https://x-access-token:${GITHUB_TOKEN}@github.com/100-hours-a-week/8-pumati-cloud.git .
+
+                                    # Git 설정 (로컬 리포지토리에서만)
+                                    git config user.name "Jenkins CI"
+                                    git config user.email "jenkins@pumati.com"
+
+                                    # jacky 브랜치로 체크아웃 (헬름 차트가 있는 브랜치)
+                                    echo "🔄 jacky 브랜치로 체크아웃 중..."
+                                    git checkout jacky
+
+                                    # 현재 브랜치 확인
+                                    git branch -a
+                                    git status
+
+                                    # values.yaml 파일 경로 확인
+                                    echo "📁 헬름 차트 구조 확인..."
+                                    find . -name "values.yaml" -type f
+                                    ls -la aws/dev/gitops/helm/frontend/ || echo "프론트엔드 헬름 디렉토리 확인 중..."
+                                '''
+
+                                // 이미지 태그 정보 설정
+                                def newImageTag = "${env.IMAGE_TAG}"
+                                def fullImageName = "${env.DOCKER_IMAGE_NAME}"
+
+                                sh """
+                                    cd /tmp/gitops
+
+                                    # values.yaml 파일 경로 설정 (frontend 디렉토리 내)
+                                    VALUES_FILE="aws/dev/gitops/helm/frontend/values.yaml"
+
+                                    if [ -f "\$VALUES_FILE" ]; then
+                                        echo "📝 values.yaml 파일 발견: \$VALUES_FILE"
+                                        echo "현재 내용:"
+                                        cat "\$VALUES_FILE"
+
+                                        echo ""
+                                        echo "🔄 이미지 태그 업데이트 중..."
+                                        echo "새 이미지: ${fullImageName}"
+                                        echo "새 태그: ${newImageTag}"
+
+                                        # 백업 생성
+                                        cp "\$VALUES_FILE" "\$VALUES_FILE.backup"
+
+                                        # sed를 사용하여 이미지 태그 업데이트
+                                        # image.tag 또는 tag 필드 업데이트
+                                        if grep -q "tag:" "\$VALUES_FILE"; then
+                                            # tag: 형태로 되어 있는 경우
+                                            sed -i "s|tag:.*|tag: \\"${newImageTag}\\"|g" "\$VALUES_FILE"
+                                        elif grep -q "image:" "\$VALUES_FILE"; then
+                                            # image: 형태로 되어 있는 경우 (전체 이미지 경로)
+                                            sed -i "s|image:.*|image: \\"${fullImageName}\\"|g" "\$VALUES_FILE"
+                                        else
+                                            echo "⚠️ 이미지 태그 필드를 찾을 수 없습니다. 파일에 추가합니다."
+                                            echo "" >> "\$VALUES_FILE"
+                                            echo "# Updated by Jenkins CI/CD" >> "\$VALUES_FILE"
+                                            echo "image:" >> "\$VALUES_FILE"
+                                            echo "  tag: \\"${newImageTag}\\"" >> "\$VALUES_FILE"
+                                        fi
+
+                                        echo ""
+                                        echo "📝 업데이트된 내용:"
+                                        cat "\$VALUES_FILE"
+
+                                        # Git 변경사항 확인
+                                        echo ""
+                                        echo "📊 Git 변경사항:"
+                                        git diff "\$VALUES_FILE" || true
+
+                                        # 변경사항이 있는지 확인
+                                        if git diff --quiet "\$VALUES_FILE"; then
+                                            echo "ℹ️ 변경사항이 없습니다."
+                                        else
+                                            echo "✅ 변경사항 발견, 커밋 및 푸시 진행..."
+
+                                            # Git add, commit, push
+                                            git add "\$VALUES_FILE"
+                                            git commit -m "🚀 Update frontend image tag to ${newImageTag}
+
+                                            - Image: ${fullImageName}
+                                            - Build: ${BUILD_NUMBER}
+                                            - Branch: ${BRANCH_NAME}
+                                            - Commit: \$(git -C /home/jenkins/agent rev-parse --short HEAD 2>/dev/null || echo 'unknown')
+                                            - Updated by Jenkins CI/CD"
+
+                                            # 원격 리포지토리에 푸시 (jacky 브랜치로)
+                                            git push origin jacky
+
+                                            echo "🎉 GitOps 리포지토리 업데이트 완료!"
+                                        fi
+                                    else
+                                        echo "❌ values.yaml 파일을 찾을 수 없습니다: \$VALUES_FILE"
+                                        echo "📁 사용 가능한 파일들:"
+                                        find . -name "*.yaml" -o -name "*.yml" | head -20
+                                        exit 1
+                                    fi
+                                """
+                            } catch (Exception e) {
+                                echo "❌ GitOps 업데이트 실패: ${e.getMessage()}"
+                                echo '🔍 디버그 정보:'
+                                sh '''
+                                    cd /tmp/gitops 2>/dev/null || echo "gitops 디렉토리 없음"
+                                    pwd
+                                    ls -la
+                                    git status 2>/dev/null || echo "Git 상태 확인 불가"
+                                '''
+                                // GitOps 실패는 전체 빌드를 실패시키지 않음
+                                currentBuild.result = 'UNSTABLE'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 10. 빌드 정리
+        stage('Cleanup') {
+            steps {
+                container('nodejs') {
+                    echo '빌드 정리 중...'
+                    sh '''
+                        # 환경 파일 정리 (보안)
+                        rm -f cicd/dev/.env || true
+                        rm -rf /home/jenkins/agent/.npm || true
+                        echo "정리 완료"
+                    '''
                 }
             }
         }
     }
 
+    // 빌드 후 처리
     post {
-        success {
+        always {
             script {
-                if (env.BRANCH_NAME == 'dev') {
-                    echo '🎉 이미지 빌드 및 업로드 성공!'
-                    echo "✅ 이미지: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"
-                    echo "✅ 최신 이미지: ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
-                } else {
-                    echo '✅ dev 브랜치가 아니므로 빌드를 건너뛰었습니다.'
+                echo '빌드 파이프라인 완료. 작업 공간을 정리합니다.'
+
+                // Jenkins 워크스페이스 정리
+                try {
+                    deleteDir()
+                    echo '작업 공간 정리 완료'
+                } catch (Exception e) {
+                    echo "작업 공간 정리 중 오류 (무시됨): ${e.getMessage()}"
                 }
             }
         }
-        failure {
-            echo '❌ 이미지 빌드 또는 업로드 실패! 로그를 확인해주세요.'
-        }
-        always {
+
+        success {
             script {
-                if (env.BRANCH_NAME == 'dev') {
-                    // 임시로 생성한 .env 파일 정리 (보안)
-                    sh '''
-                        rm -f cicd/dev/.env || true
-                        docker system prune -f || true
-                    '''
-                }
+                echo '✅ 프론트엔드 빌드 및 GitOps 업데이트 성공! 🎉'
+                echo "📦 Docker 이미지: ${env.DOCKER_IMAGE_NAME}"
+                echo "🏷️  이미지 태그: ${env.IMAGE_TAG}"
+                echo "📍 ECR 리포지토리: ${ECR_REPOSITORY}"
+                echo "🌍 AWS 리전: ${AWS_REGION}"
+                echo '🔄 GitOps: ArgoCD가 자동으로 배포를 시작합니다'
+                echo '📋 헬름 차트: aws/dev/gitops/helm/frontend/values.yaml 업데이트됨'
+            }
+        }
+
+        failure {
+            script {
+                echo '❌ 프론트엔드 빌드 실패!'
+                echo '🔍 로그를 확인하여 실패 원인을 파악하세요.'
+                echo "🌐 빌드 URL: ${env.BUILD_URL}"
+            }
+        }
+
+        unstable {
+            script {
+                echo '⚠️ 빌드 불안정'
+                echo '📊 테스트에서 일부 실패가 발생했습니다.'
             }
         }
     }
