@@ -258,6 +258,8 @@ pipeline {
         script {
           echo "EC2에 SSH 접속하여 프론트엔드 자동 배포 시작..."
 
+          def ECR_LATEST_IMAGE = "${env.ECR_IMAGE.split(':')[0]}:latest"
+
           withCredentials([
             sshUserPrivateKey(credentialsId: 'PUMATI_FULL_MASTER', keyFileVariable: 'KEY_FILE', usernameVariable: 'SSH_USER')
           ]) {
@@ -269,7 +271,6 @@ ssh -o StrictHostKeyChecking=no -i \$KEY_FILE \$SSH_USER@${env.FE_PRIVATE_IP} <<
   CONTAINER_ID=\$(docker ps -aqf "name=^/${env.SERVICE_NAME}\$")
 
   if [ -n "\$CONTAINER_ID" ]; then
-    echo "컨테이너 존재함. 중지 및 삭제: \$CONTAINER_ID"
     docker stop \$CONTAINER_ID || true
     docker rm \$CONTAINER_ID || true
   else
@@ -280,11 +281,11 @@ ssh -o StrictHostKeyChecking=no -i \$KEY_FILE \$SSH_USER@${env.FE_PRIVATE_IP} <<
   aws ecr get-login-password --region ${env.AWS_REGION} | \\
     docker login --username AWS --password-stdin ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com
 
-  echo "ECR 이미지 Pull: ${env.ECR_REPO}:latest"
-  docker pull ${env.ECR_REPO}:latest
+  echo "ECR 이미지 Pull: ${ECR_LATEST_IMAGE}"
+  docker pull ${ECR_LATEST_IMAGE}
 
   echo "새 컨테이너 실행"
-  docker run -d --name ${env.SERVICE_NAME} -p 3000:3000 ${env.ECR_REPO}:latest
+  docker run -d --name ${env.SERVICE_NAME} -p 3000:3000 ${ECR_LATEST_IMAGE}
 
   echo "사용하지 않는 이미지 정리"
   docker image prune -a -f
