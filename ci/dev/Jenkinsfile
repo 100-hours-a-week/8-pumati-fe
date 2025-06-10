@@ -48,35 +48,33 @@ spec:
     volumeMounts:
     - name: workspace-volume
       mountPath: /home/jenkins/agent
-    - name: docker-sock
-      mountPath: /var/run/docker.sock
-  - name: docker
-    image: docker:24.0.7-cli
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:v1.9.0-debug
     command: [cat]
     tty: true
     securityContext:
       runAsUser: 0
       runAsGroup: 0
-    # t3.medium 스펙에 최적화된 리소스 설정 - Docker 클라이언트용
+    # t3.medium 스펙에 최적화된 리소스 설정 - Kaniko 빌드용
     resources:
       requests:
-        memory: "256Mi"    # 256MB 요청 (Docker 클라이언트용)
-        cpu: "200m"        # 0.2 CPU 요청
+        memory: "1Gi"      # 1GB 요청 (이미지 빌드용)
+        cpu: "500m"        # 0.5 CPU 요청
       limits:
-        memory: "512Mi"    # 512MB 제한 (Docker 클라이언트에 충분)
-        cpu: "500m"        # 0.5 CPU 제한
+        memory: "3Gi"      # 3GB 제한 (이미지 빌드에 충분)
+        cpu: "1500m"       # 1.5 CPU 제한
     volumeMounts:
     - name: workspace-volume
-      mountPath: /home/jenkins/agent
-    - name: docker-sock
-      mountPath: /var/run/docker.sock
+      mountPath: /workspace
+    - name: kaniko-secret
+      mountPath: /kaniko/.docker
   - name: aws-cli
     image: cimg/aws:2023.05
     command: [cat]
     tty: true
     securityContext:
-      runAsUser: 0        # root 사용자로 변경 (Docker 소켓 접근을 위해)
-      runAsGroup: 0       # root 그룹으로 변경
+      runAsUser: 1000
+      runAsGroup: 1000
     # t3.medium 스펙에 최적화된 리소스 설정 - AWS CLI용 (가벼운 작업)
     resources:
       requests:
@@ -88,14 +86,11 @@ spec:
     volumeMounts:
     - name: workspace-volume
       mountPath: /home/jenkins/agent
-    - name: docker-sock
-      mountPath: /var/run/docker.sock
   volumes:
   - name: workspace-volume
     emptyDir: {}
-  - name: docker-sock
-    hostPath:
-      path: /var/run/docker.sock
+  - name: kaniko-secret
+    emptyDir: {}
             '''
         }
     }
@@ -242,7 +237,7 @@ spec:
                             fi
 
                             echo "✅ Docker 빌드 준비 완료"
-                            echo "🐳 실제 빌드와 의존성 설치는 Docker 컨테이너에서 수행됩니다"
+                            echo "🐳 Kaniko를 사용하여 이미지 빌드를 수행합니다"
                         '''
                     }
                 }
@@ -273,59 +268,60 @@ spec:
             }
         }
 
-        // 5. Docker 이미지 빌드 및 푸시
+        // 5. Kaniko를 사용한 Docker 이미지 빌드 및 푸시
         stage('Build and Push Docker Image') {
             steps {
                 script {
-                    // ECR 로그인을 위한 토큰 생성
-                    def ecrToken = ''
+                    // ECR 인증 정보 준비
                     container('aws-cli') {
-                        echo 'ECR 로그인 토큰 생성 중...'
+                        echo 'ECR 인증 정보 준비 중...'
                         withCredentials([
                             string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID'),
                             aws(credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
                         ]) {
-                            // ECR 로그인 토큰 생성
-                            ecrToken = sh(
-                                script: "aws ecr get-login-password --region ${AWS_REGION}",
-                                returnStdout: true
-                            ).trim()
+                            // ECR 로그인 토큰 생성 및 Docker config 생성
+                            sh '''
+                                # ECR 로그인 토큰 생성
+                                ECR_TOKEN=$(aws ecr get-login-password --region $AWS_REGION)
+                                ECR_REGISTRY="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
-                            // 환경 변수로 설정
-                            env.ECR_TOKEN = ecrToken
-                            env.ECR_REGISTRY = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+                                # Kaniko용 Docker config 생성
+                                mkdir -p /tmp/kaniko-config
+                                cat > /tmp/kaniko-config/config.json << EOF
+{
+    "auths": {
+        "$ECR_REGISTRY": {
+            "username": "AWS",
+            "password": "$ECR_TOKEN"
+        }
+    }
+}
+EOF
 
-                            echo '✅ ECR 로그인 토큰 생성 완료'
-                            echo "Registry: ${env.ECR_REGISTRY}"
+                                echo "✅ ECR 인증 정보 준비 완료"
+                                echo "Registry: $ECR_REGISTRY"
+                            '''
                         }
                     }
 
-                    // Docker 컨테이너에서 빌드 및 푸시 수행
-                    container('docker') {
-                        echo 'Docker 이미지 빌드 및 ECR 푸시 중...'
+                    // Kaniko 컨테이너에서 빌드 및 푸시 수행
+                    container('kaniko') {
+                        echo 'Kaniko를 사용한 Docker 이미지 빌드 및 ECR 푸시 중...'
 
                         withCredentials([
                             string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID')
                         ]) {
                             sh '''
-                                # Docker 데몬 연결 확인
-                                echo "🔧 Docker 환경 확인 중..."
-                                echo "Docker 소켓 상태:"
-                                ls -la /var/run/docker.sock
+                                # 작업 디렉토리 설정
+                                cd /workspace
 
-                                # Docker 데몬 상태 확인
-                                echo "🐳 Docker 데몬 연결 테스트..."
-                                if ! docker version; then
-                                    echo "❌ Docker 데몬에 연결할 수 없습니다."
-                                    echo "호스트의 Docker 데몬이 실행 중인지 확인해주세요."
-                                    exit 1
-                                fi
-
-                                echo "✅ Docker 연결 성공"
-
-                                # 빌드 전 파일 확인
-                                echo "=== 빌드 전 파일 확인 ==="
+                                echo "🔧 Kaniko 환경 확인 중..."
+                                echo "작업 디렉토리: $(pwd)"
                                 ls -la
+
+                                # Docker config 복사
+                                echo "🔐 ECR 인증 정보 설정 중..."
+                                cp /tmp/kaniko-config/config.json /kaniko/.docker/config.json
 
                                 # Dockerfile.dev 존재 확인
                                 if [ ! -f "cicd/dev/Dockerfile.dev" ]; then
@@ -337,42 +333,23 @@ spec:
 
                                 echo "✅ Dockerfile.dev 확인 완료"
 
-                                # ECR 로그인
-                                echo "🔐 ECR 로그인 중..."
-                                echo "$ECR_TOKEN" | docker login --username AWS --password-stdin "$ECR_REGISTRY"
-
-                                # Docker 이미지 빌드
-                                echo "🔨 Docker 이미지 빌드 시작..."
+                                # Kaniko를 사용한 이미지 빌드 및 푸시
+                                echo "🔨 Kaniko 이미지 빌드 시작..."
                                 echo "빌드 컨텍스트: $(pwd)"
                                 echo "Dockerfile: cicd/dev/Dockerfile.dev"
                                 echo "이미지 태그: $DOCKER_IMAGE_NAME"
 
-                                # 빌드 실행 (상세한 로그 출력)
-                                docker build -f cicd/dev/Dockerfile.dev \\
-                                    -t "$DOCKER_IMAGE_NAME" \\
-                                    -t "$LATEST_IMAGE_NAME" \\
-                                    --progress=plain \\
-                                    .
+                                # Kaniko executor 실행
+                                /kaniko/executor \\
+                                    --dockerfile=cicd/dev/Dockerfile.dev \\
+                                    --context=dir:///workspace \\
+                                    --destination="$DOCKER_IMAGE_NAME" \\
+                                    --destination="$LATEST_IMAGE_NAME" \\
+                                    --cache=true \\
+                                    --cache-ttl=24h \\
+                                    --verbosity=info
 
-                                echo "✅ Docker 이미지 빌드 완료"
-
-                                # 빌드된 이미지 확인
-                                echo "📋 빌드된 이미지 목록:"
-                                docker images | grep "$ECR_REPOSITORY" || echo "이미지를 찾을 수 없습니다."
-
-                                # 이미지 푸시
-                                echo "📤 ECR에 이미지 푸시 중..."
-                                docker push "$DOCKER_IMAGE_NAME"
-                                docker push "$LATEST_IMAGE_NAME"
-
-                                echo "✅ 이미지 푸시 완료"
-
-                                # 로컬 이미지 정리
-                                echo "🧹 로컬 이미지 정리 중..."
-                                docker rmi "$DOCKER_IMAGE_NAME" || true
-                                docker rmi "$LATEST_IMAGE_NAME" || true
-
-                                echo "✅ 정리 완료"
+                                echo "✅ Kaniko 이미지 빌드 및 푸시 완료"
                             '''
                         }
 
