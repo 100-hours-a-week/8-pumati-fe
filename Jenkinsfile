@@ -163,20 +163,13 @@ pipeline {
           sh """
             set -eux
 
-            # .env 파일에서 필요한 값 추출
+            # .env 파일에서 필요한 환경변수 추출
             export \$(cat .env | grep NEXT_PUBLIC_BASE_URL)
             export \$(cat .env | grep NEXT_PUBLIC_API_BASE_URL)
             export \$(cat .env | grep NEXT_PUBLIC_S3_HOSTNAME)
             export \$(cat .env | grep NEXT_PUBLIC_KATEBOO_CODE)
 
-            # 환경변수 값 확인
-            echo "환경변수 확인:"
-            echo "NEXT_PUBLIC_S3_HOSTNAME: \$NEXT_PUBLIC_S3_HOSTNAME"
-            echo "NEXT_PUBLIC_BASE_URL: \$NEXT_PUBLIC_BASE_URL"
-            echo "NEXT_PUBLIC_API_BASE_URL: \$NEXT_PUBLIC_API_BASE_URL"
-            echo "NEXT_PUBLIC_KATEBOO_CODE: \$NEXT_PUBLIC_KATEBOO_CODE"
-
-            # Docker 빌드
+            # Docker 이미지 빌드 (환경변수를 빌드 인자와 런타임에 모두 반영되도록 구성된 Dockerfile 기준)
             docker build \\
               --build-arg NEXT_PUBLIC_BASE_URL=\$NEXT_PUBLIC_BASE_URL \\
               --build-arg NEXT_PUBLIC_API_BASE_URL=\$NEXT_PUBLIC_API_BASE_URL \\
@@ -184,11 +177,11 @@ pipeline {
               --build-arg NEXT_PUBLIC_KATEBOO_CODE=\$NEXT_PUBLIC_KATEBOO_CODE \\
               -t ${env.ECR_IMAGE} .
 
-            # latest 태그 지정: ECR_IMAGE에서 레포지토리만 추출해 붙이기
+            # latest 태그 추가: 버전 태그와 함께 push
             LATEST_TAG="\$(echo ${env.ECR_IMAGE} | cut -d: -f1):latest"
             docker tag ${env.ECR_IMAGE} \$LATEST_TAG
 
-            # 이미지 push
+            # ECR에 push
             docker push ${env.ECR_IMAGE}
             docker push \$LATEST_TAG
           """
@@ -196,6 +189,7 @@ pipeline {
         }
       }
     }
+
 
 
     stage('Save Docker Image & Upload to S3') {
@@ -267,16 +261,12 @@ ssh -o StrictHostKeyChecking=no -i \$KEY_FILE \$SSH_USER@${env.FE_PRIVATE_IP} <<
   echo "새 컨테이너 실행"
   docker run -d --name ${env.SERVICE_NAME} -p 3000:3000 ${ECR_LATEST_IMAGE}
 
-  echo "컨테이너 환경변수 확인"
-  sleep 5  # 컨테이너가 완전히 시작될 때까지 잠시 대기
-  docker exec ${env.SERVICE_NAME} env | grep NEXT_PUBLIC
-
   echo "사용하지 않는 이미지 정리"
   docker image prune -a -f
 
   echo "배포 완료"
 EOF
-            """
+        """
           }
         }
       }
