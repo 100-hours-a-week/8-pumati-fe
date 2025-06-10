@@ -88,6 +88,8 @@ spec:
     volumeMounts:
     - name: workspace-volume
       mountPath: /home/jenkins/agent
+    - name: docker-sock
+      mountPath: /var/run/docker.sock
   volumes:
   - name: workspace-volume
     emptyDir: {}
@@ -274,7 +276,7 @@ spec:
         // 5. Docker 이미지 빌드 및 푸시
         stage('Build and Push Docker Image') {
             steps {
-                container('docker') {
+                container('aws-cli') {
                     echo 'Docker 이미지 빌드 및 ECR 푸시 중...'
 
                     withCredentials([
@@ -282,23 +284,15 @@ spec:
                         aws(credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
                     ]) {
                         script {
-                            sh """
+                            sh '''
                                 # AWS 환경변수 설정
-                                export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-                                export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-                                export AWS_DEFAULT_REGION=${AWS_REGION}
-
-                                # Docker 소켓 연결 확인
-                                export DOCKER_HOST=unix:///var/run/docker.sock
+                                export AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID"
+                                export AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY"
+                                export AWS_DEFAULT_REGION="$AWS_REGION"
 
                                 echo "✅ AWS 환경변수 설정 완료"
-                                echo "Region: ${AWS_REGION}"
-                                echo "Registry: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-                                echo "Docker Host: \$DOCKER_HOST"
-
-                                # Docker 연결 테스트
-                                echo "🔍 Docker 연결 테스트..."
-                                docker version || echo "Docker 연결 실패"
+                                echo "Region: $AWS_REGION"
+                                echo "Registry: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
                                 # 빌드 전 파일 확인
                                 echo "=== 빌드 전 파일 확인 ==="
@@ -307,26 +301,26 @@ spec:
 
                                 # ECR 로그인
                                 echo "🔐 ECR 로그인 중..."
-                                aws ecr get-login-password --region ${AWS_REGION} | \\
-                                docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                                aws ecr get-login-password --region "$AWS_REGION" | \\
+                                docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
                                 # Docker 이미지 빌드
                                 echo "🔨 Docker 이미지 빌드 중..."
                                 docker build -f cicd/dev/Dockerfile.dev \\
-                                    -t ${env.DOCKER_IMAGE_NAME} \\
-                                    -t ${env.LATEST_IMAGE_NAME} \\
+                                    -t "$DOCKER_IMAGE_NAME" \\
+                                    -t "$LATEST_IMAGE_NAME" \\
                                     .
 
                                 # 이미지 푸시
                                 echo "📤 ECR에 이미지 푸시 중..."
-                                docker push ${env.DOCKER_IMAGE_NAME}
-                                docker push ${env.LATEST_IMAGE_NAME}
+                                docker push "$DOCKER_IMAGE_NAME"
+                                docker push "$LATEST_IMAGE_NAME"
 
                                 # 로컬 이미지 정리
                                 echo "🧹 로컬 이미지 정리 중..."
-                                docker rmi ${env.DOCKER_IMAGE_NAME} || true
-                                docker rmi ${env.LATEST_IMAGE_NAME} || true
-                            """
+                                docker rmi "$DOCKER_IMAGE_NAME" || true
+                                docker rmi "$LATEST_IMAGE_NAME" || true
+                            '''
 
                             echo '✅ 이미지 빌드 및 푸시 완료!'
                             echo "📦 이미지: ${env.DOCKER_IMAGE_NAME}"
@@ -461,7 +455,7 @@ spec:
                                     ls -la
                                     git status 2>/dev/null || echo "Git 상태 확인 불가"
                                 '''
-                                // GitOps 실패는 전체 빌드를 실패시키지 않음
+                                # GitOps 실패는 전체 빌드를 실패시키지 않음
                                 currentBuild.result = 'UNSTABLE'
                             }
                         }
@@ -493,7 +487,7 @@ spec:
                 script {
                     echo '빌드 파이프라인 완료. 작업 공간을 정리합니다.'
 
-                    // Kubernetes Pod 환경에서는 수동으로 정리
+                    # Kubernetes Pod 환경에서는 수동으로 정리
                     try {
                         sh '''
                             echo "작업 공간 정리 시작..."
