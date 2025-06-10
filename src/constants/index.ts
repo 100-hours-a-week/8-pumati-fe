@@ -1,3 +1,4 @@
+export * from './chatbot-question';
 export * from './image';
 export * from './metadata';
 export * from './path';

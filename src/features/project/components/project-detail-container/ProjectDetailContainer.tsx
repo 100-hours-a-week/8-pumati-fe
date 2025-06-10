@@ -1,3 +1,4 @@
+import { ChatbotButton } from '@/features/chatbot/components';
 import Image from 'next/image';
 import { Comments } from '../../../comment/components/comments/Comments';
 import { ProjectDetail } from '../../schemas';
@@ -74,6 +75,7 @@ export function ProjectDetailContainer({
       <div className="max-w-[25rem] w-full mx-auto">
         <Comments projectId={id} />
       </div>
+      <ChatbotButton title={title} term={term} teamNumber={teamNumber} />
     </div>
   );
 }
