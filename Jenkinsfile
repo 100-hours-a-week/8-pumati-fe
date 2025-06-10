@@ -169,6 +169,13 @@ pipeline {
             export \$(cat .env | grep NEXT_PUBLIC_S3_HOSTNAME)
             export \$(cat .env | grep NEXT_PUBLIC_KATEBOO_CODE)
 
+            # 환경변수 값 확인
+            echo "환경변수 확인:"
+            echo "NEXT_PUBLIC_S3_HOSTNAME: \$NEXT_PUBLIC_S3_HOSTNAME"
+            echo "NEXT_PUBLIC_BASE_URL: \$NEXT_PUBLIC_BASE_URL"
+            echo "NEXT_PUBLIC_API_BASE_URL: \$NEXT_PUBLIC_API_BASE_URL"
+            echo "NEXT_PUBLIC_KATEBOO_CODE: \$NEXT_PUBLIC_KATEBOO_CODE"
+
             # Docker 빌드
             docker build \\
               --build-arg NEXT_PUBLIC_BASE_URL=\$NEXT_PUBLIC_BASE_URL \\
@@ -260,12 +267,16 @@ ssh -o StrictHostKeyChecking=no -i \$KEY_FILE \$SSH_USER@${env.FE_PRIVATE_IP} <<
   echo "새 컨테이너 실행"
   docker run -d --name ${env.SERVICE_NAME} -p 3000:3000 ${ECR_LATEST_IMAGE}
 
+  echo "컨테이너 환경변수 확인"
+  sleep 5  # 컨테이너가 완전히 시작될 때까지 잠시 대기
+  docker exec ${env.SERVICE_NAME} env | grep NEXT_PUBLIC
+
   echo "사용하지 않는 이미지 정리"
   docker image prune -a -f
 
   echo "배포 완료"
 EOF
-        """
+            """
           }
         }
       }
