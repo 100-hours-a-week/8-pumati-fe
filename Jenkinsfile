@@ -161,21 +161,13 @@ pipeline {
         """
         script {
           sh """
-            set -eux
+            set -e
 
-            # .env 파일에서 필요한 환경변수 추출
-            export \$(cat .env | grep NEXT_PUBLIC_BASE_URL)
-            export \$(cat .env | grep NEXT_PUBLIC_API_BASE_URL)
-            export \$(cat .env | grep NEXT_PUBLIC_S3_HOSTNAME)
-            export \$(cat .env | grep NEXT_PUBLIC_KATEBOO_CODE)
+            # .env 파일로부터 --build-arg 리스트 생성
+            BUILD_ARGS=\$(cat .env | grep -v '^#' | grep -v '^\\s*\$' | sed 's/^/--build-arg /' | xargs)
 
-            # Docker 이미지 빌드 (환경변수를 빌드 인자와 런타임에 모두 반영되도록 구성된 Dockerfile 기준)
-            docker build \\
-              --build-arg NEXT_PUBLIC_BASE_URL=\$NEXT_PUBLIC_BASE_URL \\
-              --build-arg NEXT_PUBLIC_API_BASE_URL=\$NEXT_PUBLIC_API_BASE_URL \\
-              --build-arg NEXT_PUBLIC_S3_HOSTNAME=\$NEXT_PUBLIC_S3_HOSTNAME \\
-              --build-arg NEXT_PUBLIC_KATEBOO_CODE=\$NEXT_PUBLIC_KATEBOO_CODE \\
-              -t ${env.ECR_IMAGE} .
+            # Docker 빌드 및 ECR 푸시
+            docker build \$BUILD_ARGS -t ${env.ECR_IMAGE} .
 
             # latest 태그 추가: 버전 태그와 함께 push
             LATEST_TAG="\$(echo ${env.ECR_IMAGE} | cut -d: -f1):latest"
@@ -184,7 +176,11 @@ pipeline {
             # ECR에 push
             docker push ${env.ECR_IMAGE}
             docker push \$LATEST_TAG
+
+            # 보안상 .env 제거
+            rm -f .env
           """
+
           echo "Docker 이미지 빌드 및 ECR push 완료 (${env.IMAGE_TAG} + latest)"
         }
       }
