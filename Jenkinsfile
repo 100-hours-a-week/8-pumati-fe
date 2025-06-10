@@ -205,7 +205,7 @@ pipeline {
               -t ${env.ECR_IMAGE} .
 
             # latest 태그 지정: ECR_IMAGE에서 레포지토리만 추출해 붙이기
-            LATEST_TAG="${env.ECR_IMAGE%%:*}:latest"
+            LATEST_TAG="\$(echo ${env.ECR_IMAGE} | cut -d: -f1):latest"
             docker tag ${env.ECR_IMAGE} \$LATEST_TAG
 
             # 이미지 push
