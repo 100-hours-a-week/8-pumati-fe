@@ -94,8 +94,7 @@ pipeline {
 
           if (env.BRANCH == 'main') {
             env.ENV_LABEL = 'prod'
-            // env.FE_PRIVATE_IP = '10.3.0.228'
-            env.FE_PRIVATE_IP = '10.1.0.253'
+            env.FE_PRIVATE_IP = '10.3.0.228'
 
           // } else {
           //   env.ENV_LABEL = 'dev'
