@@ -48,6 +48,8 @@ spec:
     volumeMounts:
     - name: workspace-volume
       mountPath: /home/jenkins/agent
+    - name: shared-data
+      mountPath: /shared
   - name: kaniko
     image: gcr.io/kaniko-project/executor:v1.9.0-debug
     command: [cat]
@@ -66,8 +68,8 @@ spec:
     volumeMounts:
     - name: workspace-volume
       mountPath: /workspace
-    - name: kaniko-secret
-      mountPath: /kaniko/.docker
+    - name: shared-data
+      mountPath: /shared
   - name: aws-cli
     image: cimg/aws:2023.05
     command: [cat]
@@ -86,10 +88,12 @@ spec:
     volumeMounts:
     - name: workspace-volume
       mountPath: /home/jenkins/agent
+    - name: shared-data
+      mountPath: /shared
   volumes:
   - name: workspace-volume
     emptyDir: {}
-  - name: kaniko-secret
+  - name: shared-data
     emptyDir: {}
             '''
         }
@@ -152,7 +156,7 @@ spec:
                 container('nodejs') {
                     echo '환경 설정 파일 및 AWS 정보 준비 중...'
 
-                    script {
+                script {
                         // AWS 계정 ID로 Docker 이미지 이름 설정
                         withCredentials([string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID')]) {
                             env.DOCKER_IMAGE_NAME = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${IMAGE_TAG}"
@@ -160,7 +164,7 @@ spec:
                             echo "Docker 이미지: ${env.DOCKER_IMAGE_NAME}"
                             echo "Latest 이미지: ${env.LATEST_IMAGE_NAME}"
                         }
-                    }
+                }
 
                     // Jenkins Credentials에서 .env 파일 가져와서 cicd/dev/ 디렉토리에 복사
                     withCredentials([file(credentialsId: 'fe-env', variable: 'ENV_FILE')]) {
@@ -279,15 +283,21 @@ spec:
                             string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID'),
                             aws(credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
                         ]) {
-                            // ECR 로그인 토큰 생성 및 Docker config 생성
+                            // ECR 로그인 토큰 생성 및 공유 볼륨에 Docker config 생성
                             sh '''
                                 # ECR 로그인 토큰 생성
+                                echo "🔐 ECR 로그인 토큰 생성 중..."
                                 ECR_TOKEN=$(aws ecr get-login-password --region $AWS_REGION)
                                 ECR_REGISTRY="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
-                                # Kaniko용 Docker config 생성
-                                mkdir -p /tmp/kaniko-config
-                                cat > /tmp/kaniko-config/config.json << EOF
+                                echo "Registry: $ECR_REGISTRY"
+                                echo "토큰 길이: ${#ECR_TOKEN} 문자"
+
+                                # 공유 볼륨에 Kaniko용 Docker config 생성
+                                echo "📁 Kaniko 인증 설정 파일 생성 중..."
+                                mkdir -p /shared/kaniko-config
+
+                                cat > /shared/kaniko-config/config.json << EOF
 {
     "auths": {
         "$ECR_REGISTRY": {
@@ -298,8 +308,14 @@ spec:
 }
 EOF
 
-                                echo "✅ ECR 인증 정보 준비 완료"
-                                echo "Registry: $ECR_REGISTRY"
+                                # 생성된 파일 확인
+                                echo "✅ 인증 파일 생성 완료"
+                                ls -la /shared/kaniko-config/
+                                echo "config.json 파일 크기: $(wc -c < /shared/kaniko-config/config.json) bytes"
+
+                                # 파일 내용 확인 (보안상 일부만)
+                                echo "config.json 구조 확인:"
+                                head -3 /shared/kaniko-config/config.json
                             '''
                         }
                     }
@@ -312,22 +328,45 @@ EOF
                             string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID')
                         ]) {
                             sh '''
-                                # 작업 디렉토리 설정
-                                cd /workspace
-
                                 echo "🔧 Kaniko 환경 확인 중..."
                                 echo "작업 디렉토리: $(pwd)"
+                                echo "Kaniko 버전:"
+                                /kaniko/executor version || echo "버전 정보 없음"
+
+                                # 공유 디렉토리 확인
+                                echo "📁 공유 디렉토리 상태:"
+                                ls -la /shared/
+                                ls -la /shared/kaniko-config/ || echo "kaniko-config 디렉토리 없음"
+
+                                # 실제 소스 코드가 있는 workspace 디렉토리로 이동
+                                echo "📂 소스 코드 디렉토리 확인:"
+                                ls -la /workspace/
+                                cd /workspace/workspace/
+                                echo "최종 작업 디렉토리: $(pwd)"
                                 ls -la
 
-                                # Docker config 복사
+                                # Docker config 복사 및 설정
                                 echo "🔐 ECR 인증 정보 설정 중..."
-                                cp /tmp/kaniko-config/config.json /kaniko/.docker/config.json
+                                mkdir -p /kaniko/.docker
+
+                                if [ -f "/shared/kaniko-config/config.json" ]; then
+                                    cp /shared/kaniko-config/config.json /kaniko/.docker/config.json
+                                    echo "✅ 인증 파일 복사 완료"
+                                    ls -la /kaniko/.docker/
+                                else
+                                    echo "❌ 인증 파일을 찾을 수 없습니다."
+                                    echo "공유 디렉토리 내용:"
+                                    find /shared -type f -name "*.json" 2>/dev/null || echo "JSON 파일 없음"
+                                    exit 1
+                                fi
 
                                 # Dockerfile.dev 존재 확인
                                 if [ ! -f "cicd/dev/Dockerfile.dev" ]; then
                                     echo "❌ Dockerfile.dev를 찾을 수 없습니다."
-                                    echo "📁 cicd/dev/ 디렉토리 내용:"
-                                    ls -la cicd/dev/ || echo "디렉토리가 존재하지 않습니다."
+                                    echo "📁 현재 디렉토리 구조:"
+                                    find . -name "Dockerfile*" -type f 2>/dev/null || echo "Dockerfile 없음"
+                                    echo "📁 cicd 디렉토리 확인:"
+                                    ls -la cicd/ 2>/dev/null || echo "cicd 디렉토리 없음"
                                     exit 1
                                 fi
 
@@ -338,16 +377,18 @@ EOF
                                 echo "빌드 컨텍스트: $(pwd)"
                                 echo "Dockerfile: cicd/dev/Dockerfile.dev"
                                 echo "이미지 태그: $DOCKER_IMAGE_NAME"
+                                echo "Latest 태그: $LATEST_IMAGE_NAME"
 
                                 # Kaniko executor 실행
                                 /kaniko/executor \\
                                     --dockerfile=cicd/dev/Dockerfile.dev \\
-                                    --context=dir:///workspace \\
+                                    --context=dir://$(pwd) \\
                                     --destination="$DOCKER_IMAGE_NAME" \\
                                     --destination="$LATEST_IMAGE_NAME" \\
                                     --cache=true \\
                                     --cache-ttl=24h \\
-                                    --verbosity=info
+                                    --verbosity=info \\
+                                    --log-format=text
 
                                 echo "✅ Kaniko 이미지 빌드 및 푸시 완료"
                             '''
@@ -371,7 +412,7 @@ EOF
                         string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID'),
                         string(credentialsId: 'github-pat', variable: 'GITHUB_TOKEN')
                     ]) {
-                        script {
+                script {
                             try {
                                 sh '''
                                     # 작업 디렉토리 생성
@@ -404,7 +445,7 @@ EOF
                                 def newImageTag = "${env.IMAGE_TAG}"
                                 def fullImageName = "${env.DOCKER_IMAGE_NAME}"
 
-                                sh """
+                    sh """
                                     cd /tmp/gitops
 
                                     # values.yaml 파일 경로 설정 (frontend 디렉토리 내)
@@ -485,10 +526,10 @@ EOF
                                     ls -la
                                     git status 2>/dev/null || echo "Git 상태 확인 불가"
                                 '''
-                                // GitOps 실패는 전체 빌드를 실패시키지 않음
+                                # GitOps 실패는 전체 빌드를 실패시키지 않음
                                 currentBuild.result = 'UNSTABLE'
                             }
-                        }
+                }
                     }
                 }
             }
@@ -517,7 +558,7 @@ EOF
                 script {
                     echo '빌드 파이프라인 완료. 작업 공간을 정리합니다.'
 
-                    // Kubernetes Pod 환경에서는 수동으로 정리
+                    # Kubernetes Pod 환경에서는 수동으로 정리
                     try {
                         sh '''
                             echo "작업 공간 정리 시작..."
