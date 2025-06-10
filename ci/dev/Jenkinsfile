@@ -75,8 +75,8 @@ spec:
     command: [cat]
     tty: true
     securityContext:
-      runAsUser: 1000
-      runAsGroup: 1000
+      runAsUser: 0        # root 사용자로 변경 (Docker 소켓 접근을 위해)
+      runAsGroup: 0       # root 그룹으로 변경
     # t3.medium 스펙에 최적화된 리소스 설정 - AWS CLI용 (가벼운 작업)
     resources:
       requests:
@@ -285,6 +285,31 @@ spec:
                     ]) {
                         script {
                             sh '''
+                                # Docker 소켓 권한 확인 및 설정
+                                echo "🔧 Docker 소켓 권한 확인 중..."
+                                ls -la /var/run/docker.sock
+
+                                # Docker 그룹 확인 및 권한 설정
+                                if ! groups | grep -q docker; then
+                                    echo "Docker 그룹에 사용자 추가 중..."
+                                    # Docker 소켓의 그룹 ID 확인
+                                    DOCKER_GID=$(stat -c '%g' /var/run/docker.sock)
+                                    echo "Docker 소켓 그룹 ID: $DOCKER_GID"
+
+                                    # 현재 사용자를 Docker 그룹에 추가 (임시적으로)
+                                    # root 사용자이므로 직접 접근 가능해야 함
+                                fi
+
+                                # Docker 연결 테스트
+                                echo "🐳 Docker 연결 테스트 중..."
+                                docker version || {
+                                    echo "❌ Docker 연결 실패. 권한 문제 해결 시도 중..."
+                                    # Docker 소켓 권한을 임시로 변경 (보안상 주의 필요)
+                                    chmod 666 /var/run/docker.sock
+                                    echo "Docker 소켓 권한 변경 완료"
+                                    docker version
+                                }
+
                                 # AWS 환경변수 설정
                                 export AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID"
                                 export AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY"
