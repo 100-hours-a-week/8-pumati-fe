@@ -198,164 +198,56 @@ spec:
             }
         }
 
-        // 3. Node.js 환경 준비
-        stage('Prepare Build Environment') {
+        // 3. Docker 빌드 준비 (파일 확인)
+        stage('Prepare for Docker Build') {
             steps {
                 container('nodejs') {
-                    echo 'Node.js 환경 준비 중...'
+                    echo 'Docker 빌드를 위한 파일 준비 및 확인 중...'
                     script {
-                        // NPM 캐시 디렉토리 생성
-                        sh 'mkdir -p /home/jenkins/agent/.npm'
-                        sh 'id && pwd && ls -la /home/jenkins/agent/'
+                        sh '''
+                            echo "=== Docker 빌드 준비 ==="
+                            echo "현재 디렉토리: $(pwd)"
 
-                        try {
-                            sh 'node --version'
-                            sh 'npm --version'
-                        } catch (Exception e) {
-                            echo "Node.js 버전 확인 실패: ${e.getMessage()}"
-                        }
+                            # 필요한 파일들 확인
+                            echo "📋 필수 파일 확인:"
+                            echo "- package.json:"
+                            ls -la package.json && echo "  ✅ 존재" || echo "  ❌ 없음"
 
-                        // package.json 확인
-                        try {
-                            sh 'ls -la package.json'
-                            echo 'package.json 파일 확인 완료'
-                        } catch (Exception e) {
-                            echo "package.json 파일 확인 실패: ${e.getMessage()}"
-                        }
+                            echo "- Dockerfile.dev:"
+                            ls -la cicd/dev/Dockerfile.dev && echo "  ✅ 존재" || echo "  ❌ 없음"
+
+                            echo "- .env 파일:"
+                            ls -la cicd/dev/.env && echo "  ✅ 존재" || echo "  ❌ 없음"
+
+                            echo "- tsconfig.json:"
+                            ls -la tsconfig.json && echo "  ✅ 존재" || echo "  ❌ 없음"
+
+                            echo "- src 디렉토리:"
+                            ls -la src/ && echo "  ✅ 존재" || echo "  ❌ 없음"
+
+                            echo "- next.config 파일:"
+                            ls -la next.config.* && echo "  ✅ 존재" || echo "  ❌ 없음"
+
+                            # .env 파일을 루트 디렉토리에 복사 (Dockerfile.dev에서 사용하기 위해)
+                            if [ -f "cicd/dev/.env" ]; then
+                                echo "📁 .env 파일을 루트 디렉토리에 복사 중..."
+                                cp cicd/dev/.env .env
+                                echo "✅ .env 파일 복사 완료"
+                                echo "파일 내용 확인 (첫 3줄):"
+                                head -3 .env || echo "파일이 비어있거나 읽을 수 없습니다"
+                            else
+                                echo "⚠️ .env 파일이 없습니다. 빌드는 계속 진행됩니다."
+                            fi
+
+                            echo "✅ Docker 빌드 준비 완료"
+                            echo "🐳 실제 빌드와 의존성 설치는 Docker 컨테이너에서 수행됩니다"
+                        '''
                     }
                 }
             }
         }
 
-        // 4. 의존성 설치
-        stage('Install Dependencies') {
-            steps {
-                container('nodejs') {
-                    echo 'NPM 의존성 설치 중...'
-                    script {
-                        try {
-                            sh '''
-                                # NPM 캐시 설정
-                                export NPM_CONFIG_CACHE=/home/jenkins/agent/.npm
-
-                                echo "의존성 설치 시작..."
-                                echo "NPM_CONFIG_CACHE: $NPM_CONFIG_CACHE"
-
-                                # package-lock.json 파일 확인
-                                if [ -f "package-lock.json" ]; then
-                                    echo "✅ package-lock.json 파일 발견, npm ci 사용"
-                                    npm ci --cache $NPM_CONFIG_CACHE
-                                else
-                                    echo "⚠️ package-lock.json 파일이 없음, npm install 사용"
-                                    npm install --cache $NPM_CONFIG_CACHE
-                                fi
-
-                                echo "✅ 의존성 설치 완료"
-                            '''
-                        } catch (Exception e) {
-                            echo "의존성 설치 실패: ${e.getMessage()}"
-                            error('의존성 설치 실패')
-                        }
-                    }
-                }
-            }
-        }
-
-        // 5. 테스트 실행 (선택적)
-        stage('Test') {
-            when {
-                // dev 브랜치나 PR에서만 테스트 실행
-                anyOf {
-                    branch 'dev'
-                    changeRequest()
-                }
-            }
-            steps {
-                container('nodejs') {
-                    echo '단위 테스트 실행 중...'
-                    script {
-                        try {
-                            sh '''
-                                # 환경 변수 설정
-                                export NPM_CONFIG_CACHE=/home/jenkins/agent/.npm
-                                export CI=true
-
-                                if [ -f "cicd/dev/.env" ]; then
-                                    echo "환경 파일 발견, 로드 중..."
-                                    set -a && . ./cicd/dev/.env && set +a
-                                else
-                                    echo "환경 파일이 없습니다."
-                                fi
-
-                                echo "테스트 실행 시작..."
-                                # 테스트가 있다면 실행 (없으면 건너뛰기)
-                                if npm run test --if-present; then
-                                    echo "✅ 테스트 완료"
-                                else
-                                    echo "ℹ️ 테스트 스크립트가 없거나 실행되지 않았습니다."
-                                fi
-                            '''
-                        } catch (Exception e) {
-                            echo "테스트 실행 중 오류: ${e.getMessage()}"
-                            currentBuild.result = 'UNSTABLE'
-                        }
-                    }
-                }
-            }
-        }
-
-        // 6. 프론트엔드 애플리케이션 빌드
-        stage('Build Application') {
-            steps {
-                container('nodejs') {
-                    echo 'React/Next.js 애플리케이션 빌드 중...'
-                    script {
-                        try {
-                            sh '''
-                                # 환경 변수 설정
-                                export NPM_CONFIG_CACHE=/home/jenkins/agent/.npm
-                                export NODE_ENV=production
-                                export CI=true
-
-                                # .env 파일 로드
-                                if [ -f "cicd/dev/.env" ]; then
-                                    echo "환경 파일 로드 중..."
-                                    set -a && . ./cicd/dev/.env && set +a
-                                else
-                                    echo "⚠️ 환경 파일이 없습니다."
-                                fi
-
-                                echo "프론트엔드 빌드 시작..."
-                                npm run build
-
-                                echo "빌드 결과 확인..."
-                                ls -la
-
-                                # 빌드 결과물 확인 (일반적으로 build/ 또는 dist/ 디렉토리)
-                                if [ -d "build" ]; then
-                                    echo "✅ build 디렉토리 확인:"
-                                    ls -la build/
-                                elif [ -d "dist" ]; then
-                                    echo "✅ dist 디렉토리 확인:"
-                                    ls -la dist/
-                                elif [ -d ".next" ]; then
-                                    echo "✅ .next 디렉토리 확인 (Next.js):"
-                                    ls -la .next/
-                                else
-                                    echo "⚠️ 빌드 결과물 디렉토리를 찾을 수 없습니다."
-                                fi
-                            '''
-                            echo '✅ 애플리케이션 빌드 완료'
-                        } catch (Exception e) {
-                            echo "애플리케이션 빌드 실패: ${e.getMessage()}"
-                            error('빌드 실패')
-                        }
-                    }
-                }
-            }
-        }
-
-        // 7. ECR 로그인 및 설정
+        // 4. ECR 로그인 및 설정
         stage('Setup ECR') {
             steps {
                 container('aws-cli') {
@@ -379,7 +271,7 @@ spec:
             }
         }
 
-        // 8. Docker 이미지 빌드 및 푸시
+        // 5. Docker 이미지 빌드 및 푸시
         stage('Build and Push Docker Image') {
             steps {
                 container('docker') {
@@ -445,7 +337,7 @@ spec:
             }
         }
 
-        // 9. GitOps - 헬름 차트 업데이트 및 푸시
+        // 6. GitOps - 헬름 차트 업데이트 및 푸시
         stage('Update GitOps Repository') {
             steps {
                 container('nodejs') {
@@ -578,7 +470,7 @@ spec:
             }
         }
 
-        // 10. 빌드 정리
+        // 7. 빌드 정리
         stage('Cleanup') {
             steps {
                 container('nodejs') {
