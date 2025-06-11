@@ -10,14 +10,14 @@ WORKDIR /app
 # 패키지 매니저 설치
 RUN npm install -g pnpm
 
-# ✅ Next.js 최신 버전 강제 보장 (allowedUrlKeys 대응용)
-RUN pnpm add next@latest
-
-# 의존성 설치
+# 필수: Next.js 및 TypeScript 환경 구성
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
-# 소스 코드 복사 (next.config.js 포함)
+# next.config.ts를 처리하기 위한 의존성 명시적 설치
+RUN pnpm add next@latest typescript ts-node @types/node --save-dev
+
+# 소스 복사 (next.config.ts 포함)
 COPY . .
 
 # 환경변수 설정 (빌드 시점)
@@ -51,7 +51,10 @@ RUN pnpm install --prod
 # 빌드 산출물 복사
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.js ./next.config.js  # ← 반드시 포함!
+
+# 실행 시 next.config.ts는 필요하지 않음 (런타임에서 사용되지 않음)
+# 굳이 복사하려면 아래처럼 유지
+COPY --from=builder /app/next.config.ts ./next.config.ts
 
 # 환경변수 설정 (런타임)
 ARG NEXT_PUBLIC_BASE_URL
