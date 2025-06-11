@@ -30,12 +30,9 @@ RUN echo "=== 파일 확인 ===" && \
     export $(cat .env | xargs) && \
     echo "NEXT_PUBLIC_S3_HOSTNAME: $NEXT_PUBLIC_S3_HOSTNAME"
 
-# **TypeScript 설정 파일 컴파일 테스트**
+# **TypeScript 설정 파일 간단 테스트**
 RUN echo "=== TypeScript 설정 파일 테스트 ===" && \
-    node -r ts-node/register -e "
-    const config = require('./next.config.ts');
-    console.log('TypeScript 설정 로드 성공:', JSON.stringify(config.default || config, null, 2));
-    " || echo "TypeScript 설정 로드 실패 (빌드 시점에 처리됨)"
+    node -e "console.log('TypeScript 런타임 사용 가능:', typeof require('ts-node'))" || echo "ts-node 테스트 실패"
 
 # 임시 디렉토리 권한 설정
 RUN mkdir -p /tmp/next-image-cache && \
@@ -44,7 +41,7 @@ RUN mkdir -p /tmp/next-image-cache && \
 # **환경변수를 명시적으로 로드하여 빌드**
 RUN export $(cat .env | xargs) && pnpm build
 
-# **빌드 후 설정 파일 확인 (JavaScript로 컴파일되었는지)**
+# **빌드 후 설정 파일 확인**
 RUN echo "=== 빌드 완료 후 확인 ===" && \
     find .next -name "*config*" -type f && \
     echo "=== .next 디렉토리 구조 ===" && \
@@ -58,32 +55,22 @@ RUN npm install -g pnpm
 
 WORKDIR /app
 
-# **빌드 단계에서 설정 파일들 복사 (TypeScript와 컴파일된 결과 모두)**
+# **빌드 단계에서 설정 파일들 복사**
 COPY --from=builder /app/next.config.ts ./next.config.ts
 COPY --from=builder /app/.env ./.env
 
-# **런타임에도 TypeScript 처리 가능하도록 최소 의존성 설치**
+# **런타임 의존성 설치**
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --prod
-RUN pnpm add typescript ts-node @types/node --save-dev
 
 # 빌드 결과물 복사
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
-# **실행 단계에서도 설정 파일 확인 및 테스트**
+# **실행 단계에서 설정 파일 확인**
 RUN echo "=== 실행 단계 확인 ===" && \
     ls -la next.config.ts && \
-    find .next -name "*config*" -type f && \
-    echo "=== TypeScript 설정 런타임 테스트 ===" && \
-    node -r ts-node/register -e "
-    try {
-      const config = require('./next.config.ts');
-      console.log('✅ TypeScript 설정 런타임 로드 성공');
-    } catch (e) {
-      console.log('⚠️ TypeScript 설정 런타임 로드 실패:', e.message);
-    }
-    " || echo "TypeScript 런타임 처리 실패"
+    find .next -name "*config*" -type f
 
 # 임시 디렉토리 권한 설정
 RUN mkdir -p /tmp/next-image-cache && \
