@@ -16,3 +16,7 @@ export const PROJECT_QUERY_KEY = Object.freeze({
 export const COMMENT_QUERY_KEY = Object.freeze({
   COMMENTS: (projectId: number) => ['comments', projectId],
 });
+
+export const CHATBOT_QUERY_KEY = Object.freeze({
+  SESSION_ID: ['chatbot', 'session-id'],
+});

@@ -80,7 +80,12 @@ export async function ProjectDetailContainer({
         <Comments projectId={id} />
       </div>
       {!!refreshToken && (
-        <ChatbotButton title={title} term={term} teamNumber={teamNumber} />
+        <ChatbotButton
+          title={title}
+          term={term}
+          teamNumber={teamNumber}
+          projectId={id.toString()}
+        />
       )}
     </div>
   );
