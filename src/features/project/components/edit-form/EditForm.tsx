@@ -8,7 +8,7 @@ import { authAtom } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useEditProject } from '../../hooks';
 import {
@@ -29,6 +29,7 @@ export function EditForm({ project }: EditFormProps) {
   const {
     id,
     images,
+    teamId,
     title,
     introduction,
     deploymentUrl,
@@ -101,6 +102,13 @@ export function EditForm({ project }: EditFormProps) {
       },
     );
   };
+
+  useEffect(() => {
+    if (teamId !== auth?.teamId) {
+      alert('프로젝트 수정 권한이 없습니다.');
+      router.replace(PROJECT_PATH.DETAIL(id.toString()));
+    }
+  }, [teamId, auth, router, id]);
   return (
     <FormProvider {...methods}>
       <form
