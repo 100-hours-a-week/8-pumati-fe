@@ -328,7 +328,8 @@ EOF
                         echo 'Kaniko를 사용한 Docker 이미지 빌드 및 ECR 푸시 중...'
 
                         withCredentials([
-                            string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID')
+                            string(credentialsId: 'aws-account-id', variable: 'AWS_ACCOUNT_ID'),
+                            file(credentialsId: 'fe-env', variable: 'ENV_FILE')
                         ]) {
                             sh '''
                                 echo "🔧 Kaniko 환경 확인 중..."
@@ -408,15 +409,21 @@ EOF
                                 echo "이미지 태그: $DOCKER_IMAGE_NAME"
                                 echo "Latest 태그: $LATEST_IMAGE_NAME"
 
-                                # Kaniko executor 실행
-                                /kaniko/executor \\
-                                    --dockerfile="$DOCKERFILE_PATH" \\
-                                    --context=dir://$(pwd) \\
-                                    --destination="$DOCKER_IMAGE_NAME" \\
-                                    --destination="$LATEST_IMAGE_NAME" \\
-                                    --cache=true \\
-                                    --cache-ttl=24h \\
-                                    --verbosity=info \\
+                                # .env 파일에서 환경변수 읽기
+                                export $(cat $ENV_FILE | xargs)
+
+                                # Kaniko에 ARG로 환경변수 전달
+                                /kaniko/executor \
+                                    --dockerfile="$DOCKERFILE_PATH" \
+                                    --context=dir://$(pwd) \
+                                    --destination="$DOCKER_IMAGE_NAME" \
+                                    --destination="$LATEST_IMAGE_NAME" \
+                                    --build-arg NEXT_PUBLIC_S3_HOSTNAME="$NEXT_PUBLIC_S3_HOSTNAME" \
+                                    --build-arg NEXT_PUBLIC_API_BASE_URL="$NEXT_PUBLIC_API_BASE_URL" \
+                                    --build-arg NEXT_PUBLIC_BASE_URL="$NEXT_PUBLIC_BASE_URL" \
+                                    --cache=true \
+                                    --cache-ttl=24h \
+                                    --verbosity=info \
                                     --log-format=text
 
                                 echo "✅ Kaniko 이미지 빌드 및 푸시 완료"
@@ -555,7 +562,7 @@ EOF
                                     ls -la
                                     git status 2>/dev/null || echo "Git 상태 확인 불가"
                                 '''
-                                // GitOps 실패는 전체 빌드를 실패시키지 않음
+                                # GitOps 실패는 전체 빌드를 실패시키지 않음
                                 currentBuild.result = 'UNSTABLE'
                             }
                         }
