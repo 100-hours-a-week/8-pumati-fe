@@ -19,8 +19,9 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
-# Sharp를 컨테이너 환경에 맞게 재설치
-RUN pnpm add sharp --platform=linux --arch=x64
+# Sharp를 컨테이너 환경에 맞게 재설치 (pnpm 방식)
+RUN pnpm remove sharp || true
+RUN pnpm add sharp
 
 # .env 파일 복사 (빌드 시점에 환경변수가 필요하므로 소스 복사 전에 먼저 복사)
 COPY ./cicd/dev/.env ./.env
@@ -58,8 +59,8 @@ COPY ./cicd/dev/.env ./.env
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --prod
 
-# Sharp를 런타임 환경에 맞게 재설치
-RUN pnpm add sharp --platform=linux --arch=x64
+# Sharp를 런타임 환경에 맞게 재설치 (pnpm 방식)
+RUN pnpm add sharp
 
 # 빌드 결과물 복사
 COPY --from=builder /app/.next ./.next
