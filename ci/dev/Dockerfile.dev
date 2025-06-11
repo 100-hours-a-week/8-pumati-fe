@@ -29,8 +29,8 @@ RUN pnpm install
 RUN pnpm add sharp
 RUN pnpm approve-builds sharp
 
-# .env 파일 복사 (빌드 시점에 환경변수가 필요하므로 소스 복사 전에 먼저 복사)
-COPY ./cicd/dev/.env ./.env
+# .env 파일 복사 (젠킨스에서 루트에 복사한 파일 사용)
+COPY ./.env ./.env
 
 # 소스 복사
 COPY . .
@@ -59,7 +59,7 @@ RUN npm install -g pnpm
 WORKDIR /app
 
 # 실행 환경에도 .env 파일 복사
-COPY ./cicd/dev/.env ./.env
+COPY ./.env ./.env
 
 # 실행에 필요한 의존성만 설치
 COPY package.json pnpm-lock.yaml ./
