@@ -12,6 +12,12 @@ RUN apk add --no-cache \
 # 작업 디렉토리
 WORKDIR /app
 
+# 환경변수 명시적 설정 (빌드 타임에 필요)
+ENV NEXT_PUBLIC_BASE_URL=https://local.dev.tebutebu.com:3000
+ENV NEXT_PUBLIC_API_BASE_URL=https://dev.tebutebu.com
+ENV NEXT_PUBLIC_S3_HOSTNAME=s3-pumati-dev.s3.ap-northeast-2.amazonaws.com
+ENV NEXT_PUBLIC_KATEBOO_CODE=1970
+
 # 패키지 매니저 설치
 RUN npm install -g pnpm
 
@@ -76,6 +82,12 @@ ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
 EXPOSE 3000
+
+# 런타임 환경변수도 설정 (일부 기능에서 필요할 수 있음)
+ENV NEXT_PUBLIC_BASE_URL=https://local.dev.tebutebu.com:3000
+ENV NEXT_PUBLIC_API_BASE_URL=https://dev.tebutebu.com
+ENV NEXT_PUBLIC_S3_HOSTNAME=s3-pumati-dev.s3.ap-northeast-2.amazonaws.com
+ENV NEXT_PUBLIC_KATEBOO_CODE=1970
 
 # 서버 시작 (Next.js가 자동으로 .env 파일을 읽음)
 CMD ["pnpm", "start", "--hostname", "0.0.0.0"]
