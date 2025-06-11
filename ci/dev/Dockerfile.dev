@@ -1,7 +1,13 @@
 FROM node:20-alpine AS builder
 
-# 기본 패키지 설치
-RUN apk add --no-cache libc6-compat
+# Sharp와 이미지 처리를 위한 패키지 설치
+RUN apk add --no-cache \
+    libc6-compat \
+    vips-dev \
+    build-base \
+    python3 \
+    make \
+    g++
 
 # 작업 디렉토리
 WORKDIR /app
@@ -13,6 +19,9 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
+# Sharp를 컨테이너 환경에 맞게 재설치
+RUN pnpm add sharp --platform=linux --arch=x64
+
 # .env 파일 복사 (빌드 시점에 환경변수가 필요하므로 소스 복사 전에 먼저 복사)
 COPY ./cicd/dev/.env ./.env
 
@@ -22,13 +31,20 @@ COPY . .
 # .env 파일 확인 (디버깅용)
 RUN echo "=== .env 파일 내용 확인 ===" && cat ./.env
 
+# 임시 디렉토리 권한 설정 (이미지 최적화용)
+RUN mkdir -p /tmp/next-image-cache && \
+    chmod 777 /tmp/next-image-cache
+
 # 빌드 실행 (Next.js가 .env 파일을 자동으로 읽어서 NEXT_PUBLIC_ 변수들을 사용)
 RUN pnpm build
 
 # 2단계: 실행용 스테이지
 FROM node:20-alpine AS runner
 
-RUN apk add --no-cache libc6-compat
+# Sharp와 이미지 처리를 위한 런타임 패키지 설치
+RUN apk add --no-cache \
+    libc6-compat \
+    vips
 
 # pnpm 설치
 RUN npm install -g pnpm
@@ -42,9 +58,16 @@ COPY ./cicd/dev/.env ./.env
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --prod
 
+# Sharp를 런타임 환경에 맞게 재설치
+RUN pnpm add sharp --platform=linux --arch=x64
+
 # 빌드 결과물 복사
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
+
+# 임시 디렉토리 권한 설정 (런타임에서도 이미지 최적화용)
+RUN mkdir -p /tmp/next-image-cache && \
+    chmod 777 /tmp/next-image-cache
 
 # 환경 설정
 ENV NODE_ENV=production
