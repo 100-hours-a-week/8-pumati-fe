@@ -60,7 +60,6 @@ WORKDIR /app
 
 # **빌드 단계에서 설정 파일들 복사**
 COPY --from=builder /app/next.config.ts ./next.config.ts
-COPY --from=builder /app/.env ./.env
 
 # **런타임 의존성 설치**
 COPY package.json pnpm-lock.yaml ./
