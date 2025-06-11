@@ -51,7 +51,7 @@ export function Description({
     router.push(`/projects/${id}/edit`);
   };
   const handleOpenProject = () => {
-    if (accessToken) {
+    if (accessToken && auth && auth.teamId) {
       receivePumati(
         { token: accessToken, teamId },
         {
