@@ -1,22 +1,10 @@
 FROM node:20-alpine AS builder
 
-# Sharp와 이미지 처리를 위한 패키지 설치
-RUN apk add --no-cache \
-    libc6-compat \
-    vips-dev \
-    build-base \
-    python3 \
-    make \
-    g++
+# 기본 패키지 설치
+RUN apk add --no-cache libc6-compat
 
 # 작업 디렉토리
 WORKDIR /app
-
-# 환경변수 명시적 설정 (빌드 타임에 필요)
-ENV NEXT_PUBLIC_BASE_URL=https://local.dev.tebutebu.com:3000
-ENV NEXT_PUBLIC_API_BASE_URL=https://dev.tebutebu.com
-ENV NEXT_PUBLIC_S3_HOSTNAME=s3-pumati-dev.s3.ap-northeast-2.amazonaws.com
-ENV NEXT_PUBLIC_KATEBOO_CODE=1970
 
 # 패키지 매니저 설치
 RUN npm install -g pnpm
@@ -25,11 +13,7 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
-# Sharp를 컨테이너 환경에 맞게 재설치하고 빌드 스크립트 승인
-RUN pnpm add sharp
-RUN pnpm approve-builds sharp
-
-# .env 파일 복사 (젠킨스에서 루트에 복사한 파일 사용)
+# .env 파일 복사 (빌드 시점에 환경변수가 필요하므로 소스 복사 전에 먼저 복사)
 COPY ./.env ./.env
 
 # 소스 복사
@@ -38,6 +22,12 @@ COPY . .
 # .env 파일 확인 (디버깅용)
 RUN echo "=== .env 파일 내용 확인 ===" && cat ./.env
 
+# 빌드 단계에서 TypeScript 설정 파일 처리 확인
+RUN echo "=== Next.js 설정 파일 확인 ===" && \
+    ls -la next.config.* && \
+    echo "빌드 후 설정 파일 확인:" && \
+    ls -la .next/next.config.* 2>/dev/null || echo "빌드된 설정 파일 없음"
+
 # 임시 디렉토리 권한 설정 (이미지 최적화용)
 RUN mkdir -p /tmp/next-image-cache && \
     chmod 777 /tmp/next-image-cache
@@ -45,13 +35,15 @@ RUN mkdir -p /tmp/next-image-cache && \
 # 빌드 실행 (Next.js가 .env 파일을 자동으로 읽어서 NEXT_PUBLIC_ 변수들을 사용)
 RUN pnpm build
 
+# 빌드 후 다시 설정 파일 확인
+RUN echo "=== 빌드 완료 후 설정 파일 재확인 ===" && \
+    ls -la .next/next.config.* 2>/dev/null || echo "빌드된 설정 파일 여전히 없음" && \
+    find .next -name "*config*" -type f
+
 # 2단계: 실행용 스테이지
 FROM node:20-alpine AS runner
 
-# Sharp와 이미지 처리를 위한 런타임 패키지 설치
-RUN apk add --no-cache \
-    libc6-compat \
-    vips
+RUN apk add --no-cache libc6-compat
 
 # pnpm 설치
 RUN npm install -g pnpm
@@ -65,13 +57,13 @@ COPY ./.env ./.env
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --prod
 
-# Sharp를 런타임 환경에 맞게 재설치하고 빌드 스크립트 승인
-RUN pnpm add sharp
-RUN pnpm approve-builds sharp
-
 # 빌드 결과물 복사
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
+
+# 실행 단계에서도 설정 파일 확인
+RUN echo "=== 실행 단계 설정 파일 확인 ===" && \
+    find .next -name "*config*" -type f
 
 # 임시 디렉토리 권한 설정 (런타임에서도 이미지 최적화용)
 RUN mkdir -p /tmp/next-image-cache && \
@@ -83,59 +75,5 @@ ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
 EXPOSE 3000
 
-# 런타임 환경변수도 설정 (일부 기능에서 필요할 수 있음)
-ENV NEXT_PUBLIC_BASE_URL=https://local.dev.tebutebu.com:3000
-ENV NEXT_PUBLIC_API_BASE_URL=https://dev.tebutebu.com
-ENV NEXT_PUBLIC_S3_HOSTNAME=s3-pumati-dev.s3.ap-northeast-2.amazonaws.com
-ENV NEXT_PUBLIC_KATEBOO_CODE=1970
-
 # 서버 시작 (Next.js가 자동으로 .env 파일을 읽음)
 CMD ["pnpm", "start", "--hostname", "0.0.0.0"]
-
-
-# FROM node:20-alpine AS builder
-# # pnpm 전역 설치
-# RUN npm install -g pnpm
-# WORKDIR /app
-
-# # .env 파일 복사하고 확인 (기존 수동 배포 스크립트의 3단계와 동일)
-# COPY ./cicd/dev/.env ./.env
-# RUN cat ./.env  # 환경변수 파일 내용 확인 (디버깅용)
-
-# # package.json과 pnpm-lock.yaml 복사 후 의존성 설치 (기존 스크립트의 5단계와 동일)
-# COPY package.json pnpm-lock.yaml ./
-# RUN pnpm install --frozen-lockfile
-
-# # 소스 코드 복사 후 빌드 (기존 스크립트의 6단계와 동일)
-# COPY . .
-# RUN pnpm build
-
-# # 프로덕션 실행 환경 설정
-# FROM node:20-alpine AS runner
-# RUN npm install -g pnpm
-# WORKDIR /app
-
-# # 실행 환경에도 .env 파일 복사
-# COPY ./cicd/dev/.env ./.env
-
-# # 프로덕션 의존성만 설치
-# COPY package.json pnpm-lock.yaml ./
-# RUN pnpm install --prod --frozen-lockfile && \
-#     pnpm store prune && \
-#     rm -rf ~/.pnpm-store && \
-#     rm -rf /root/.pnpm-store && \
-#     rm -rf /tmp/* && \
-#     npm cache clean --force
-
-# # 빌드된 파일들 복사
-# COPY --from=builder /app/.next ./.next
-# COPY --from=builder /app/public ./public
-
-# # 환경 변수 설정 (기존 스크립트의 7단계와 동일한 서버 실행 환경)
-# ENV NODE_ENV=production
-# ENV HOSTNAME=0.0.0.0
-# ENV PORT=3000
-# EXPOSE 3000
-
-# # 서버 시작 (기존 스크립트의 'pnpm start'와 동일)
-# CMD ["pnpm", "start", "--hostname", "0.0.0.0"]
