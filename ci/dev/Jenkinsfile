@@ -346,8 +346,10 @@ EOF
                                 ls -la /workspace/workspace/
 
                                 # 실제 프로젝트 디렉토리로 이동
-                                PROJECT_DIR="/workspace/workspace/8-pumati-fe_jacky"
-                                if [ -d "$PROJECT_DIR" ]; then
+                                PROJECT_DIR_BASE="/workspace/workspace"
+                                PROJECT_DIR=$(find "$PROJECT_DIR_BASE" -maxdepth 1 -name "8-pumati-fe_*" -type d | head -1)
+
+                                if [ -n "$PROJECT_DIR" ] && [ -d "$PROJECT_DIR" ]; then
                                     cd "$PROJECT_DIR"
                                     echo "✅ 프로젝트 디렉토리로 이동: $(pwd)"
                                 else
@@ -553,7 +555,7 @@ EOF
                                     ls -la
                                     git status 2>/dev/null || echo "Git 상태 확인 불가"
                                 '''
-                                // GitOps 실패는 전체 빌드를 실패시키지 않음
+                                # GitOps 실패는 전체 빌드를 실패시키지 않음
                                 currentBuild.result = 'UNSTABLE'
                             }
                         }
@@ -585,7 +587,7 @@ EOF
                 script {
                     echo '빌드 파이프라인 완료. 작업 공간을 정리합니다.'
 
-                    // Kubernetes Pod 환경에서는 수동으로 정리
+                    # Kubernetes Pod 환경에서는 수동으로 정리
                     try {
                         sh '''
                             echo "작업 공간 정리 시작..."
