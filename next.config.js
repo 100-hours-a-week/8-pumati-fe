@@ -1,16 +1,7 @@
-
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+module.exports = {
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 's3-pumati-prod.s3.ap-northeast-2.amazonaws.com',
-        pathname: '/**',
-      },
+      new URL(`https://${process.env.NEXT_PUBLIC_S3_HOSTNAME!}/**`),
     ],
   },
 };
-
-module.exports = nextConfig;
-
