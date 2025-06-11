@@ -33,7 +33,7 @@ export function EditBadgeModalContent({ onClose }: EditBadgeModalContentProps) {
 
   const accessToken = useAtomValue(accessTokenAtom);
   const authData = useAtomValue(authAtom);
-  const { mutateAsync: editBadge, isPending: isEditingBadge } = useEditBadge();
+  const { mutate: editBadge, isPending: isEditingBadge } = useEditBadge();
 
   const handleToggleTag = async (tag: string) => {
     if (tags.includes(tag)) {
@@ -46,19 +46,25 @@ export function EditBadgeModalContent({ onClose }: EditBadgeModalContentProps) {
       setValue('tags', [...tags, tag]);
     }
   };
-  const handleBadgeEdit = handleSubmit(async (data) => {
+  const handleBadgeEdit = handleSubmit((data) => {
     if (!accessToken || !authData?.teamId) {
       alert('팀 정보가 없습니다.');
       router.push(AUTH_PATH.LOGIN);
       return;
     }
 
-    await editBadge({
-      token: accessToken,
-      teamId: authData.teamId,
-      data,
-    });
-    onClose();
+    editBadge(
+      {
+        token: accessToken,
+        teamId: authData.teamId,
+        data,
+      },
+      {
+        onSettled: () => {
+          onClose();
+        },
+      },
+    );
   });
   return (
     <ModalPortal>

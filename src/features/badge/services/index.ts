@@ -1,3 +1,4 @@
+import { BADGE_ERROR_MESSAGE } from '@/constants';
 import { EditBadge } from '../schemas';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -82,6 +83,14 @@ export const editBadge = async (
     );
 
     if (!response.ok) {
+      if (response.status === 400) {
+        const errorData = await response.json();
+
+        if (errorData.message === BADGE_ERROR_MESSAGE.IN_PROGRESS) {
+          throw new Error(errorData.message);
+        }
+      }
+
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 

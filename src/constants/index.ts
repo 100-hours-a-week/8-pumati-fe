@@ -1,4 +1,5 @@
 export * from './badge-tag';
+export * from './error-message';
 export * from './image';
 export * from './metadata';
 export * from './path';
