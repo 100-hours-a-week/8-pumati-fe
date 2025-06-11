@@ -562,7 +562,7 @@ EOF
                                     ls -la
                                     git status 2>/dev/null || echo "Git 상태 확인 불가"
                                 '''
-                                # GitOps 실패는 전체 빌드를 실패시키지 않음
+                                // GitOps 실패는 전체 빌드를 실패시키지 않음
                                 currentBuild.result = 'UNSTABLE'
                             }
                         }
