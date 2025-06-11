@@ -1,4 +1,4 @@
-import { PROJECT_QUERY_KEY } from '@/constants/query-key';
+import { PROJECT_QUERY_KEY } from '@/constants';
 import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { ProjectInfiniteScrollResponse } from '../schemas';
 import { getRankedProjects } from '../services';

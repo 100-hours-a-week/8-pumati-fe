@@ -43,7 +43,7 @@ export function AlertModal({
       <div className="relative flex justify-center items-center mx-auto max-w-[600px] w-full min-h-screen h-full backdrop-blur-xs bg-neutral-800/30">
         <div
           ref={modalRef}
-          className="relative flex flex-col items-center justify-between gap-4 p-4 w-4/5 min-h-[200px] bg-white rounded-lg"
+          className="relative flex flex-col items-center justify-between gap-4 p-4 w-4/5 min-h-[200px] max-h-4/5 bg-white rounded-lg overflow-auto"
         >
           {children}
           <Button size="md" onClick={handleConfirm} disabled={isLoading}>

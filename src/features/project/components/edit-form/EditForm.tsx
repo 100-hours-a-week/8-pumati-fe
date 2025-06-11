@@ -2,6 +2,7 @@
 
 import { Button, Textarea, TextInput } from '@/components';
 import { PROJECT_PATH } from '@/constants';
+import { EditBadge } from '@/features/badge/components';
 import { useMultiFilesToS3 } from '@/hooks';
 import { authAtom } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,6 +33,7 @@ export function EditForm({ project }: EditFormProps) {
     introduction,
     deploymentUrl,
     githubUrl,
+    badgeImageUrl,
     detailedDescription,
     tags,
   } = project;
@@ -112,6 +114,7 @@ export function EditForm({ project }: EditFormProps) {
           maxImages={5}
           disabled={isSubmitting}
         />
+        <EditBadge badgeImageUrl={badgeImageUrl} />
         <TextInput
           name="title"
           label="프로젝트 이름"

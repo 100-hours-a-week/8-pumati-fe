@@ -31,6 +31,8 @@ export function Information() {
             src={profileImageUrl}
             alt="프로필 이미지"
             fill
+            sizes="100%"
+            priority
             className="rounded-full object-cover"
           />
         </div>

@@ -2,6 +2,8 @@
 
 import { Button } from '@/components';
 import { EditIcon } from '@/components/icons';
+import { Badge } from '@/features/badge/components';
+import { useReceiveBadge } from '@/features/badge/hooks';
 import { accessTokenAtom, authAtom } from '@/store';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
@@ -18,6 +20,7 @@ type DescriptionProps = Pick<
   | 'modifiedAt'
   | 'term'
   | 'introduction'
+  | 'badgeImageUrl'
   | 'deploymentUrl'
   | 'detailedDescription'
   | 'tags'
@@ -30,6 +33,7 @@ export function Description({
   title,
   term,
   introduction,
+  badgeImageUrl,
   deploymentUrl,
   detailedDescription,
   tags,
@@ -41,6 +45,7 @@ export function Description({
 
   const { mutateAsync: givePumati } = useGivePumati();
   const { mutateAsync: receivePumati } = useReceivePumati();
+  const { mutate: receiveBadge } = useReceiveBadge();
 
   const handleEditButtonClick = () => {
     router.push(`/projects/${id}/edit`);
@@ -48,7 +53,8 @@ export function Description({
   const handleOpenProject = async () => {
     if (auth && auth.teamId && accessToken) {
       await givePumati({ token: accessToken, teamId: auth.teamId });
-      await receivePumati({ token: accessToken, teamId: teamId });
+      await receivePumati({ token: accessToken, teamId });
+      receiveBadge({ token: accessToken, teamId });
       router.refresh();
     }
 
@@ -65,9 +71,12 @@ export function Description({
             <EditIcon width={20} height={20} />
           </button>
         )}
-        <div className="flex items-start justify-between">
-          <h1 className="text-2xl font-bold mr-2">{title}</h1>
-          <div className="flex flex-col items-end">
+        <div className="flex justify-between">
+          <div className="flex items-center gap-3">
+            <Badge imageUrl={badgeImageUrl} />
+            <h1 className="text-2xl font-bold mr-2">{title}</h1>
+          </div>
+          <div className="flex flex-col justify-end items-end">
             <p className="text-sm text-dark-grey font-semibold">
               {teamNumber}팀
             </p>
