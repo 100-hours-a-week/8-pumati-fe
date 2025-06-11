@@ -43,19 +43,26 @@ export function Description({
   const auth = useAtomValue(authAtom);
   const accessToken = useAtomValue(accessTokenAtom);
 
-  const { mutateAsync: givePumati } = useGivePumati();
-  const { mutateAsync: receivePumati } = useReceivePumati();
+  const { mutate: givePumati } = useGivePumati();
+  const { mutate: receivePumati } = useReceivePumati();
   const { mutate: receiveBadge } = useReceiveBadge();
 
   const handleEditButtonClick = () => {
     router.push(`/projects/${id}/edit`);
   };
-  const handleOpenProject = async () => {
-    if (auth && auth.teamId && accessToken) {
-      await givePumati({ token: accessToken, teamId: auth.teamId });
-      await receivePumati({ token: accessToken, teamId });
-      receiveBadge({ token: accessToken, teamId });
-      router.refresh();
+  const handleOpenProject = () => {
+    if (accessToken && auth && auth.teamId) {
+      receivePumati(
+        { token: accessToken, teamId },
+        {
+          onSuccess: () => {
+            if (!auth || !auth.teamId) return;
+
+            givePumati({ token: accessToken, teamId: auth.teamId });
+            receiveBadge({ token: accessToken, teamId });
+          },
+        },
+      );
     }
 
     window.open(deploymentUrl, '_blank', 'noopener,noreferrer');
