@@ -13,59 +13,79 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
-# .env 파일 복사 (빌드 시점에 환경변수가 필요하므로 소스 복사 전에 먼저 복사)
-COPY ./.env ./.env
+# **next.config.ts를 처리하기 위한 의존성 명시적 설치**
+RUN pnpm add next@latest typescript ts-node @types/node --save-dev
 
-# 소스 복사
+# **소스 코드 먼저 복사 (next.config.ts 포함)**
 COPY . .
 
-# .env 파일 확인 (디버깅용)
-RUN echo "=== .env 파일 내용 확인 ===" && cat ./.env
+# **Jenkins에서 준비한 .env 파일을 마지막에 복사 (덮어쓰기)**
+COPY ./.env ./.env
 
-# 빌드 단계에서 TypeScript 설정 파일 처리 확인
-RUN echo "=== Next.js 설정 파일 확인 ===" && \
-    ls -la next.config.* && \
-    echo "빌드 후 설정 파일 확인:" && \
-    ls -la .next/next.config.* 2>/dev/null || echo "빌드된 설정 파일 없음"
+# **파일 존재 및 내용 확인**
+RUN echo "=== 파일 확인 ===" && \
+    echo "next.config.ts:" && ls -la next.config.ts && \
+    echo "=== .env 파일 내용 ===" && cat ./.env && \
+    echo "=== 환경변수 테스트 ===" && \
+    export $(cat .env | xargs) && \
+    echo "NEXT_PUBLIC_S3_HOSTNAME: $NEXT_PUBLIC_S3_HOSTNAME"
 
-# 임시 디렉토리 권한 설정 (이미지 최적화용)
+# **TypeScript 설정 파일 컴파일 테스트**
+RUN echo "=== TypeScript 설정 파일 테스트 ===" && \
+    node -r ts-node/register -e "
+    const config = require('./next.config.ts');
+    console.log('TypeScript 설정 로드 성공:', JSON.stringify(config.default || config, null, 2));
+    " || echo "TypeScript 설정 로드 실패 (빌드 시점에 처리됨)"
+
+# 임시 디렉토리 권한 설정
 RUN mkdir -p /tmp/next-image-cache && \
     chmod 777 /tmp/next-image-cache
 
-# 빌드 실행 (Next.js가 .env 파일을 자동으로 읽어서 NEXT_PUBLIC_ 변수들을 사용)
-RUN pnpm build
+# **환경변수를 명시적으로 로드하여 빌드**
+RUN export $(cat .env | xargs) && pnpm build
 
-# 빌드 후 다시 설정 파일 확인
-RUN echo "=== 빌드 완료 후 설정 파일 재확인 ===" && \
-    ls -la .next/next.config.* 2>/dev/null || echo "빌드된 설정 파일 여전히 없음" && \
-    find .next -name "*config*" -type f
+# **빌드 후 설정 파일 확인 (JavaScript로 컴파일되었는지)**
+RUN echo "=== 빌드 완료 후 확인 ===" && \
+    find .next -name "*config*" -type f && \
+    echo "=== .next 디렉토리 구조 ===" && \
+    ls -la .next/
 
 # 2단계: 실행용 스테이지
 FROM node:20-alpine AS runner
 
 RUN apk add --no-cache libc6-compat
-
-# pnpm 설치
 RUN npm install -g pnpm
 
 WORKDIR /app
 
-# 실행 환경에도 .env 파일 복사
-COPY ./.env ./.env
+# **빌드 단계에서 설정 파일들 복사 (TypeScript와 컴파일된 결과 모두)**
+COPY --from=builder /app/next.config.ts ./next.config.ts
+COPY --from=builder /app/.env ./.env
 
-# 실행에 필요한 의존성만 설치
+# **런타임에도 TypeScript 처리 가능하도록 최소 의존성 설치**
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --prod
+RUN pnpm add typescript ts-node @types/node --save-dev
 
 # 빌드 결과물 복사
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
-# 실행 단계에서도 설정 파일 확인
-RUN echo "=== 실행 단계 설정 파일 확인 ===" && \
-    find .next -name "*config*" -type f
+# **실행 단계에서도 설정 파일 확인 및 테스트**
+RUN echo "=== 실행 단계 확인 ===" && \
+    ls -la next.config.ts && \
+    find .next -name "*config*" -type f && \
+    echo "=== TypeScript 설정 런타임 테스트 ===" && \
+    node -r ts-node/register -e "
+    try {
+      const config = require('./next.config.ts');
+      console.log('✅ TypeScript 설정 런타임 로드 성공');
+    } catch (e) {
+      console.log('⚠️ TypeScript 설정 런타임 로드 실패:', e.message);
+    }
+    " || echo "TypeScript 런타임 처리 실패"
 
-# 임시 디렉토리 권한 설정 (런타임에서도 이미지 최적화용)
+# 임시 디렉토리 권한 설정
 RUN mkdir -p /tmp/next-image-cache && \
     chmod 777 /tmp/next-image-cache
 
@@ -75,5 +95,4 @@ ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
 EXPOSE 3000
 
-# 서버 시작 (Next.js가 자동으로 .env 파일을 읽음)
 CMD ["pnpm", "start", "--hostname", "0.0.0.0"]
