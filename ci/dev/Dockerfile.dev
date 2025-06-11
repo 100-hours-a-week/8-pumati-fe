@@ -1,5 +1,17 @@
 FROM node:20-alpine AS builder
 
+# 빌드 시점에 환경변수를 ARG로 받기
+ARG NEXT_PUBLIC_BASE_URL
+ARG NEXT_PUBLIC_API_BASE_URL
+ARG NEXT_PUBLIC_S3_HOSTNAME
+ARG NEXT_PUBLIC_KATEBOO_CODE
+
+# ENV로 설정하여 빌드 과정에서 사용 가능하게 함
+ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_S3_HOSTNAME=$NEXT_PUBLIC_S3_HOSTNAME
+ENV NEXT_PUBLIC_KATEBOO_CODE=$NEXT_PUBLIC_KATEBOO_CODE
+
 # 기본 패키지 설치
 RUN apk add --no-cache libc6-compat
 
@@ -19,15 +31,8 @@ RUN pnpm add next@latest typescript ts-node @types/node --save-dev
 # **소스 코드 먼저 복사 (next.config.ts 포함)**
 COPY . .
 
-# **Jenkins에서 준비한 .env 파일을 마지막에 복사 (덮어쓰기)**
-COPY ./.env ./.env
-
-# **파일 존재 및 내용 확인**
-RUN echo "=== 파일 확인 ===" && \
-    echo "next.config.ts:" && ls -la next.config.ts && \
-    echo "=== .env 파일 내용 ===" && cat ./.env && \
-    echo "=== 환경변수 테스트 ===" && \
-    export $(cat .env | xargs) && \
+# **환경변수 확인 (ARG로 전달받은 것들)**
+RUN echo "=== 환경변수 확인 ===" && \
     echo "NEXT_PUBLIC_S3_HOSTNAME: $NEXT_PUBLIC_S3_HOSTNAME"
 
 # **TypeScript 설정 파일 간단 테스트**
@@ -57,7 +62,6 @@ WORKDIR /app
 
 # **빌드 단계에서 설정 파일들 복사**
 COPY --from=builder /app/next.config.ts ./next.config.ts
-COPY --from=builder /app/.env ./.env
 
 # **런타임 의존성 설치**
 COPY package.json pnpm-lock.yaml ./
@@ -66,6 +70,7 @@ RUN pnpm install --prod
 # 빌드 결과물 복사
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./package.json
 
 # **실행 단계에서 설정 파일 확인**
 RUN echo "=== 실행 단계 확인 ===" && \
@@ -81,5 +86,11 @@ ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
 EXPOSE 3000
+
+# **여기서도 반드시 ENV로 환경변수 주입!**
+ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_S3_HOSTNAME=$NEXT_PUBLIC_S3_HOSTNAME
+ENV NEXT_PUBLIC_KATEBOO_CODE=$NEXT_PUBLIC_KATEBOO_CODE
 
 CMD ["pnpm", "start", "--hostname", "0.0.0.0"]
