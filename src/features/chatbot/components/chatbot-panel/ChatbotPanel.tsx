@@ -91,8 +91,14 @@ export function ChatbotPanel({
       }
     };
   }, [sessionId, accessToken]);
+
+  useEffect(() => {
+    if (chattingBottomRef.current) {
+      chattingBottomRef.current.scrollIntoView();
+    }
+  }, [chattingBottomRef]);
   return (
-    <aside className="fixed bottom-0 [@media(min-width:600px)]:bottom-4 right-0 [@media(min-width:600px)]:right-4 w-[375px] max-h-4/5 h-full z-50 bg-light-blue rounded-t-2xl rounded-b-none xs:rounded-2xl shadow-2xl border border-soft-blue overflow-hidden flex flex-col">
+    <aside className="fixed bottom-0 [@media(min-width:600px)]:bottom-4 right-0 [@media(min-width:600px)]:right-4 w-[375px] max-h-screen [@media(min-width:376px)]:max-h-4/5 h-full z-50 bg-light-blue rounded-t-2xl rounded-b-none xs:rounded-2xl shadow-2xl border border-soft-blue overflow-hidden flex flex-col">
       <p className="text-lg p-4 font-semibold text-center">{projectTitle}</p>
       <button
         className="absolute top-4 right-4  p-2 bg-soft-blue cursor-pointer rounded-lg"
