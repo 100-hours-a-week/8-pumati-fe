@@ -6,5 +6,7 @@ export function useCreateChatbotSessionId(token: string, projectId: string) {
   return useQuery({
     queryKey: CHATBOT_QUERY_KEY.SESSION_ID,
     queryFn: () => createChatbotSessionId(token, projectId),
+    staleTime: 0,
+    gcTime: 0,
   });
 }
