@@ -1,19 +1,29 @@
 import { QUESTIONS } from '@/constants';
+import { Dispatch } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Chatting, Question } from '../../schemas';
 
 type DefaultQuestionsProps = {
+  isConnecting: boolean;
+  isTyping: boolean;
+  setIsTyping: Dispatch<React.SetStateAction<boolean>>;
   addQuestion: (question: Chatting) => void;
   sendQuestion: (content: string) => void;
 };
 
 export function DefaultQuestions({
+  isConnecting,
+  isTyping,
+  setIsTyping,
   addQuestion,
   sendQuestion,
 }: DefaultQuestionsProps) {
   const { reset, handleSubmit } = useFormContext<Question>();
 
   const handleClickDefaultQuestion = (question: string) => {
+    if (isConnecting || isTyping) return;
+
+    setIsTyping(true);
     addQuestion({
       content: question,
       isUser: true,

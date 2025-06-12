@@ -1,7 +1,7 @@
 import { CancelIcon } from '@/components/icons';
 import { accessTokenAtom } from '@/store';
 import { useAtomValue } from 'jotai';
-import { Dispatch, RefObject, useEffect } from 'react';
+import { Dispatch, RefObject, useEffect, useState } from 'react';
 import {
   useCreateChatbotSessionId,
   useDisconnectChatbot,
@@ -33,6 +33,9 @@ export function ChatbotPanel({
   onSubmitQuestion,
   setChattings,
 }: ChatbotPanelProps) {
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+
   const accessToken = useAtomValue(accessTokenAtom);
 
   const { data: sessionId } = useCreateChatbotSessionId(
@@ -67,6 +70,8 @@ export function ChatbotPanel({
   const { eventSourceRef, connect } = useSSE(
     `${BASE_URL}/api/projects/${projectId}/chatbot/sessions/${sessionId}/stream`,
     handleMessage,
+    setIsConnecting,
+    setIsTyping,
   );
 
   const handleCloseChatbot = () => {
@@ -85,7 +90,6 @@ export function ChatbotPanel({
       }
     };
   }, [sessionId, accessToken]);
-
   return (
     <aside className="fixed bottom-0 [@media(min-width:600px)]:bottom-4 right-0 [@media(min-width:600px)]:right-4 w-[375px] max-h-4/5 h-full z-50 bg-light-blue rounded-t-2xl rounded-b-none xs:rounded-2xl shadow-2xl border border-soft-blue overflow-hidden flex flex-col">
       <p className="text-lg p-4 font-semibold text-center">{projectTitle}</p>
@@ -102,6 +106,9 @@ export function ChatbotPanel({
         <div ref={chattingBottomRef} />
       </ul>
       <ChatForm
+        isConnecting={isConnecting}
+        isTyping={isTyping}
+        setIsTyping={setIsTyping}
         onSubmitQuestion={onSubmitQuestion}
         onQuestionSubmit={sendChatbotQuestion}
       />
