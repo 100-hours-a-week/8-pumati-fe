@@ -4,17 +4,24 @@ import { Chatting, Question } from '../../schemas';
 
 type DefaultQuestionsProps = {
   addQuestion: (question: Chatting) => void;
+  sendQuestion: (content: string) => void;
 };
 
-export function DefaultQuestions({ addQuestion }: DefaultQuestionsProps) {
-  const { reset } = useFormContext<Question>();
+export function DefaultQuestions({
+  addQuestion,
+  sendQuestion,
+}: DefaultQuestionsProps) {
+  const { reset, handleSubmit } = useFormContext<Question>();
 
   const handleClickDefaultQuestion = (question: string) => {
-    reset();
     addQuestion({
       content: question,
       isUser: true,
     });
+    handleSubmit(() => {
+      sendQuestion(question);
+      reset();
+    })();
   };
   return (
     <ul className="flex gap-2 w-full overflow-x-auto">

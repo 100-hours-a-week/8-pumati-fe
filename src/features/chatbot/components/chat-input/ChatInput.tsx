@@ -6,9 +6,10 @@ import { Chatting, Question } from '../../schemas';
 
 type ChatInputProps = {
   addQuestion: (question: Chatting) => void;
+  sendQuestion: (content: string) => void;
 };
 
-export function ChatInput({ addQuestion }: ChatInputProps) {
+export function ChatInput({ addQuestion, sendQuestion }: ChatInputProps) {
   const { register, handleSubmit, reset } = useFormContext<Question>();
 
   const onSubmit = ({ question }: Question) => {
@@ -18,6 +19,7 @@ export function ChatInput({ addQuestion }: ChatInputProps) {
       content: question,
       isUser: true,
     });
+    sendQuestion(question);
     reset();
   };
   return (

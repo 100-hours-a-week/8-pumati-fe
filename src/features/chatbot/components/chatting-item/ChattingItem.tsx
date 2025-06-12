@@ -24,14 +24,14 @@ export function ChattingItem({ content, isUser }: ChattingItemProps) {
           <p className="font-semibold text-sm">마티</p>
         </div>
       )}
-      <p
+      <pre
         className={cn(
-          'text-sm px-3 py-2 bg-white rounded-xl max-w-4/5',
+          'text-sm px-3 py-2 bg-white rounded-xl max-w-4/5 whitespace-pre-wrap break-words',
           isUser && 'self-end',
         )}
       >
         {content}
-      </p>
+      </pre>
     </li>
   );
 }

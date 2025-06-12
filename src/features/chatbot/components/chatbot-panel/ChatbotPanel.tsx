@@ -1,8 +1,13 @@
 import { CancelIcon } from '@/components/icons';
 import { accessTokenAtom } from '@/store';
 import { useAtomValue } from 'jotai';
-import { RefObject } from 'react';
-import { useCreateChatbotSessionId } from '../../hooks';
+import { Dispatch, RefObject, useEffect } from 'react';
+import {
+  useCreateChatbotSessionId,
+  useDisconnectChatbot,
+  useSendChatbotQuestion,
+  useSSE,
+} from '../../hooks';
 import { Chatting } from '../../schemas';
 import { ChatForm } from '../chat-form';
 import { ChattingItem } from '../chatting-item';
@@ -12,17 +17,21 @@ type ChatbotPanelProps = {
   projectTitle: string;
   chattings: Chatting[];
   chattingBottomRef: RefObject<HTMLDivElement | null>;
-  handleToggleChatbot: () => void;
-  handleSubmitQuestion: (question: Chatting) => void;
+  onToggleChatbot: () => void;
+  onSubmitQuestion: (question: Chatting) => void;
+  setChattings: Dispatch<React.SetStateAction<Chatting[]>>;
 };
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export function ChatbotPanel({
   projectId,
   projectTitle,
   chattings,
   chattingBottomRef,
-  handleToggleChatbot,
-  handleSubmitQuestion,
+  onToggleChatbot,
+  onSubmitQuestion,
+  setChattings,
 }: ChatbotPanelProps) {
   const accessToken = useAtomValue(accessTokenAtom);
 
@@ -30,13 +39,59 @@ export function ChatbotPanel({
     accessToken as string,
     projectId,
   );
-  console.log(sessionId);
+  const { mutate: sendChatbotQuestion } = useSendChatbotQuestion(
+    accessToken as string,
+    projectId,
+    sessionId,
+  );
+  const { mutate: disconnectChatbot } = useDisconnectChatbot(
+    accessToken as string,
+    projectId,
+    sessionId,
+  );
+
+  const handleMessage = (message: string) => {
+    setChattings((prev) => {
+      const lastChat = prev[prev.length - 1];
+
+      if (lastChat && !lastChat.isUser) {
+        return [
+          ...prev.slice(0, -1),
+          { ...lastChat, content: lastChat.content + message },
+        ];
+      }
+
+      return [...prev, { isUser: false, content: message }];
+    });
+  };
+  const { eventSourceRef, connect } = useSSE(
+    `${BASE_URL}/api/projects/${projectId}/chatbot/sessions/${sessionId}/stream`,
+    handleMessage,
+  );
+
+  const handleCloseChatbot = () => {
+    disconnectChatbot();
+    onToggleChatbot();
+  };
+
+  useEffect(() => {
+    if (sessionId && accessToken) {
+      connect();
+    }
+
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+    };
+  }, [sessionId, accessToken]);
+
   return (
     <aside className="fixed bottom-0 [@media(min-width:600px)]:bottom-4 right-0 [@media(min-width:600px)]:right-4 w-[375px] max-h-4/5 h-full z-50 bg-light-blue rounded-t-2xl rounded-b-none xs:rounded-2xl shadow-2xl border border-soft-blue overflow-hidden flex flex-col">
       <p className="text-lg p-4 font-semibold text-center">{projectTitle}</p>
       <button
         className="absolute top-4 right-4  p-2 bg-soft-blue cursor-pointer rounded-lg"
-        onClick={handleToggleChatbot}
+        onClick={handleCloseChatbot}
       >
         <CancelIcon width={14} height={14} fill="var(--color-blue)" />
       </button>
@@ -46,7 +101,10 @@ export function ChatbotPanel({
         ))}
         <div ref={chattingBottomRef} />
       </ul>
-      <ChatForm onSubmitQuestion={handleSubmitQuestion} />
+      <ChatForm
+        onSubmitQuestion={onSubmitQuestion}
+        onQuestionSubmit={sendChatbotQuestion}
+      />
     </aside>
   );
 }

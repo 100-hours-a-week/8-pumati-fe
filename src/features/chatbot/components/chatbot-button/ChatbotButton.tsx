@@ -32,7 +32,7 @@ export function ChatbotButton({
   const handleToggleChatbot = () => {
     setIsChatbotOpen((prev) => !prev);
   };
-  const handleSubmitQuestion = (question: ChattingType) => {
+  const handleAddChatting = (question: ChattingType) => {
     setChattings((prev) => [...prev, question]);
   };
 
@@ -64,8 +64,9 @@ export function ChatbotButton({
           projectTitle={title}
           chattings={chattings}
           chattingBottomRef={chattingBottomRef}
-          handleToggleChatbot={handleToggleChatbot}
-          handleSubmitQuestion={handleSubmitQuestion}
+          onToggleChatbot={handleToggleChatbot}
+          onSubmitQuestion={handleAddChatting}
+          setChattings={setChattings}
         />
       )}
     </>
