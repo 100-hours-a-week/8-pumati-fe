@@ -56,15 +56,16 @@ export function ChatbotPanel({
   const handleMessage = (message: string) => {
     setChattings((prev) => {
       const lastChat = prev[prev.length - 1];
+      const newMessage = message === '' ? ' ' : message.replace(/\\n/g, '\n');
 
       if (lastChat && !lastChat.isUser) {
         return [
           ...prev.slice(0, -1),
-          { ...lastChat, content: lastChat.content + message },
+          { ...lastChat, content: lastChat.content + newMessage },
         ];
       }
 
-      return [...prev, { isUser: false, content: message }];
+      return [...prev, { isUser: false, content: newMessage }];
     });
   };
   const { eventSourceRef, connect } = useSSE(
