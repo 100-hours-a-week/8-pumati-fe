@@ -1,12 +1,11 @@
 import { QUESTIONS } from '@/constants';
-import { Dispatch } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Chatting, Question } from '../../schemas';
 
 type DefaultQuestionsProps = {
   isConnecting: boolean;
   isTyping: boolean;
-  setIsTyping: Dispatch<React.SetStateAction<boolean>>;
+  isLoading: boolean;
   addChatting: (question: Chatting) => void;
   sendQuestion: (content: string) => void;
 };
@@ -14,16 +13,15 @@ type DefaultQuestionsProps = {
 export function DefaultQuestions({
   isConnecting,
   isTyping,
-  setIsTyping,
+  isLoading,
   addChatting,
   sendQuestion,
 }: DefaultQuestionsProps) {
   const { reset, handleSubmit } = useFormContext<Question>();
 
   const handleClickDefaultQuestion = (question: string) => {
-    if (isConnecting || isTyping) return;
+    if (isConnecting || isTyping || isLoading) return;
 
-    setIsTyping(true);
     addChatting({
       content: question,
       isUser: true,

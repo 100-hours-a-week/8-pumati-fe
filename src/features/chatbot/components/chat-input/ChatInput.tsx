@@ -2,14 +2,13 @@
 
 import { ArrowIcon } from '@/components/icons';
 import PauseIcon from '@/components/icons/PauseIcon';
-import { Dispatch } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Chatting, Question } from '../../schemas';
 
 type ChatInputProps = {
   isConnecting: boolean;
   isTyping: boolean;
-  setIsTyping: Dispatch<React.SetStateAction<boolean>>;
+  isLoading: boolean;
   addChatting: (question: Chatting) => void;
   sendQuestion: (content: string) => void;
 };
@@ -17,7 +16,7 @@ type ChatInputProps = {
 export function ChatInput({
   isConnecting,
   isTyping,
-  setIsTyping,
+  isLoading,
   addChatting,
   sendQuestion,
 }: ChatInputProps) {
@@ -26,7 +25,6 @@ export function ChatInput({
   const onSubmit = ({ question }: Question) => {
     if (!question.trim()) return;
 
-    setIsTyping(true);
     addChatting({
       content: question,
       isUser: true,
@@ -39,7 +37,7 @@ export function ChatInput({
       <input
         id="question"
         {...register('question')}
-        disabled={isConnecting || isTyping}
+        disabled={isConnecting || isTyping || isLoading}
         maxLength={50}
         placeholder="무엇이든 물어보세요."
         className="w-full pl-4 pr-10 py-2 bg-white placeholder:text-grey placeholder:text-sm rounded-md outline-none border border-soft-grey focus:border-transparent focus:ring-2 focus:ring-blue focus:ring-offset-0 disabled:bg-blue-white"

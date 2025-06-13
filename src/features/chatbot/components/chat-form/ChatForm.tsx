@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@/components';
-import { Dispatch } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Chatting, Question } from '../../schemas';
 import { ChatInput } from '../chat-input';
@@ -10,7 +9,7 @@ import { DefaultQuestions } from '../default-questions';
 type ChatFormProps = {
   isConnecting: boolean;
   isTyping: boolean;
-  setIsTyping: Dispatch<React.SetStateAction<boolean>>;
+  isLoading: boolean;
   isError: boolean;
   onReconnect: () => void;
   onAddChatting: (question: Chatting) => void;
@@ -20,7 +19,7 @@ type ChatFormProps = {
 export function ChatForm({
   isConnecting,
   isTyping,
-  setIsTyping,
+  isLoading,
   isError,
   onReconnect,
   onAddChatting,
@@ -45,14 +44,14 @@ export function ChatForm({
           <DefaultQuestions
             isConnecting={isConnecting}
             isTyping={isTyping}
-            setIsTyping={setIsTyping}
+            isLoading={isLoading}
             addChatting={onAddChatting}
             sendQuestion={onQuestionSubmit}
           />
           <ChatInput
             isConnecting={isConnecting}
             isTyping={isTyping}
-            setIsTyping={setIsTyping}
+            isLoading={isLoading}
             addChatting={onAddChatting}
             sendQuestion={onQuestionSubmit}
           />

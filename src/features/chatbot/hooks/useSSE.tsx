@@ -3,21 +3,28 @@
 import { accessTokenAtom } from '@/store';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { useAtomValue } from 'jotai';
-import { Dispatch, useRef } from 'react';
+import { useRef, useState } from 'react';
 
 export function useSSE(
   url: string,
   onMessage: (message: string) => void,
   onError: () => void,
-  setIsConnecting: Dispatch<React.SetStateAction<boolean>>,
-  setIsTyping: Dispatch<React.SetStateAction<boolean>>,
 ) {
   const eventSourceRef = useRef<EventSourcePolyfill | null>(null);
+
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const accessToken = useAtomValue(accessTokenAtom);
 
   const connect = () => {
     eventSourceRef.current?.close();
+
+    if (isError) {
+      setIsError(false);
+    }
 
     setIsConnecting(true);
 
@@ -35,6 +42,10 @@ export function useSSE(
       setIsConnecting(false);
     };
 
+    eventSource.addEventListener('typing', () => {
+      setIsTyping(true);
+    });
+
     eventSource.onmessage = (e) => {
       const message = e.data;
 
@@ -45,6 +56,7 @@ export function useSSE(
       console.log('[SSE EventSource] Received answer done');
       setIsConnecting(false);
       setIsTyping(false);
+      setIsLoading(false);
     });
 
     eventSource.addEventListener('timeout', () => {
@@ -59,6 +71,7 @@ export function useSSE(
       console.log('[SSE EventSource] Error', e);
 
       eventSource.close();
+      setIsError(true);
       onError();
     };
 
@@ -67,6 +80,12 @@ export function useSSE(
 
   return {
     eventSourceRef,
+    isConnecting,
+    isTyping,
+    setIsTyping,
+    isLoading,
+    setIsLoading,
+    isError,
     connect,
   };
 }

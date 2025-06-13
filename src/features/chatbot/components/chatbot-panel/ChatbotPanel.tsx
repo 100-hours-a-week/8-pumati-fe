@@ -1,7 +1,7 @@
 import { CancelIcon } from '@/components/icons';
 import { accessTokenAtom } from '@/store';
 import { useAtomValue } from 'jotai';
-import { Dispatch, RefObject, useEffect, useState } from 'react';
+import { Dispatch, RefObject, useEffect } from 'react';
 import {
   useCreateChatbotSessionId,
   useDisconnectChatbot,
@@ -33,10 +33,6 @@ export function ChatbotPanel({
   onAddChatting,
   setChattings,
 }: ChatbotPanelProps) {
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const [isError, setIsError] = useState(false);
-
   const accessToken = useAtomValue(accessTokenAtom);
 
   const { data: sessionId } = useCreateChatbotSessionId(
@@ -70,18 +66,23 @@ export function ChatbotPanel({
     });
   };
   const handleError = () => {
-    setIsError(true);
     onAddChatting({
       isUser: false,
       content: '마티와의 연결이 종료되었습니다. 다시 시도해주세요.',
     });
   };
-  const { eventSourceRef, connect } = useSSE(
+  const {
+    eventSourceRef,
+    isConnecting,
+    isTyping,
+    isLoading,
+    setIsLoading,
+    isError,
+    connect,
+  } = useSSE(
     `${BASE_URL}/api/projects/${projectId}/chatbot/sessions/${sessionId}/stream`,
     handleMessage,
     handleError,
-    setIsConnecting,
-    setIsTyping,
   );
 
   const handleCloseChatbot = () => {
@@ -92,9 +93,12 @@ export function ChatbotPanel({
     disconnectChatbot(undefined, {
       onSuccess: () => {
         connect();
-        setIsError(false);
       },
     });
+  };
+  const handleSendQuestion = (content: string) => {
+    setIsLoading(true);
+    sendChatbotQuestion(content);
   };
 
   useEffect(() => {
@@ -132,11 +136,11 @@ export function ChatbotPanel({
       <ChatForm
         isConnecting={isConnecting}
         isTyping={isTyping}
-        setIsTyping={setIsTyping}
+        isLoading={isLoading}
         isError={isError}
         onReconnect={handleReconnect}
         onAddChatting={onAddChatting}
-        onQuestionSubmit={sendChatbotQuestion}
+        onQuestionSubmit={handleSendQuestion}
       />
     </aside>
   );
