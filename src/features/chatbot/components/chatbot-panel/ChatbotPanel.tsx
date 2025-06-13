@@ -1,5 +1,4 @@
 import { CancelIcon } from '@/components/icons';
-import { useLockOutsideScroll } from '@/hooks';
 import { accessTokenAtom } from '@/store';
 import { useAtomValue } from 'jotai';
 import { Dispatch, RefObject, useEffect } from 'react';
@@ -35,8 +34,6 @@ export function ChatbotPanel({
   setChattings,
 }: ChatbotPanelProps) {
   const accessToken = useAtomValue(accessTokenAtom);
-
-  useLockOutsideScroll();
 
   const { data: sessionId } = useCreateChatbotSessionId(
     accessToken as string,
@@ -111,9 +108,11 @@ export function ChatbotPanel({
 
     return () => {
       if (eventSourceRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         eventSourceRef.current.close();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId, accessToken]);
 
   useEffect(() => {
