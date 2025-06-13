@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowIcon } from '@/components/icons';
+import { NavArrowIcon } from '@/components/icons';
 import { ROOT_PATH } from '@/constants';
 import { useRouter } from 'next/navigation';
 
@@ -13,7 +13,7 @@ export function AuthHeader() {
   return (
     <header className="sticky top-0 flex justify-center items-center px-6 py-4 w-full h-16 border-b border-soft-grey bg-white z-40">
       <button onClick={handleBack} className="absolute left-6 cursor-pointer">
-        <ArrowIcon
+        <NavArrowIcon
           width={28}
           height={28}
           fill="var(--color-dark-grey)"

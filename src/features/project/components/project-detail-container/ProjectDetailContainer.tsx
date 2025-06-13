@@ -1,3 +1,5 @@
+import { ChatbotButton } from '@/features/chatbot/components';
+import { cookies } from 'next/headers';
 import Image from 'next/image';
 import { Comments } from '../../../comment/components/comments/Comments';
 import { ProjectDetail } from '../../schemas';
@@ -10,7 +12,7 @@ type ProjectDetailContainerProps = {
   project: ProjectDetail;
 };
 
-export function ProjectDetailContainer({
+export async function ProjectDetailContainer({
   project,
 }: ProjectDetailContainerProps) {
   const {
@@ -30,6 +32,9 @@ export function ProjectDetailContainer({
     receivedPumatiCount,
     teamRank,
   } = project;
+
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get('refreshToken')?.value;
 
   return (
     <div className="flex flex-col gap-1">
@@ -76,6 +81,14 @@ export function ProjectDetailContainer({
       <div className="max-w-[25rem] w-full mx-auto">
         <Comments projectId={id} />
       </div>
+      {!!refreshToken && (
+        <ChatbotButton
+          title={title}
+          term={term}
+          teamNumber={teamNumber}
+          projectId={id.toString()}
+        />
+      )}
     </div>
   );
 }
