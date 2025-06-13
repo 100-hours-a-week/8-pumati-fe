@@ -1,6 +1,6 @@
 'use client';
 
-import { PROJECT_QUERY_KEY } from '@/constants/query-key';
+import { PROJECT_QUERY_KEY } from '@/constants';
 import { accessTokenAtom } from '@/store';
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';

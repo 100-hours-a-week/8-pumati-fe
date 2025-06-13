@@ -1,5 +1,5 @@
+import { Badge } from '@/features/badge/components';
 import { cn } from '@/utils/style';
-import Image from 'next/image';
 import { Team } from '../../schemas';
 import { DashboardItem } from './DashboardItem';
 
@@ -14,16 +14,7 @@ export function Dashboard({ dashboard }: DashboardProps) {
   const dashboardItems = [
     {
       title: '뱃지',
-      item: (
-        <div className="relative h-14 w-14 shrink-0 rounded-full">
-          <Image
-            src={badgeImageUrl}
-            alt="뱃지"
-            fill
-            className="rounded-full object-cover"
-          />
-        </div>
-      ),
+      item: <Badge imageUrl={badgeImageUrl} />,
       itemStyle: 'bg-light-blue border-blue',
     },
     {

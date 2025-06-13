@@ -65,7 +65,7 @@ export const projectDetailSchema = z.object({
   receivedPumatiCount: z.number(),
   teamRank: z.number(),
   isSubscribed: z.boolean(),
-  badgeImageUrl: z.string().nullable(),
+  badgeImageUrl: z.string().url(),
   createdAt: z.string().datetime(),
   modifiedAt: z.string().datetime(),
 });

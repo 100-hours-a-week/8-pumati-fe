@@ -1,6 +1,6 @@
 'use client';
 
-import { USER_QUERY_KEY } from '@/constants/query-key';
+import { USER_QUERY_KEY } from '@/constants';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Attendance } from '../schemas';
 import { checkAttendance } from '../services';
