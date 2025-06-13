@@ -10,7 +10,7 @@ type ChatFormProps = {
   isConnecting: boolean;
   isTyping: boolean;
   setIsTyping: Dispatch<React.SetStateAction<boolean>>;
-  onSubmitQuestion: (question: Chatting) => void;
+  onAddChatting: (question: Chatting) => void;
   onQuestionSubmit: (content: string) => void;
 };
 
@@ -18,7 +18,7 @@ export function ChatForm({
   isConnecting,
   isTyping,
   setIsTyping,
-  onSubmitQuestion,
+  onAddChatting,
   onQuestionSubmit,
 }: ChatFormProps) {
   const methods = useForm<Question>({
@@ -34,14 +34,14 @@ export function ChatForm({
           isConnecting={isConnecting}
           isTyping={isTyping}
           setIsTyping={setIsTyping}
-          addQuestion={onSubmitQuestion}
+          addChatting={onAddChatting}
           sendQuestion={onQuestionSubmit}
         />
         <ChatInput
           isConnecting={isConnecting}
           isTyping={isTyping}
           setIsTyping={setIsTyping}
-          addQuestion={onSubmitQuestion}
+          addChatting={onAddChatting}
           sendQuestion={onQuestionSubmit}
         />
       </FormProvider>

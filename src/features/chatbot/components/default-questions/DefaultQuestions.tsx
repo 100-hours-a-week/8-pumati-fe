@@ -7,7 +7,7 @@ type DefaultQuestionsProps = {
   isConnecting: boolean;
   isTyping: boolean;
   setIsTyping: Dispatch<React.SetStateAction<boolean>>;
-  addQuestion: (question: Chatting) => void;
+  addChatting: (question: Chatting) => void;
   sendQuestion: (content: string) => void;
 };
 
@@ -15,7 +15,7 @@ export function DefaultQuestions({
   isConnecting,
   isTyping,
   setIsTyping,
-  addQuestion,
+  addChatting,
   sendQuestion,
 }: DefaultQuestionsProps) {
   const { reset, handleSubmit } = useFormContext<Question>();
@@ -24,7 +24,7 @@ export function DefaultQuestions({
     if (isConnecting || isTyping) return;
 
     setIsTyping(true);
-    addQuestion({
+    addChatting({
       content: question,
       isUser: true,
     });

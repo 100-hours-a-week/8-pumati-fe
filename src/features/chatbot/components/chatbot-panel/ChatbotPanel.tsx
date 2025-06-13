@@ -18,7 +18,7 @@ type ChatbotPanelProps = {
   chattings: Chatting[];
   chattingBottomRef: RefObject<HTMLDivElement | null>;
   onToggleChatbot: () => void;
-  onSubmitQuestion: (question: Chatting) => void;
+  onAddChatting: (question: Chatting) => void;
   setChattings: Dispatch<React.SetStateAction<Chatting[]>>;
 };
 
@@ -30,7 +30,7 @@ export function ChatbotPanel({
   chattings,
   chattingBottomRef,
   onToggleChatbot,
-  onSubmitQuestion,
+  onAddChatting,
   setChattings,
 }: ChatbotPanelProps) {
   const [isConnecting, setIsConnecting] = useState(false);
@@ -116,7 +116,7 @@ export function ChatbotPanel({
         isConnecting={isConnecting}
         isTyping={isTyping}
         setIsTyping={setIsTyping}
-        onSubmitQuestion={onSubmitQuestion}
+        onAddChatting={onAddChatting}
         onQuestionSubmit={sendChatbotQuestion}
       />
     </aside>

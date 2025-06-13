@@ -10,7 +10,7 @@ type ChatInputProps = {
   isConnecting: boolean;
   isTyping: boolean;
   setIsTyping: Dispatch<React.SetStateAction<boolean>>;
-  addQuestion: (question: Chatting) => void;
+  addChatting: (question: Chatting) => void;
   sendQuestion: (content: string) => void;
 };
 
@@ -18,7 +18,7 @@ export function ChatInput({
   isConnecting,
   isTyping,
   setIsTyping,
-  addQuestion,
+  addChatting,
   sendQuestion,
 }: ChatInputProps) {
   const { register, handleSubmit, reset } = useFormContext<Question>();
@@ -27,7 +27,7 @@ export function ChatInput({
     if (!question.trim()) return;
 
     setIsTyping(true);
-    addQuestion({
+    addChatting({
       content: question,
       isUser: true,
     });

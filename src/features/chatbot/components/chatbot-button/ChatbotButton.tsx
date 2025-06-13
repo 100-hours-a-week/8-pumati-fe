@@ -25,7 +25,7 @@ export function ChatbotButton({
   const [chattings, setChattings] = useState<ChattingType[]>([
     {
       isUser: false,
-      content: `안녕하세요! 마티에게 ${term}기 ${teamNumber}팀의 ${title}에 대해 궁금한 내용을 물어보세요!`,
+      content: `안녕하세요! 마티에게 ${term}기 ${teamNumber}팀의\n${title}에 대해 궁금한 내용을 물어보세요!`,
     },
   ]);
 
@@ -65,7 +65,7 @@ export function ChatbotButton({
           chattings={chattings}
           chattingBottomRef={chattingBottomRef}
           onToggleChatbot={handleToggleChatbot}
-          onSubmitQuestion={handleAddChatting}
+          onAddChatting={handleAddChatting}
           setChattings={setChattings}
         />
       )}
