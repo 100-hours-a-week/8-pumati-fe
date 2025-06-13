@@ -1,7 +1,7 @@
 'use client';
 
 import { DropdownOption } from '@/components';
-import { AUTH_QUERY_KEY } from '@/constants/query-key';
+import { AUTH_QUERY_KEY } from '@/constants';
 import { getTeamList } from '@/features/auth/services';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';

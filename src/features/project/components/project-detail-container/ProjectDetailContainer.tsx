@@ -18,6 +18,7 @@ export async function ProjectDetailContainer({
   const {
     id,
     images,
+    badgeImageUrl,
     title,
     modifiedAt,
     term,
@@ -63,6 +64,7 @@ export async function ProjectDetailContainer({
           modifiedAt={modifiedAt}
           term={term}
           introduction={introduction}
+          badgeImageUrl={badgeImageUrl}
           deploymentUrl={deploymentUrl}
           detailedDescription={detailedDescription}
           tags={tags}

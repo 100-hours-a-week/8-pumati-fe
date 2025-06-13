@@ -1,5 +1,4 @@
-import { METADATA } from '@/constants';
-import { AUTH_QUERY_KEY } from '@/constants/query-key';
+import { AUTH_QUERY_KEY, METADATA } from '@/constants';
 import { SignupContainer } from '@/features/auth/components';
 import { getTeamList } from '@/features/auth/services';
 import { getQueryClient } from '@/libs/tanstack-query';
