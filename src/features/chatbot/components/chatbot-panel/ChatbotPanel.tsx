@@ -35,6 +35,7 @@ export function ChatbotPanel({
 }: ChatbotPanelProps) {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const accessToken = useAtomValue(accessTokenAtom);
 
@@ -68,9 +69,17 @@ export function ChatbotPanel({
       return [...prev, { isUser: false, content: newMessage }];
     });
   };
+  const handleError = () => {
+    setIsError(true);
+    onAddChatting({
+      isUser: false,
+      content: '마티와의 연결이 종료되었습니다. 다시 시도해주세요.',
+    });
+  };
   const { eventSourceRef, connect } = useSSE(
     `${BASE_URL}/api/projects/${projectId}/chatbot/sessions/${sessionId}/stream`,
     handleMessage,
+    handleError,
     setIsConnecting,
     setIsTyping,
   );
@@ -78,6 +87,14 @@ export function ChatbotPanel({
   const handleCloseChatbot = () => {
     disconnectChatbot();
     onToggleChatbot();
+  };
+  const handleReconnect = () => {
+    disconnectChatbot(undefined, {
+      onSuccess: () => {
+        connect();
+        setIsError(false);
+      },
+    });
   };
 
   useEffect(() => {
@@ -116,6 +133,8 @@ export function ChatbotPanel({
         isConnecting={isConnecting}
         isTyping={isTyping}
         setIsTyping={setIsTyping}
+        isError={isError}
+        onReconnect={handleReconnect}
         onAddChatting={onAddChatting}
         onQuestionSubmit={sendChatbotQuestion}
       />

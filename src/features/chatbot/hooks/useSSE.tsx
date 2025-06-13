@@ -8,6 +8,7 @@ import { Dispatch, useRef } from 'react';
 export function useSSE(
   url: string,
   onMessage: (message: string) => void,
+  onError: () => void,
   setIsConnecting: Dispatch<React.SetStateAction<boolean>>,
   setIsTyping: Dispatch<React.SetStateAction<boolean>>,
 ) {
@@ -46,10 +47,10 @@ export function useSSE(
       setIsTyping(false);
     });
 
-    eventSource.addEventListener('stream-end', () => {
+    eventSource.addEventListener('timeout', () => {
       eventSource.close();
       console.log(
-        '[SSE EventSource] Received stream-end event, trying to reconnect',
+        '[SSE EventSource] Received timeout event, trying to reconnect',
       );
       connect();
     });
@@ -58,7 +59,7 @@ export function useSSE(
       console.log('[SSE EventSource] Error', e);
 
       eventSource.close();
-      setTimeout(connect, 3000);
+      onError();
     };
 
     eventSourceRef.current = eventSource;
