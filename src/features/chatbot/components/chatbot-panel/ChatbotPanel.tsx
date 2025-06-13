@@ -1,4 +1,5 @@
 import { CancelIcon } from '@/components/icons';
+import { useLockOutsideScroll } from '@/hooks';
 import { accessTokenAtom } from '@/store';
 import { useAtomValue } from 'jotai';
 import { Dispatch, RefObject, useEffect } from 'react';
@@ -34,6 +35,8 @@ export function ChatbotPanel({
   setChattings,
 }: ChatbotPanelProps) {
   const accessToken = useAtomValue(accessTokenAtom);
+
+  useLockOutsideScroll();
 
   const { data: sessionId } = useCreateChatbotSessionId(
     accessToken as string,
