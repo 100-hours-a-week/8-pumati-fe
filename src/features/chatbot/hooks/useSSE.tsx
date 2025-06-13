@@ -44,6 +44,7 @@ export function useSSE(
 
     eventSource.addEventListener('typing', () => {
       setIsTyping(true);
+      setIsLoading(false);
     });
 
     eventSource.onmessage = (e) => {
@@ -72,6 +73,7 @@ export function useSSE(
 
       eventSource.close();
       setIsError(true);
+      setIsLoading(false);
       onError();
     };
 
