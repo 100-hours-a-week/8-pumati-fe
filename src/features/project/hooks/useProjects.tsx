@@ -4,7 +4,7 @@ import { ProjectInfiniteScrollResponse } from '../schemas';
 import { getRankedProjects } from '../services';
 
 export function useProjects(contextId: number) {
-  return useSuspenseInfiniteQuery<ProjectInfiniteScrollResponse>({
+  return useSuspenseInfiniteQuery({
     queryKey: PROJECT_QUERY_KEY.RANKED_PROJECTS,
     queryFn: ({ pageParam }) =>
       getRankedProjects(contextId, pageParam as number),

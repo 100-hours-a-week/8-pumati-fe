@@ -12,6 +12,14 @@ export type InfiniteScrollResponse<T> = {
   meta: PaginationMeta;
 };
 
+const projectExistenceResponseSchema = z.object({
+  exists: z.boolean(),
+});
+
+export type ProjectExistenceResponse = z.infer<
+  typeof projectExistenceResponseSchema
+>;
+
 const projectImageSchema = z.object({
   id: z.number(),
   projectId: z.number(),

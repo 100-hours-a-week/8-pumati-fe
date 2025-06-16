@@ -71,6 +71,10 @@ export const newProjectFormSchema = z.object({
 
 export type NewProjectForm = z.infer<typeof newProjectFormSchema>;
 
+export const newProjectResponseSchema = z.object({ id: z.number() });
+
+export type NewProjectResponse = z.infer<typeof newProjectResponseSchema>;
+
 export const editProjectFormSchema = newProjectFormSchema.extend({
   images: z
     .array(editImageFormSchema)
