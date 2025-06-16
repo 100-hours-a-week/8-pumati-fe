@@ -1,7 +1,8 @@
 'use client';
 
-import { USER_PATH } from '@/constants';
+import { USER_PATH, USER_QUERY_KEY } from '@/constants';
 import { useAuth } from '@/features/auth/hooks';
+import { getQueryClient } from '@/libs/tanstack-query';
 import { authAtom } from '@/store';
 import { useMutation } from '@tanstack/react-query';
 import { useSetAtom } from 'jotai';
@@ -11,6 +12,8 @@ import { editUserProfile } from '../services';
 
 export function useEditUserProfile(token: string) {
   const router = useRouter();
+
+  const queryClient = getQueryClient();
 
   const setAuthData = useSetAtom(authAtom);
 
@@ -22,6 +25,7 @@ export function useEditUserProfile(token: string) {
       const user = await getMe(token);
 
       setAuthData(user);
+      queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY.BADGES });
       router.push(USER_PATH.MY_PAGE);
     },
     onError: (error) => {
