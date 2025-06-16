@@ -2,6 +2,7 @@ export * from './ArrowIcon';
 export * from './CancelIcon';
 export * from './DotMenuIcon';
 export * from './EditIcon';
+export * from './InfoIcon';
 export * from './KakaoIcon';
 export * from './LogoIcon';
 export * from './MenuIcon';
