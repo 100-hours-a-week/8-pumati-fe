@@ -1,14 +1,19 @@
 import { USER_QUERY_KEY } from '@/constants';
 import { getQueryClient } from '@/libs/tanstack-query';
 import { useMutation } from '@tanstack/react-query';
-import { receiveBadge } from '../services';
+import { sendTeamBadge } from '../services';
 
-export function useReceiveBadge() {
+export function useSendTeamBadge() {
   const queryClient = getQueryClient();
 
   return useMutation({
-    mutationFn: ({ teamId, token }: { teamId: number; token: string }) =>
-      receiveBadge(token, teamId),
+    mutationFn: ({
+      receiverTeamId,
+      token,
+    }: {
+      receiverTeamId: number;
+      token: string;
+    }) => sendTeamBadge(token, receiverTeamId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY.BADGES });
     },

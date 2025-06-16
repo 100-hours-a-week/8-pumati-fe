@@ -1,3 +1,3 @@
 export * from './useEditBadge';
 export * from './useMyBadges';
-export * from './useReceiveBadge';
+export * from './useSendTeamBadge';

@@ -3,7 +3,7 @@
 import { Button } from '@/components';
 import { EditIcon } from '@/components/icons';
 import { Badge } from '@/features/badge/components';
-import { useReceiveBadge } from '@/features/badge/hooks';
+import { useSendTeamBadge } from '@/features/badge/hooks';
 import { accessTokenAtom, authAtom } from '@/store';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
@@ -45,7 +45,7 @@ export function Description({
 
   const { mutate: givePumati } = useGivePumati();
   const { mutate: receivePumati } = useReceivePumati();
-  const { mutate: receiveBadge } = useReceiveBadge();
+  const { mutate: sendTeamBadge } = useSendTeamBadge();
 
   const handleEditButtonClick = () => {
     router.push(`/projects/${id}/edit`);
@@ -59,7 +59,7 @@ export function Description({
             if (!auth || !auth.teamId) return;
 
             givePumati({ token: accessToken, teamId: auth.teamId });
-            receiveBadge({ token: accessToken, teamId });
+            sendTeamBadge({ token: accessToken, receiverTeamId: teamId });
           },
         },
       );
