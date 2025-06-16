@@ -3,10 +3,10 @@ import { EditBadge } from '../schemas';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export const receiveBadge = async (token: string, teamId: number) => {
+export const sendTeamBadge = async (token: string, receiverTeamId: number) => {
   try {
     const response = await fetch(
-      `${BASE_URL}/api/members/teams/${teamId}/badge`,
+      `${BASE_URL}/api/teams/${receiverTeamId}/badge`,
       {
         method: 'PATCH',
         headers: {
@@ -39,7 +39,7 @@ export const getMyBadges = async (
 ) => {
   try {
     const response = await fetch(
-      `${BASE_URL}/api/members/badges?page-size=${pageSize}${cursorId ? `&cursor-id=${cursorId}` : ''}${cursorCount ? `&cursor-count=${cursorCount}` : ''}`,
+      `${BASE_URL}/api/teams/received-badges?page-size=${pageSize}${cursorId ? `&cursor-id=${cursorId}` : ''}${cursorCount ? `&cursor-count=${cursorCount}` : ''}`,
       {
         method: 'GET',
         headers: {
