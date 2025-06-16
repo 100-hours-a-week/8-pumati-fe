@@ -20,7 +20,7 @@ export function DashboardFetcher() {
   }
 
   const handleBrowseProjectsClick = () => {
-    router.push(PROJECT_PATH.DETAIL(dashboard?.projectId));
+    router.push(PROJECT_PATH.DETAIL(dashboard!.projectId.toString()));
   };
   return (
     <section className="flex flex-col items-center gap-4 w-full">
@@ -38,7 +38,7 @@ export function DashboardFetcher() {
           {isLoading ? (
             <DashboardFallback />
           ) : (
-            <Dashboard dashboard={dashboard} />
+            <Dashboard dashboard={dashboard!} />
           )}
         </>
       ) : (
