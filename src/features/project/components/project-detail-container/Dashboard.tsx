@@ -1,5 +1,7 @@
+import { InfoIcon } from '@/components/icons';
 import { abbreviateCountToK } from '@/utils/count';
 import { ProjectDashboard } from '../../schemas';
+import { Tooltip } from './Tooltip';
 
 type DashboardProps = ProjectDashboard;
 
@@ -27,7 +29,18 @@ export function Dashboard({
   ];
   return (
     <section className="flex flex-col gap-3 p-4 pb-6 bg-soft-blue rounded-lg max-w-[25rem] mx-auto">
-      <h2 className="text-lg font-semibold">대시보드</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-lg font-semibold">대시보드</h2>
+        <div className="relative group">
+          <InfoIcon
+            width={22}
+            height={22}
+            stroke="var(--color-dark-grey)"
+            className="cursor-pointer"
+          />
+          <Tooltip />
+        </div>
+      </div>
       <ul className="flex w-full bg-white rounded-lg">
         {dashboardData.map((data) => (
           <li
