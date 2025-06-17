@@ -80,7 +80,7 @@ export function Description({
         )}
         <div className="flex justify-between">
           <div className="flex items-center gap-3">
-            <Badge imageUrl={badgeImageUrl} />
+            <Badge imageUrl={badgeImageUrl} isExpandable title={title} />
             <h1 className="text-2xl font-bold mr-2">{title}</h1>
           </div>
           <div className="flex flex-col justify-end items-end">
