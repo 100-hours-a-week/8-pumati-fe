@@ -25,7 +25,7 @@ export function BadgeFetcher() {
   return (
     <section className="flex flex-col gap-4 w-full">
       <div className="flex justify-between items-end w-full">
-        <h2 className="text-lg font-semibold">내가 모은 뱃지</h2>
+        <h2 className="text-lg font-semibold">받은 품앗이 뱃지</h2>
         {badges.length > MAX_BADGE_COUNT && (
           <button
             className="text-sm text-blue cursor-pointer hover:underline"

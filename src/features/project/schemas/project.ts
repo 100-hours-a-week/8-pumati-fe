@@ -1,16 +1,5 @@
+import { InfiniteScrollResponse } from '@/schemas';
 import { z } from 'zod';
-
-export type PaginationMeta = {
-  nextCursorId: number;
-  nextCursorTime: string;
-  hasNext: boolean;
-};
-
-export type InfiniteScrollResponse<T> = {
-  message: string;
-  data: T[];
-  meta: PaginationMeta;
-};
 
 const projectExistenceResponseSchema = z.object({
   exists: z.boolean(),

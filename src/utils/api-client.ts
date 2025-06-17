@@ -1,4 +1,4 @@
-import { InfiniteScrollResponse } from '@/features/project/schemas';
+import { InfiniteScrollResponse, PaginationMeta } from '@/schemas';
 import { ApiError } from './error';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -17,10 +17,10 @@ interface ApiResponse<T> {
   message: string;
 }
 
-async function fetchWithConfig<T>(
+export const fetchWithConfig = async <T>(
   endpoint: string,
   config: RequestConfig = {},
-): Promise<T> {
+): Promise<T> => {
   const { method = 'GET', headers = {}, body, credentials } = config;
 
   try {
@@ -48,27 +48,27 @@ async function fetchWithConfig<T>(
 
     throw new ApiError(500, 'An unexpected error occurred');
   }
-}
+};
 
-export async function apiClient<T>(
+export const apiClient = async <T>(
   endpoint: string,
   config: RequestConfig = {},
-): Promise<ApiResponse<T>> {
+): Promise<ApiResponse<T>> => {
   return fetchWithConfig<ApiResponse<T>>(endpoint, config);
-}
+};
 
-export async function infiniteApiClient<T>(
+export const infiniteApiClient = async <T, M = PaginationMeta>(
   endpoint: string,
   config: RequestConfig = {},
-): Promise<InfiniteScrollResponse<T>> {
-  return fetchWithConfig<InfiniteScrollResponse<T>>(endpoint, config);
-}
+): Promise<InfiniteScrollResponse<T, M>> => {
+  return fetchWithConfig<InfiniteScrollResponse<T, M>>(endpoint, config);
+};
 
-export function authApiClient<T>(
+export const authApiClient = async <T>(
   endpoint: string,
   token: string,
   config: RequestConfig = {},
-) {
+) => {
   return apiClient<T>(endpoint, {
     ...config,
     headers: {
@@ -76,4 +76,18 @@ export function authApiClient<T>(
       ...config.headers,
     },
   });
-}
+};
+
+export const authInfiniteApiClient = <T, M = PaginationMeta>(
+  endpoint: string,
+  token: string,
+  config: RequestConfig = {},
+) => {
+  return infiniteApiClient<T, M>(endpoint, {
+    ...config,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...config.headers,
+    },
+  });
+};

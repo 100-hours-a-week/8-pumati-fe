@@ -13,8 +13,8 @@ export function useMyBadges(token: string | null) {
       ),
     staleTime: 1000 * 60 * 5,
     initialPageParam: {
-      nextCursorId: null,
-      nextCursorCount: null,
+      nextCursorId: null as number | null,
+      nextCursorCount: null as number | null,
     },
     getNextPageParam: (lastPage) => {
       if (!lastPage.meta.hasNext) return null;

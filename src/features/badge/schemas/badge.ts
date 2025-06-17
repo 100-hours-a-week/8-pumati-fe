@@ -1,6 +1,12 @@
 import { BADGE_TAG_MAX_LENGTH } from '@/constants';
 import { z } from 'zod';
 
+export type PaginationMeta = {
+  nextCursorId: number | null;
+  nextCount: number | null;
+  hasNext: boolean;
+};
+
 export const badgeSchema = z.object({
   id: z.number(),
   projectId: z.number(),

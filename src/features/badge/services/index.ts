@@ -1,34 +1,12 @@
 import { BADGE_ERROR_MESSAGE } from '@/constants';
-import { EditBadge } from '../schemas';
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { authApiClient, authInfiniteApiClient } from '@/utils/api-client';
+import { ApiError } from '@/utils/error';
+import { Badge, EditBadge, PaginationMeta } from '../schemas';
 
 export const sendTeamBadge = async (token: string, receiverTeamId: number) => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/api/teams/${receiverTeamId}/badge`,
-      {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return data;
-  } catch (error) {
-    console.error('Failed to receive badge:', error);
-
-    throw error instanceof Error
-      ? error
-      : new Error('An unexpected error occurred while receiving badge');
-  }
+  return authApiClient(`/api/teams/${receiverTeamId}/badge`, token, {
+    method: 'PATCH',
+  });
 };
 
 export const getMyBadges = async (
@@ -37,31 +15,10 @@ export const getMyBadges = async (
   cursorCount: number | null,
   pageSize: number = 20,
 ) => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/api/teams/received-badges?page-size=${pageSize}${cursorId ? `&cursor-id=${cursorId}` : ''}${cursorCount ? `&cursor-count=${cursorCount}` : ''}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return data;
-  } catch (error) {
-    console.error('Failed to get my badges:', error);
-
-    throw error instanceof Error
-      ? error
-      : new Error('An unexpected error occurred while getting my badges');
-  }
+  return authInfiniteApiClient<Badge, PaginationMeta>(
+    `/api/teams/received-badges?page-size=${pageSize}${cursorId ? `&cursor-id=${cursorId}` : ''}${cursorCount ? `&cursor-count=${cursorCount}` : ''}`,
+    token,
+  );
 };
 
 export const editBadge = async (
@@ -70,38 +27,23 @@ export const editBadge = async (
   editBadgeData: EditBadge,
 ) => {
   try {
-    const response = await fetch(
-      `${BASE_URL}/api/teams/${teamId}/badge-image`,
+    const response = await authApiClient(
+      `/api/teams/${teamId}/badge-image`,
+      token,
       {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editBadgeData),
+        body: editBadgeData,
       },
     );
 
-    if (!response.ok) {
-      if (response.status === 400) {
-        const errorData = await response.json();
-
-        if (errorData.message === BADGE_ERROR_MESSAGE.IN_PROGRESS) {
-          throw new Error(errorData.message);
-        }
+    return response;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      if (error.statusCode === 400) {
+        throw new ApiError(error.statusCode, BADGE_ERROR_MESSAGE.IN_PROGRESS);
       }
-
-      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
-
-    return data;
-  } catch (error) {
-    console.error('Failed to edit badge:', error);
-
-    throw error instanceof Error
-      ? error
-      : new Error('An unexpected error occurred while editing badge');
+    throw error;
   }
 };
