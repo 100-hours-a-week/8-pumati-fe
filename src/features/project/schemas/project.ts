@@ -1,6 +1,7 @@
 import { InfiniteScrollResponse } from '@/schemas';
 import { z } from 'zod';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const projectExistenceResponseSchema = z.object({
   exists: z.boolean(),
 });
