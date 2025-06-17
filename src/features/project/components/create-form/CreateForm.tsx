@@ -60,8 +60,8 @@ export function CreateForm() {
         teamId: auth.teamId,
       },
       {
-        onSuccess: ({ id }) => {
-          router.replace(PROJECT_PATH.DETAIL(id.toString()));
+        onSuccess: (data) => {
+          router.replace(PROJECT_PATH.DETAIL(data!.id.toString()));
         },
         onSettled: () => {
           setIsSubmitting(false);
