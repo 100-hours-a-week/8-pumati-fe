@@ -1,9 +1,13 @@
+'use client';
+
 import { AUTH_PATH } from '@/constants';
 import { accessTokenAtom } from '@/store';
 import { useMutation } from '@tanstack/react-query';
 import { useSetAtom } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { signup } from '../services';
+import { NonTraineeSignupData, SignupData } from '../schemas';
+import { ApiError } from '@/utils/error';
 
 export function useSignup() {
   const router = useRouter();
@@ -11,7 +15,13 @@ export function useSignup() {
   const setAccessToken = useSetAtom(accessTokenAtom);
 
   return useMutation({
-    mutationFn: signup,
+    mutationFn: async (signupData: SignupData | NonTraineeSignupData) => {
+      const data = await signup(signupData);
+
+      if (!data) throw new ApiError(404, 'Signup failed');
+
+      return data;
+    },
     onSuccess: (data) => {
       setAccessToken(data.accessToken);
     },

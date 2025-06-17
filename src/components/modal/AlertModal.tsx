@@ -1,7 +1,7 @@
 'use client';
 
-import { useOutsideClick } from '@/hooks';
-import { ReactNode, useEffect, useRef } from 'react';
+import { useLockOutsideScroll, useOutsideClick } from '@/hooks';
+import { ReactNode, useRef } from 'react';
 import { Button } from '../button';
 
 type AlertModalProps = {
@@ -22,6 +22,7 @@ export function AlertModal({
   const modalRef = useRef<HTMLDivElement>(null);
 
   useOutsideClick(modalRef, onClose);
+  useLockOutsideScroll();
 
   const handleConfirm = () => {
     if (onConfirm) {
@@ -31,19 +32,12 @@ export function AlertModal({
 
     onClose();
   };
-
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
   return (
     <section className="fixed top-0 left-0 w-full h-full z-50">
       <div className="relative flex justify-center items-center mx-auto max-w-[600px] w-full min-h-screen h-full backdrop-blur-xs bg-neutral-800/30">
         <div
           ref={modalRef}
-          className="relative flex flex-col items-center justify-between gap-4 p-4 w-4/5 min-h-[200px] bg-white rounded-lg"
+          className="relative flex flex-col items-center justify-between gap-4 px-4 pt-4 pb-8 w-4/5 min-h-[200px] max-h-4/5 bg-white rounded-lg overflow-auto"
         >
           {children}
           <Button size="md" onClick={handleConfirm} disabled={isLoading}>

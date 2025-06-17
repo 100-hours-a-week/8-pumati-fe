@@ -1,188 +1,82 @@
-import { NewProject } from '../schemas';
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import {
+  apiClient,
+  authApiClient,
+  infiniteApiClient,
+} from '@/utils/api-client';
+import { ApiError } from '@/utils/error';
+import {
+  NewProject,
+  NewProjectResponse,
+  ProjectDetail,
+  ProjectExistenceResponse,
+  ProjectItem,
+  TeamMember,
+} from '../schemas';
 
 export const checkProjectExists = async (token: string) => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/api/members/teams/projects/existence`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return data.data;
-  } catch (error) {
-    console.error('Failed to check project existence:', error);
-
-    throw error instanceof Error
-      ? error
-      : new Error(
-          'An unexpected error occurred while checking project existence',
-        );
-  }
+  return authApiClient<ProjectExistenceResponse>(
+    '/api/members/teams/projects/existence',
+    token,
+  ).then((res) => res.data);
 };
 
 export const createProject = async (
   newProjectData: NewProject,
-  accessToken: string,
+  token: string,
 ) => {
-  try {
-    const response = await fetch(`${BASE_URL}/api/projects`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify(newProjectData),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return data.data;
-  } catch (error) {
-    console.error('Failed to create project:', error);
-
-    throw error instanceof Error
-      ? error
-      : new Error('An unexpected error occurred while creating a project');
-  }
+  return authApiClient<NewProjectResponse>('/api/projects', token, {
+    method: 'POST',
+    body: newProjectData,
+  }).then((res) => res.data);
 };
 
 export const editProject = async (
   projectId: number,
   projectData: NewProject,
-  accessToken: string,
+  token: string,
 ) => {
-  try {
-    const response = await fetch(`${BASE_URL}/api/projects/${projectId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify(projectData),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return data.data;
-  } catch (error) {
-    console.error('Failed to edit project:', error);
-
-    throw error instanceof Error
-      ? error
-      : new Error('An unexpected error occurred while editing a project');
-  }
+  return authApiClient(`/api/projects/${projectId}`, token, {
+    method: 'PUT',
+    body: projectData,
+  });
 };
 
 export const deleteProject = async (projectId: number, token: string) => {
-  try {
-    const response = await fetch(`${BASE_URL}/api/projects/${projectId}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return data.data;
-  } catch (error) {
-    console.error('Failed to delete project:', error);
-
-    throw error instanceof Error
-      ? error
-      : new Error('An unexpected error occurred while deleting a project');
-  }
+  return authApiClient(`/api/projects/${projectId}`, token, {
+    method: 'DELETE',
+  });
 };
 
 export const getProject = async (projectId: number) => {
   if (typeof projectId !== 'number' || isNaN(projectId)) return undefined;
 
   try {
-    const response = await fetch(`${BASE_URL}/api/projects/${projectId}`);
+    const response = await apiClient<ProjectDetail>(
+      `/api/projects/${projectId}`,
+    );
 
-    if (!response.ok) {
-      if (response.status === 404) {
+    return response.data;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      if (error.statusCode === 404) {
         return undefined;
       }
-
-      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
-
-    return data.data;
-  } catch (error) {
-    console.error('Failed to get project:', error);
-
-    throw error instanceof Error
-      ? error
-      : new Error('An unexpected error occurred while getting a project');
+    throw error;
   }
 };
 
 export const getTeamMembers = async (teamId: number) => {
-  try {
-    const response = await fetch(`${BASE_URL}/api/teams/${teamId}/members`);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return data.data;
-  } catch (error) {
-    console.error('Failed to get team members:', error);
-
-    throw error instanceof Error
-      ? error
-      : new Error('An unexpected error occurred while getting team members');
-  }
+  return apiClient<TeamMember[]>(`/api/teams/${teamId}/members`).then(
+    (res) => res.data,
+  );
 };
 
 export const getSnapshot = async () => {
-  try {
-    const response = await fetch(`${BASE_URL}/api/projects/snapshot`, {
-      method: 'POST',
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return data.data;
-  } catch (error) {
-    console.error('Failed to get snapshot:', error);
-
-    throw error instanceof Error
-      ? error
-      : new Error('An unexpected error occurred while getting snapshot');
-  }
+  return apiClient<{ id: number }>('/api/projects/snapshot', {
+    method: 'POST',
+  }).then((res) => res.data);
 };
 
 export const getRankedProjects = async (
@@ -190,28 +84,9 @@ export const getRankedProjects = async (
   cursorId: number = 0,
   pageSize: number = 10,
 ) => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/api/projects?sort=rank&context-id=${contextId}&cursor-id=${cursorId}&page-size=${pageSize}`,
-      {
-        method: 'GET',
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return data;
-  } catch (error) {
-    console.error('Failed to get projects:', error);
-
-    throw error instanceof Error
-      ? error
-      : new Error('An unexpected error occurred while getting projects');
-  }
+  return infiniteApiClient<ProjectItem>(
+    `/api/projects?sort=rank&context-id=${contextId}&cursor-id=${cursorId}&page-size=${pageSize}`,
+  );
 };
 
 export const getLatestProjects = async (
@@ -219,28 +94,9 @@ export const getLatestProjects = async (
   cursorId: number = 0,
   pageSize: number = 10,
 ) => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/api/projects?sort=latest${cursorTime ? `&cursor-time=${cursorTime}` : ''}&cursor-id=${cursorId}&page-size=${pageSize}`,
-      {
-        method: 'GET',
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return data;
-  } catch (error) {
-    console.error('Failed to get projects:', error);
-
-    throw error instanceof Error
-      ? error
-      : new Error('An unexpected error occurred while getting projects');
-  }
+  return infiniteApiClient<ProjectItem>(
+    `/api/projects?sort=latest${cursorTime ? `&cursor-time=${cursorTime}` : ''}&cursor-id=${cursorId}&page-size=${pageSize}`,
+  );
 };
 
 export const givePumati = async ({
@@ -250,31 +106,13 @@ export const givePumati = async ({
   token: string;
   teamId: number;
 }) => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/api/teams/${teamId}/gived-pumati`,
-      {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return data.data;
-  } catch (error) {
-    console.error('Failed to give pumati:', error);
-
-    throw error instanceof Error
-      ? error
-      : new Error('An unexpected error occurred while giving pumati');
-  }
+  return authApiClient<{ givedPumatiCount: number }>(
+    `/api/teams/${teamId}/gived-pumati`,
+    token,
+    {
+      method: 'PATCH',
+    },
+  ).then((res) => res.data);
 };
 
 export const receivePumati = async ({
@@ -284,29 +122,11 @@ export const receivePumati = async ({
   token: string;
   teamId: number;
 }) => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/api/teams/${teamId}/received-pumati`,
-      {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return data.data;
-  } catch (error) {
-    console.error('Failed to give pumati:', error);
-
-    throw error instanceof Error
-      ? error
-      : new Error('An unexpected error occurred while receiving pumati');
-  }
+  return authApiClient<{ receivedPumatiCount: number }>(
+    `/api/teams/${teamId}/received-pumati`,
+    token,
+    {
+      method: 'PATCH',
+    },
+  ).then((res) => res.data);
 };

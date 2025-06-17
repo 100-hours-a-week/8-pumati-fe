@@ -2,12 +2,13 @@
 
 import { Button, Textarea, TextInput } from '@/components';
 import { PROJECT_PATH } from '@/constants';
+import { EditBadge } from '@/features/badge/components';
 import { useMultiFilesToS3 } from '@/hooks';
 import { authAtom } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useEditProject } from '../../hooks';
 import {
@@ -28,10 +29,12 @@ export function EditForm({ project }: EditFormProps) {
   const {
     id,
     images,
+    teamId,
     title,
     introduction,
     deploymentUrl,
     githubUrl,
+    badgeImageUrl,
     detailedDescription,
     tags,
   } = project;
@@ -66,11 +69,11 @@ export function EditForm({ project }: EditFormProps) {
 
     setIsSubmitting(true);
     const prevImageUrls = data.images
-      .filter((image) => image.url)
-      .map((image) => image.url);
+      .filter((image) => image?.url)
+      .map((image) => image!.url);
     const newFiles = data.images
-      .filter((image) => image.file)
-      .map((image) => image.file) as File[];
+      .filter((image) => image?.file)
+      .map((image) => image!.file) as File[];
 
     let newUrls: string[] = [];
     if (newFiles.length) {
@@ -99,6 +102,13 @@ export function EditForm({ project }: EditFormProps) {
       },
     );
   };
+
+  useEffect(() => {
+    if (teamId !== auth?.teamId) {
+      alert('프로젝트 수정 권한이 없습니다.');
+      router.replace(PROJECT_PATH.DETAIL(id.toString()));
+    }
+  }, [teamId, auth, router, id]);
   return (
     <FormProvider {...methods}>
       <form
@@ -112,6 +122,7 @@ export function EditForm({ project }: EditFormProps) {
           maxImages={5}
           disabled={isSubmitting}
         />
+        <EditBadge badgeImageUrl={badgeImageUrl} />
         <TextInput
           name="title"
           label="프로젝트 이름"

@@ -1,4 +1,4 @@
-import { USER_QUERY_KEY } from '@/constants/query-key';
+import { USER_QUERY_KEY } from '@/constants';
 import { accessTokenAtom } from '@/store';
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';

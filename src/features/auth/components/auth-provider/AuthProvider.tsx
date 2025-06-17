@@ -3,7 +3,7 @@
 import { SpinnerIcon } from '@/components/icons';
 import { accessTokenAtom } from '@/store';
 import { useSetAtom } from 'jotai';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useAuth } from '../../hooks';
 import { useRefresh } from '../../hooks/useRefresh';
 
@@ -12,6 +12,8 @@ type AuthProviderProps = {
 };
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const [isLoading, setIsLoading] = useState(true);
+
   const setAccessToken = useSetAtom(accessTokenAtom);
 
   const {
@@ -19,22 +21,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoading: isRefreshing,
     isError: isRefreshError,
   } = useRefresh();
-  const { mutate: getAuth, isPending: isGettingAuth } = useAuth();
+  const { mutateAsync: getAuth, isPending: isGettingAuth } = useAuth();
 
   useEffect(() => {
-    if (refreshData?.accessToken) {
-      const accessToken = refreshData.accessToken;
+    const fetchAuth = async () => {
+      if (refreshData?.accessToken) {
+        const accessToken = refreshData.accessToken;
 
-      setAccessToken(accessToken);
-      getAuth(accessToken);
-    }
+        setAccessToken(accessToken);
+        await getAuth(accessToken);
+      }
+
+      setIsLoading(false);
+    };
+
+    fetchAuth();
   }, [refreshData, getAuth, setAccessToken]);
 
   if (isRefreshError) {
     return <>{children}</>;
   }
 
-  if (isRefreshing || isGettingAuth) {
+  if (isLoading || isRefreshing || isGettingAuth) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <SpinnerIcon

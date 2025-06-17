@@ -1,5 +1,4 @@
-import { STORAGE_KEY } from '@/constants';
-import { PROJECT_QUERY_KEY } from '@/constants/query-key';
+import { PROJECT_QUERY_KEY, STORAGE_KEY } from '@/constants';
 import { getQueryClient } from '@/libs/tanstack-query';
 import { accessTokenAtom } from '@/store';
 import { useMutation } from '@tanstack/react-query';
@@ -12,8 +11,9 @@ export function useCreateProject() {
 
   const queryClient = getQueryClient();
 
-  return useMutation<{ id: number }, Error, NewProject>({
-    mutationFn: (data) => createProject(data, accessToken as string),
+  return useMutation({
+    mutationFn: (data: NewProject) =>
+      createProject(data, accessToken as string),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: PROJECT_QUERY_KEY.RANKED_PROJECTS,

@@ -1,18 +1,8 @@
-import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/constants';
+import { editImageFormSchema } from '@/schemas';
 import { z } from 'zod';
 
 export const signupFormSchema = z.object({
-  profileImageUrl: z
-    .instanceof(File)
-    .refine(
-      (file) => file.size <= MAX_FILE_SIZE,
-      '이미지 용량은 최대 10MB 까지 가능합니다.',
-    )
-    .refine(
-      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
-      '지원하지 않는 이미지 형식입니다.',
-    )
-    .optional(),
+  profileImageUrl: editImageFormSchema,
   name: z
     .string()
     .min(1, '이름을 입력해주세요.')
@@ -82,3 +72,16 @@ export const nonTraineeSignupDataSchema = signupDataSchema.extend({
 });
 
 export type NonTraineeSignupData = z.infer<typeof nonTraineeSignupDataSchema>;
+
+export const signupResponseSchema = z.object({
+  id: z.number(),
+  teamId: z.number(),
+  email: z.string(),
+  name: z.string(),
+  nickname: z.string(),
+  role: z.enum(['TRAINEE', 'USER']),
+  state: z.enum(['ACTIVE', 'INACTIVE']),
+  accessToken: z.string(),
+});
+
+export type SignupResponse = z.infer<typeof signupResponseSchema>;

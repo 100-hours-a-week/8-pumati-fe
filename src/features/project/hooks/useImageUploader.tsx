@@ -1,8 +1,8 @@
 'use client';
 
+import { FormImageType } from '@/schemas';
 import { useEffect, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { FormImageType } from '../components/image-uploader/ImageUploader';
 import { newProjectFormSchema } from '../schemas';
 
 export function useImageUploader<T extends FormImageType>(
@@ -55,6 +55,8 @@ export function useImageUploader<T extends FormImageType>(
   // URL 해제에 대한 최적화 필요
   useEffect(() => {
     const newPreviews = value.map((item) => {
+      if (!item) return '';
+
       if (item instanceof File) {
         return URL.createObjectURL(item);
       }

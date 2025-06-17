@@ -1,4 +1,4 @@
-import { COMMENT_QUERY_KEY } from '@/constants/query-key';
+import { COMMENT_QUERY_KEY } from '@/constants';
 import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { getComments } from '../services';
 
@@ -9,7 +9,7 @@ export function useComments(projectId: number) {
       getComments(projectId, pageParam.nextCursorTime, pageParam.nextCursorId),
     initialPageParam: {
       nextCursorId: 0,
-      nextCursorTime: null,
+      nextCursorTime: null as string | null,
     },
     getNextPageParam: (lastPage) => {
       if (

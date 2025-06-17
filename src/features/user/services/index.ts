@@ -1,52 +1,40 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { apiClient, authApiClient } from '@/utils/api-client';
+import {
+  Attendance,
+  AttendanceState,
+  Team,
+  UserProfileEditData,
+} from '../schemas';
 
 export const checkAttendance = async (token: string) => {
-  try {
-    const response = await fetch(`${BASE_URL}/api/attendances`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to check attendance');
-    }
-
-    const data = await response.json();
-
-    return data.data;
-  } catch (error) {
-    console.error(error);
-
-    throw error instanceof Error
-      ? error
-      : new Error('An unexpected error occurred while checking attendance');
-  }
+  return authApiClient<Attendance>('/api/attendances', token, {
+    method: 'POST',
+  }).then((res) => res.data);
 };
 
 export const getAttendanceState = async (token: string) => {
-  try {
-    const response = await fetch(`${BASE_URL}/api/attendances`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  return authApiClient<AttendanceState>('/api/attendances', token).then(
+    (res) => res.data,
+  );
+};
 
-    if (!response.ok) {
-      throw new Error('Failed to get attendance state');
-    }
+export const getDashboard = async (teamId: number) => {
+  return apiClient<Team>(`/api/teams/${teamId}`).then((res) => res.data);
+};
 
-    const data = await response.json();
+export const editUserProfile = async (
+  token: string,
+  userData: UserProfileEditData,
+) => {
+  return authApiClient('/api/members/me', token, {
+    method: 'PUT',
+    body: userData,
+  });
+};
 
-    return data.data;
-  } catch (error) {
-    console.error(error);
-
-    throw error instanceof Error
-      ? error
-      : new Error(
-          'An unexpected error occurred while getting attendance state',
-        );
-  }
+export const withdraw = async (token: string) => {
+  return authApiClient('/api/members/me', token, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
 };

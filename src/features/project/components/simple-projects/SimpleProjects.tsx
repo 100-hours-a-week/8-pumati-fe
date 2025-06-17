@@ -23,8 +23,9 @@ export function SimpleProjects({ projects }: SimpleCardListProps) {
           품앗이 상위 <span className="text-blue">TOP3</span> 프로젝트
         </h2>
         <p className="font-medium text-dark-grey mb-4">
-          지금 커뮤니티에서 <br />
-          가장 활발한 프로젝트들을 소개할게요!
+          <span className="text-blue font-semibold">품앗이</span>를 많이 할수록{' '}
+          <br />
+          우리 팀의 프로젝트가 상단에 노출돼요!
         </p>
       </div>
       <SimpleCardList projects={projects} />
