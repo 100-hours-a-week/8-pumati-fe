@@ -2,13 +2,12 @@
 
 import { USER_QUERY_KEY } from '@/constants';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Attendance } from '../schemas';
 import { checkAttendance } from '../services';
 
 export function useCheckAttendance() {
   const queryClient = useQueryClient();
 
-  return useMutation<Attendance, Error, string>({
+  return useMutation({
     mutationFn: checkAttendance,
     onSuccess: () => {
       queryClient.invalidateQueries({

@@ -11,8 +11,9 @@ export function useCreateProject() {
 
   const queryClient = getQueryClient();
 
-  return useMutation<{ id: number }, Error, NewProject>({
-    mutationFn: (data) => createProject(data, accessToken as string),
+  return useMutation({
+    mutationFn: (data: NewProject) =>
+      createProject(data, accessToken as string),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: PROJECT_QUERY_KEY.RANKED_PROJECTS,

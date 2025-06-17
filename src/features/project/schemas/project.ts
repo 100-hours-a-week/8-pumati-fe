@@ -1,16 +1,14 @@
+import { InfiniteScrollResponse } from '@/schemas';
 import { z } from 'zod';
 
-export type PaginationMeta = {
-  nextCursorId: number;
-  nextCursorTime: string;
-  hasNext: boolean;
-};
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const projectExistenceResponseSchema = z.object({
+  exists: z.boolean(),
+});
 
-export type InfiniteScrollResponse<T> = {
-  message: string;
-  data: T[];
-  meta: PaginationMeta;
-};
+export type ProjectExistenceResponse = z.infer<
+  typeof projectExistenceResponseSchema
+>;
 
 const projectImageSchema = z.object({
   id: z.number(),

@@ -72,3 +72,16 @@ export const nonTraineeSignupDataSchema = signupDataSchema.extend({
 });
 
 export type NonTraineeSignupData = z.infer<typeof nonTraineeSignupDataSchema>;
+
+export const signupResponseSchema = z.object({
+  id: z.number(),
+  teamId: z.number(),
+  email: z.string(),
+  name: z.string(),
+  nickname: z.string(),
+  role: z.enum(['TRAINEE', 'USER']),
+  state: z.enum(['ACTIVE', 'INACTIVE']),
+  accessToken: z.string(),
+});
+
+export type SignupResponse = z.infer<typeof signupResponseSchema>;

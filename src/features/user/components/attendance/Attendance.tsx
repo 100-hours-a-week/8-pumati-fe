@@ -30,8 +30,8 @@ export function Attendance() {
     }
 
     setIsAttendanceModalOpen(true);
-    const { devLuck } = await checkAttendance(accessToken);
-    setLuckMessage(devLuck.overall);
+    const attendanceData = await checkAttendance(accessToken);
+    setLuckMessage(attendanceData!.devLuck.overall);
   };
   return (
     <article className="flex flex-col items-center justify-center gap-4 p-8 my-10 bg-blue-white">

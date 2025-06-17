@@ -45,12 +45,12 @@ export function ChatbotPanel({
   const { mutate: sendChatbotQuestion } = useSendChatbotQuestion(
     accessToken as string,
     projectId,
-    sessionId,
+    sessionId!,
   );
   const { mutate: disconnectChatbot } = useDisconnectChatbot(
     accessToken as string,
     projectId,
-    sessionId,
+    sessionId!,
   );
 
   const handleMessage = (message: string) => {
