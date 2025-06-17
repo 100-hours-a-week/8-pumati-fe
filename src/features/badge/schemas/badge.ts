@@ -22,7 +22,7 @@ export const badgeSchema = z.object({
 export type Badge = z.infer<typeof badgeSchema>;
 
 export const editBadgeSchema = z.object({
-  tags: z
+  modificationTags: z
     .array(z.string())
     .min(BADGE_TAG_MAX_LENGTH, `태그를 ${BADGE_TAG_MAX_LENGTH}개 입력해주세요.`)
     .max(
