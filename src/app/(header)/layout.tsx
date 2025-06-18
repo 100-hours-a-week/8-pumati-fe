@@ -9,7 +9,9 @@ export default function HeaderLayout({
   return (
     <AuthProvider>
       <Header />
-      <div className="px-6 min-h-[calc(100vh-4rem)] h-full">{children}</div>
+      <div className="relative px-6 min-h-[calc(100vh-4rem)] h-full">
+        {children}
+      </div>
     </AuthProvider>
   );
 }

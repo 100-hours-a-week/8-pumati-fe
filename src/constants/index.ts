@@ -1,3 +1,4 @@
+export * from './chatbot-question';
 export * from './badge-tag';
 export * from './error-message';
 export * from './image';

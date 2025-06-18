@@ -2,7 +2,7 @@
 
 import { ConfirmModal, ModalPortal } from '@/components';
 import { SpinnerIcon } from '@/components/icons';
-import { AUTH_PATH } from '@/constants';
+import { AUTH_PATH, BADGE_TAG_MAX_LENGTH } from '@/constants';
 import { accessTokenAtom, authAtom } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAtomValue } from 'jotai';
@@ -25,11 +25,11 @@ export function EditBadgeModalContent({ onClose }: EditBadgeModalContentProps) {
     formState: { errors },
   } = useForm<EditBadge>({
     defaultValues: {
-      tags: [],
+      modificationTags: [],
     },
     resolver: zodResolver(editBadgeSchema),
   });
-  const tags = watch('tags');
+  const tags = watch('modificationTags');
 
   const accessToken = useAtomValue(accessTokenAtom);
   const authData = useAtomValue(authAtom);
@@ -38,12 +38,12 @@ export function EditBadgeModalContent({ onClose }: EditBadgeModalContentProps) {
   const handleToggleTag = async (tag: string) => {
     if (tags.includes(tag)) {
       const newTags = tags.filter((t: string) => t !== tag);
-      setValue('tags', newTags);
+      setValue('modificationTags', newTags);
       return;
     }
 
-    if (tags.length < 5) {
-      setValue('tags', [...tags, tag]);
+    if (tags.length < BADGE_TAG_MAX_LENGTH) {
+      setValue('modificationTags', [...tags, tag]);
     }
   };
   const handleBadgeEdit = handleSubmit((data) => {
@@ -91,9 +91,9 @@ export function EditBadgeModalContent({ onClose }: EditBadgeModalContentProps) {
               <p>뱃지의 스타일을 선택해주세요.</p>
             </div>
             <TagList tags={tags} onToggleTag={handleToggleTag} />
-            {errors.tags ? (
+            {errors.modificationTags ? (
               <p className="absolute -bottom-1 text-red-500 text-sm">
-                {String(errors.tags.message)}
+                {String(errors.modificationTags.message)}
               </p>
             ) : tags.length === 5 ? (
               <p className="absolute -bottom-1 text-red-500 text-sm">
