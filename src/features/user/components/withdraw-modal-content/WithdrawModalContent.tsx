@@ -3,7 +3,7 @@
 import { ConfirmModal, ModalPortal } from '@/components';
 import { WarningIcon } from '@/components/icons';
 import { AUTH_PATH } from '@/constants';
-import { accessTokenAtom } from '@/store';
+import { accessTokenAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useWithdraw } from '../../hooks';

@@ -1,6 +1,6 @@
 'use client';
 
-import { authAtom } from '@/store/atoms/user';
+import { authAtom } from '@/store/atoms';
 import { ApiError } from '@/utils/error';
 import { useMutation } from '@tanstack/react-query';
 import { useSetAtom } from 'jotai';

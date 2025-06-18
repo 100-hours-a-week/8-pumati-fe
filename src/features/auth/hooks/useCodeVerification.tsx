@@ -1,6 +1,6 @@
 'use client';
 
-import { isCodeVerifiedAtom } from '@/store';
+import { isCodeVerifiedAtom } from '@/store/atoms';
 import { useSetAtom } from 'jotai';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';

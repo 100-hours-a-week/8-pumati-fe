@@ -2,7 +2,7 @@
 
 import { ModalPortal } from '@/components';
 import { AUTH_PATH } from '@/constants';
-import { accessTokenAtom } from '@/store';
+import { accessTokenAtom } from '@/store/atoms';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';

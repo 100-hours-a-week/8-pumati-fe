@@ -3,7 +3,7 @@
 import { USER_PATH, USER_QUERY_KEY } from '@/constants';
 import { useAuth } from '@/features/auth/hooks';
 import { getQueryClient } from '@/libs/tanstack-query';
-import { authAtom } from '@/store';
+import { authAtom } from '@/store/atoms';
 import { useMutation } from '@tanstack/react-query';
 import { useSetAtom } from 'jotai';
 import { useRouter } from 'next/navigation';

@@ -1,6 +1,6 @@
 import { COURSE } from '@/constants';
 import { useOutsideClick } from '@/hooks';
-import { authAtom } from '@/store';
+import { authAtom } from '@/store/atoms';
 import { dateDistance } from '@/utils/date';
 import { useAtomValue } from 'jotai';
 import Image from 'next/image';

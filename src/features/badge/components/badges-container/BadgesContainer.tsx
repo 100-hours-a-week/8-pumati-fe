@@ -1,7 +1,7 @@
 'use client';
 
 import { AlertModal, ModalPortal } from '@/components';
-import { accessTokenAtom } from '@/store';
+import { accessTokenAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { useState } from 'react';
 import { useMyBadges } from '../../hooks';

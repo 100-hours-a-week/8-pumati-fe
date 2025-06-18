@@ -1,7 +1,7 @@
 'use client';
 
 import { ROOT_PATH } from '@/constants';
-import { accessTokenAtom, authAtom } from '@/store';
+import { accessTokenAtom, authAtom } from '@/store/atoms';
 import { useMutation } from '@tanstack/react-query';
 import { useSetAtom } from 'jotai';
 import { useRouter } from 'next/navigation';

@@ -1,6 +1,6 @@
 'use client';
 
-import { navbarAtom } from '@/store';
+import { navbarAtom } from '@/store/atoms';
 import { cn } from '@/utils/style';
 import { useAtom } from 'jotai';
 import Link from 'next/link';

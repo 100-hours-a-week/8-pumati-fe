@@ -3,7 +3,7 @@
 import { Button, Dropdown, TextInput } from '@/components';
 import { useTeamList } from '@/features/auth/hooks';
 import { useUploadFileToS3 } from '@/hooks';
-import { accessTokenAtom, authAtom } from '@/store';
+import { accessTokenAtom, authAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
