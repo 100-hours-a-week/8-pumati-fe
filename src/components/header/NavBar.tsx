@@ -1,7 +1,7 @@
 import { AUTH_PATH, PROJECT_PATH, ROOT_PATH, USER_PATH } from '@/constants';
 import { useLogout } from '@/features/auth/hooks';
 import { useOutsideClick } from '@/hooks';
-import { isLoggedInAtom, navbarAtom } from '@/store';
+import { isLoggedInAtom, navbarAtom } from '@/store/atoms';
 import { cn } from '@/utils/style';
 import { useAtom, useAtomValue } from 'jotai';
 import Link from 'next/link';

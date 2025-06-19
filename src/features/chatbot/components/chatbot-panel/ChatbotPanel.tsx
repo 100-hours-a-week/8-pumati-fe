@@ -1,6 +1,6 @@
 import { CancelIcon } from '@/components/icons';
 import { useLockOutsideScroll } from '@/hooks';
-import { accessTokenAtom } from '@/store';
+import { accessTokenAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { Dispatch, RefObject, useEffect } from 'react';
 import {

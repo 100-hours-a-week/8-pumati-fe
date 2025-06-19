@@ -4,7 +4,7 @@ import { Button, Textarea, TextInput } from '@/components';
 import { PROJECT_PATH } from '@/constants';
 import { EditBadge } from '@/features/badge/components';
 import { useMultiFilesToS3 } from '@/hooks';
-import { authAtom } from '@/store';
+import { authAtom } from '@/store/atoms';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';

@@ -1,8 +1,6 @@
 'use client';
 
 import { AlertModal, ModalPortal } from '@/components';
-import { accessTokenAtom } from '@/store';
-import { useAtomValue } from 'jotai';
 import { useState } from 'react';
 import { useMyBadges } from '../../hooks';
 import { BadgeList } from '../badge-list';
@@ -13,10 +11,8 @@ const MAX_BADGE_COUNT = 12;
 export function BadgesContainer() {
   const [isBadgeListModalOpen, setIsBadgeListModalOpen] = useState(false);
 
-  const accessToken = useAtomValue(accessTokenAtom);
-
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
-    useMyBadges(accessToken);
+    useMyBadges();
   const badges = data?.pages.flatMap((page) => page.data) ?? [];
 
   const handleBadgeListModalToggle = () => {

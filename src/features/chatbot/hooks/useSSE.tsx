@@ -1,6 +1,6 @@
 'use client';
 
-import { accessTokenAtom } from '@/store';
+import { accessTokenAtom } from '@/store/atoms';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { useAtomValue } from 'jotai';
 import { useRef, useState } from 'react';

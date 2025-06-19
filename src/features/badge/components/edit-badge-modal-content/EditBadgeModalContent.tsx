@@ -3,7 +3,7 @@
 import { ConfirmModal, ModalPortal } from '@/components';
 import { SpinnerIcon } from '@/components/icons';
 import { AUTH_PATH, BADGE_TAG_MAX_LENGTH } from '@/constants';
-import { accessTokenAtom, authAtom } from '@/store';
+import { accessTokenAtom, authAtom } from '@/store/atoms';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';

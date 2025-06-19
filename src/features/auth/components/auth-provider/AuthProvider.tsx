@@ -1,7 +1,7 @@
 'use client';
 
 import { SpinnerIcon } from '@/components/icons';
-import { accessTokenAtom } from '@/store';
+import { accessTokenAtom } from '@/store/atoms';
 import { useSetAtom } from 'jotai';
 import { ReactNode, useEffect, useState } from 'react';
 import { useAuth } from '../../hooks';

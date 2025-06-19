@@ -1,7 +1,7 @@
 'use client';
 
 import { AUTH_PATH, ROOT_PATH } from '@/constants';
-import { accessTokenAtom, signupTokenAtom } from '@/store';
+import { accessTokenAtom, signupTokenAtom } from '@/store/atoms';
 import { useSetAtom } from 'jotai';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';

@@ -3,7 +3,7 @@
 import { Button, Textarea, TextInput } from '@/components';
 import { PROJECT_PATH, STORAGE_KEY } from '@/constants';
 import { useMultiFilesToS3 } from '@/hooks';
-import { authAtom } from '@/store';
+import { authAtom } from '@/store/atoms';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';

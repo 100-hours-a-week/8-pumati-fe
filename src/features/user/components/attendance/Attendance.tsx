@@ -3,7 +3,7 @@
 import { AlertModal, Button, ModalPortal } from '@/components';
 import { SmallIcon } from '@/components/icons/SmallIcon';
 import { AUTH_PATH } from '@/constants';
-import { accessTokenAtom, isLoggedInAtom } from '@/store';
+import { accessTokenAtom, isLoggedInAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';

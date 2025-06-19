@@ -1,7 +1,7 @@
 'use client';
 
 import { PROJECT_PATH } from '@/constants';
-import { authAtom } from '@/store';
+import { authAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useDashboard } from '../../hooks';
