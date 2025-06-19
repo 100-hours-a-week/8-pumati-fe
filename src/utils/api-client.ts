@@ -1,7 +1,7 @@
 import { refresh } from '@/features/auth/services';
 import { InfiniteScrollResponse, PaginationMeta } from '@/schemas';
-import atomStore from '@/store';
 import { accessTokenAtom } from '@/store/atoms';
+import { getDefaultStore } from 'jotai';
 import { ApiError } from './error';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -79,17 +79,19 @@ const refreshRequest = async <T>(
   } catch (error) {
     if (error instanceof ApiError && error.statusCode === 401) {
       if (!isRefreshing) {
+        const store = getDefaultStore();
+
         try {
           isRefreshing = true;
 
           const refreshResponse = await refresh();
           const newAccessToken = refreshResponse!.accessToken;
 
-          atomStore.set(accessTokenAtom, newAccessToken);
+          store.set(accessTokenAtom, newAccessToken);
 
           return await request(newAccessToken);
         } catch {
-          atomStore.set(accessTokenAtom, null);
+          store.set(accessTokenAtom, null);
 
           window.location.href = '/login';
         } finally {
