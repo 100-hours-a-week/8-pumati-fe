@@ -1,4 +1,7 @@
+import { refresh } from '@/features/auth/services';
 import { InfiniteScrollResponse, PaginationMeta } from '@/schemas';
+import atomStore from '@/store';
+import { accessTokenAtom } from '@/store/atoms';
 import { ApiError } from './error';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -65,18 +68,55 @@ export const infiniteApiClient = async <T, M = PaginationMeta>(
   return fetchWithConfig<InfiniteScrollResponse<T, M>>(endpoint, config);
 };
 
+let isRefreshing = false;
+
+const refreshRequest = async <T>(
+  token: string,
+  request: (token: string) => Promise<T>,
+) => {
+  try {
+    return await request(token);
+  } catch (error) {
+    if (error instanceof ApiError && error.statusCode === 401) {
+      if (!isRefreshing) {
+        try {
+          isRefreshing = true;
+
+          const refreshResponse = await refresh();
+          const newAccessToken = refreshResponse!.accessToken;
+
+          atomStore.set(accessTokenAtom, newAccessToken);
+
+          return await request(newAccessToken);
+        } catch {
+          atomStore.set(accessTokenAtom, null);
+
+          window.location.href = '/login';
+        } finally {
+          isRefreshing = false;
+        }
+      }
+    }
+
+    throw error;
+  }
+};
+
 export const authApiClient = async <T>(
   endpoint: string,
   token: string,
   config: RequestConfig = {},
 ) => {
-  return apiClient<T>(endpoint, {
-    ...config,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...config.headers,
-    },
-  });
+  const request = (accessToken: string) =>
+    apiClient<T>(endpoint, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        ...config.headers,
+      },
+    });
+
+  return refreshRequest(token, request);
 };
 
 export const authInfiniteApiClient = <T, M = PaginationMeta>(
@@ -84,11 +124,14 @@ export const authInfiniteApiClient = <T, M = PaginationMeta>(
   token: string,
   config: RequestConfig = {},
 ) => {
-  return infiniteApiClient<T, M>(endpoint, {
-    ...config,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...config.headers,
-    },
-  });
+  const request = (accessToken: string) =>
+    infiniteApiClient<T, M>(endpoint, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        ...config.headers,
+      },
+    });
+
+  return refreshRequest(token, request);
 };
