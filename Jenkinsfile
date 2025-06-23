@@ -7,8 +7,8 @@ pipeline {
     S3_BUCKET        = "s3-pumati-common-storage"     // S3 버킷
     AWS_REGION       = "ap-northeast-2"               // 리전
     AWS_ACCOUNT_ID   = "236450698266"                 // 계정 ID
-    HOST_PORT        = "3000"                        // 호스트 포트
-    CONTAINER_PORT   = "3000"                        // 컨테이너 포트
+    HOST_PORT        = "3000"                         // 호스트 포트
+    CONTAINER_PORT   = "3000"                         // 컨테이너 포트
     CONTAINER_NAME   = "pumati-frontend"              // 컨테이너 이름
   }
 
@@ -21,7 +21,7 @@ pipeline {
         ============================================
         """
         script {
-          // 브랜치명 추출 및 환경 설정
+          // 브랜치명 추출 및 환경 설정 
           env.BRANCH = (env.BRANCH_NAME ?: env.GIT_BRANCH)?.replaceFirst(/^origin\//, '') ?: 'unknown'
 
           if (env.BRANCH == 'main') {
