@@ -99,7 +99,7 @@ pipeline {
             def secret = sh(
               script: """
                 set -e
-                /usr/bin/aws secretsmanager get-secret-value \
+                /usr/local/bin/aws secretsmanager get-secret-value \
                   --secret-id ${env.PROJECT_NAME}-${env.ENV_LABEL}-${env.SERVICE_NAME}-test-.env \
                   --region ${env.AWS_REGION} \
                   --query SecretString \
