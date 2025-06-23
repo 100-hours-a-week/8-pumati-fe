@@ -47,33 +47,33 @@ pipeline {
       }
     }
 
-    stage('Notify Before Start') {
-      when {
-          expression { env.BRANCH == 'main' } // dev 브랜치 조건 제거
-      }
-      steps {
-        echo """
-        ============================================
-        스테이지 시작: Notify Before Start
-        ============================================
-        """
-        script {
-          try {
-            // Jenkins의 Credentials에서 'Discord-Webhook' ID를 사용하여 웹훅 URL을 가져옴
-            withCredentials([string(credentialsId: 'Discord-Webhook', variable: 'DISCORD')]) {
-              discordSend(
-                description: "빌드가 곧 시작됩니다: ${env.SERVICE_NAME} - ${env.BRANCH} 브랜치",
-                link: env.BUILD_URL,
-                title: "빌드 시작",
-                webhookURL: DISCORD
-              )
-            }
-          } catch (e) {
-            echo "디스코드 알림 전송 실패: ${e.message}"
-          }
-        }
-      }
-    }
+    // stage('Notify Before Start') {
+    //   when {
+    //       expression { env.BRANCH == 'main' } // dev 브랜치 조건 제거
+    //   }
+    //   steps {
+    //     echo """
+    //     ============================================
+    //     스테이지 시작: Notify Before Start
+    //     ============================================
+    //     """
+    //     script {
+    //       try {
+    //         // Jenkins의 Credentials에서 'Discord-Webhook' ID를 사용하여 웹훅 URL을 가져옴
+    //         withCredentials([string(credentialsId: 'Discord-Webhook', variable: 'DISCORD')]) {
+    //           discordSend(
+    //             description: "빌드가 곧 시작됩니다: ${env.SERVICE_NAME} - ${env.BRANCH} 브랜치",
+    //             link: env.BUILD_URL,
+    //             title: "빌드 시작",
+    //             webhookURL: DISCORD
+    //           )
+    //         }
+    //       } catch (e) {
+    //         echo "디스코드 알림 전송 실패: ${e.message}"
+    //       }
+    //     }
+    //   }
+    // }
 
     stage('Checkout') {
       steps {
@@ -99,7 +99,7 @@ pipeline {
             def secret = sh(
               script: """
                 set -e
-                /usr/local/bin/aws secretsmanager get-secret-value \
+                /usr/bin/aws secretsmanager get-secret-value \
                   --secret-id ${env.PROJECT_NAME}-${env.ENV_LABEL}-${env.SERVICE_NAME}-test-.env \
                   --region ${env.AWS_REGION} \
                   --query SecretString \
