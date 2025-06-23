@@ -1,13 +1,13 @@
 import { USER_QUERY_KEY } from '@/constants';
 import { accessTokenAtom } from '@/store/atoms';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import { getMyBadges } from '../services';
 
 export function useMyBadges() {
   const accessToken = useAtomValue(accessTokenAtom);
 
-  return useInfiniteQuery({
+  return useSuspenseInfiniteQuery({
     queryKey: USER_QUERY_KEY.BADGES,
     queryFn: ({ pageParam }) =>
       getMyBadges(
@@ -27,6 +27,5 @@ export function useMyBadges() {
         nextCursorCount: lastPage.meta.nextCount,
       };
     },
-    enabled: !!accessToken,
   });
 }

@@ -11,7 +11,7 @@ export function DashboardFetcher() {
   const router = useRouter();
 
   const authData = useAtomValue(authAtom);
-  const { data: dashboard } = useDashboard(authData?.teamId);
+  const { data: dashboard } = useDashboard(authData!.teamId);
 
   const handleBrowseProjectsClick = () => {
     router.push(PROJECT_PATH.DETAIL(dashboard!.projectId.toString()));
