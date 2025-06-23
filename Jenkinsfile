@@ -23,7 +23,7 @@ pipeline {
 
           if (env.BRANCH == 'main') {
             env.ENV_LABEL = 'prod'
-            env.FE_PRIVATE_IP = '10.3.0.228'
+            env.FE_PRIVATE_IP = '10.1.2.165'
           } else {
             echo "지원되지 않는 브랜치입니다: ${env.BRANCH}. 빌드를 중단합니다."
             currentBuild.result = 'NOT_BUILT'
@@ -100,7 +100,7 @@ pipeline {
               script: """
                 set -e
                 aws secretsmanager get-secret-value \
-                  --secret-id ${env.PROJECT_NAME}-${env.ENV_LABEL}-${env.SERVICE_NAME}-.env \
+                  --secret-id ${env.PROJECT_NAME}-${env.ENV_LABEL}-${env.SERVICE_NAME}-test-.env \
                   --region ${env.AWS_REGION} \
                   --query SecretString \
                   --output text
