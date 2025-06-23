@@ -7,6 +7,9 @@ pipeline {
     S3_BUCKET        = "s3-pumati-common-storage"     // S3 버킷
     AWS_REGION       = "ap-northeast-2"               // 리전
     AWS_ACCOUNT_ID   = "236450698266"                 // 계정 ID
+    HOST_PORT        = "3000"                        // 호스트 포트
+    CONTAINER_PORT   = "3000"                        // 컨테이너 포트
+    CONTAINER_NAME   = "pumati-frontend"              // 컨테이너 이름
   }
 
   stages {
@@ -47,33 +50,33 @@ pipeline {
       }
     }
 
-    // stage('Notify Before Start') {
-    //   when {
-    //       expression { env.BRANCH == 'main' } // dev 브랜치 조건 제거
-    //   }
-    //   steps {
-    //     echo """
-    //     ============================================
-    //     스테이지 시작: Notify Before Start
-    //     ============================================
-    //     """
-    //     script {
-    //       try {
-    //         // Jenkins의 Credentials에서 'Discord-Webhook' ID를 사용하여 웹훅 URL을 가져옴
-    //         withCredentials([string(credentialsId: 'Discord-Webhook', variable: 'DISCORD')]) {
-    //           discordSend(
-    //             description: "빌드가 곧 시작됩니다: ${env.SERVICE_NAME} - ${env.BRANCH} 브랜치",
-    //             link: env.BUILD_URL,
-    //             title: "빌드 시작",
-    //             webhookURL: DISCORD
-    //           )
-    //         }
-    //       } catch (e) {
-    //         echo "디스코드 알림 전송 실패: ${e.message}"
-    //       }
-    //     }
-    //   }
-    // }
+    stage('Notify Before Start') {
+      when {
+          expression { env.BRANCH == 'main' } // dev 브랜치 조건 제거
+      }
+      steps {
+        echo """
+        ============================================
+        스테이지 시작: Notify Before Start
+        ============================================
+        """
+        script {
+          try {
+            // Jenkins의 Credentials에서 'Discord-Webhook' ID를 사용하여 웹훅 URL을 가져옴
+            withCredentials([string(credentialsId: 'Discord-Webhook', variable: 'DISCORD')]) {
+              discordSend(
+                description: "빌드가 곧 시작됩니다: ${env.SERVICE_NAME} - ${env.BRANCH} 브랜치",
+                link: env.BUILD_URL,
+                title: "빌드 시작",
+                webhookURL: DISCORD
+              )
+            }
+          } catch (e) {
+            echo "디스코드 알림 전송 실패: ${e.message}"
+          }
+        }
+      }
+    }
 
     stage('Checkout') {
       steps {
@@ -176,35 +179,35 @@ pipeline {
       }
     }
 
-    // stage('Save Docker Image & Upload to S3') {
-    //   steps {
-    //     echo """
-    //     ============================================
-    //     스테이지 시작: Save Docker Image & Upload to S3
-    //     ============================================
-    //     """
-    //     script {
-    //       def tarFile = "${env.IMAGE_TAG}.tar"
-    //       def gzipFile = "${tarFile}.gz"
+    stage('Save Docker Image & Upload to S3') {
+      steps {
+        echo """
+        ============================================
+        스테이지 시작: Save Docker Image & Upload to S3
+        ============================================
+        """
+        script {
+          def tarFile = "${env.IMAGE_TAG}.tar"
+          def gzipFile = "${tarFile}.gz"
 
-    //       sh """
-    //         echo "Docker 이미지 저장: ${tarFile}"
-    //         docker save -o ${tarFile} ${env.ECR_IMAGE}
+          sh """
+            echo "Docker 이미지 저장: ${tarFile}"
+            docker save -o ${tarFile} ${env.ECR_IMAGE}
 
-    //         echo "압축 중: ${gzipFile}"
-    //         gzip -c ${tarFile} > ${gzipFile}
+            echo "압축 중: ${gzipFile}"
+            gzip -c ${tarFile} > ${gzipFile}
 
-    //         echo "S3에 업로드 중..."
-    //         aws s3 cp ${gzipFile} s3://${env.S3_BUCKET}/CI/${env.ENV_LABEL}/${env.SERVICE_NAME}/${gzipFile} --region ${env.AWS_REGION}
+            echo "S3에 업로드 중..."
+            aws s3 cp ${gzipFile} s3://${env.S3_BUCKET}/CI/${env.ENV_LABEL}/${env.SERVICE_NAME}/${gzipFile} --region ${env.AWS_REGION}
 
-    //         echo "로컬 파일 정리"
-    //         rm -f ${tarFile} ${gzipFile}
+            echo "로컬 파일 정리"
+            rm -f ${tarFile} ${gzipFile}
 
-    //         echo "S3 업로드 완료"
-    //       """
-    //     }
-    //   }
-    // }
+            echo "S3 업로드 완료"
+          """
+        }
+      }
+    }
 
     stage('Deploy to Frontend EC2 via SSH') {
       steps {
@@ -222,30 +225,28 @@ pipeline {
             sshUserPrivateKey(credentialsId: 'PUMATI_FULL_MASTER', keyFileVariable: 'KEY_FILE', usernameVariable: 'SSH_USER')
           ]) {
             sh """
+echo "[단계1] SSH 접속하여 Docker 배포 실행"
 ssh -o StrictHostKeyChecking=no -i \$KEY_FILE \$SSH_USER@${env.FE_PRIVATE_IP} << 'EOF'
   set -e
 
-  echo "기존 컨테이너 중지 및 제거"
-  CONTAINER_ID=\$(docker ps -aqf "name=^/${env.SERVICE_NAME}\$")
+  echo "[단계1-1] 기존 컨테이너 중지 및 제거"
+  sudo docker stop ${env.CONTAINER_NAME} || true
+  sudo docker rm ${env.CONTAINER_NAME} || true
 
-  if [ -n "\$CONTAINER_ID" ]; then
-    docker stop \$CONTAINER_ID || true
-    docker rm \$CONTAINER_ID || true
-  else
-    echo "삭제할 기존 컨테이너 없음"
-  fi
-
-  echo "ECR 인증"
+  echo "[단계1-2] ECR 인증"
   aws ecr get-login-password --region ${env.AWS_REGION} | \\
     docker login --username AWS --password-stdin ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com
 
-  echo "ECR 이미지 Pull: ${ECR_LATEST_IMAGE}"
+  echo "[단계1-3] ECR 이미지 Pull: ${ECR_LATEST_IMAGE}"
   docker pull ${ECR_LATEST_IMAGE}
 
-  echo "새 컨테이너 실행"
-  docker run -d --name ${env.SERVICE_NAME} -p 3000:3000 ${ECR_LATEST_IMAGE}
+  echo "[단계1-4] 새 컨테이너 실행"
+  docker run -d \\
+    -p ${env.HOST_PORT}:${env.CONTAINER_PORT} \\
+    --name ${env.CONTAINER_NAME} \\
+    ${ECR_LATEST_IMAGE}
 
-  echo "사용하지 않는 이미지 정리"
+  echo "[단계1-5] 사용하지 않는 이미지 정리"
   docker image prune -a -f
 
   echo "배포 완료"
