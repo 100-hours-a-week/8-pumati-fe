@@ -21,18 +21,21 @@ const DASHBOARDITEMS = [
 
 export function DashboardFallback() {
   return (
-    <ul className="grid grid-cols-2 gap-2 w-full">
-      {DASHBOARDITEMS.map(({ title, itemStyle }) => (
-        <li
-          key={itemStyle}
-          className={cn(
-            'flex flex-col items-center px-4 py-3 border rounded-xl h-28',
-            itemStyle,
-          )}
-        >
-          <p className="self-start font-semibold">{title}</p>
-        </li>
-      ))}
-    </ul>
+    <section className="flex flex-col items-center gap-4 w-full">
+      <h2 className="self-start text-lg font-semibold">대시보드</h2>
+      <ul className="grid grid-cols-2 gap-2 w-full">
+        {DASHBOARDITEMS.map(({ title, itemStyle }) => (
+          <li
+            key={itemStyle}
+            className={cn(
+              'flex flex-col items-center px-4 py-3 border rounded-xl h-28',
+              itemStyle,
+            )}
+          >
+            <p className="self-start font-semibold">{title}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

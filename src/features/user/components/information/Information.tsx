@@ -12,7 +12,6 @@ export function Information() {
   const authData = useAtomValue(authAtom);
 
   if (!authData) {
-    // 에러 throw 하고 에러바운더리로 처리
     return null;
   }
 
