@@ -1,3 +1,4 @@
+import { PROJECT_REVALIDATE_TAG } from '@/constants';
 import {
   apiClient,
   authApiClient,
@@ -76,6 +77,9 @@ export const getTeamMembers = async (teamId: number) => {
 export const getSnapshot = async () => {
   return apiClient<{ id: number }>('/api/projects/snapshot', {
     method: 'POST',
+    next: {
+      tags: [PROJECT_REVALIDATE_TAG.SNAPSHOT],
+    },
   }).then((res) => res.data);
 };
 
@@ -86,6 +90,11 @@ export const getRankedProjects = async (
 ) => {
   return infiniteApiClient<ProjectItem>(
     `/api/projects?sort=rank&context-id=${contextId}&cursor-id=${cursorId}&page-size=${pageSize}`,
+    {
+      next: {
+        tags: [PROJECT_REVALIDATE_TAG.RANKED_PROJECTS],
+      },
+    },
   );
 };
 
