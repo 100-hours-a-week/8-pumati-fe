@@ -10,3 +10,7 @@ export const revalidateSnapshot = async () => {
 export const revalidateRankedProjects = async () => {
   revalidateTag(PROJECT_REVALIDATE_TAG.RANKED_PROJECTS);
 };
+
+export const revalidateLatestProjects = async () => {
+  revalidateTag(PROJECT_REVALIDATE_TAG.LATEST_PROJECTS);
+};

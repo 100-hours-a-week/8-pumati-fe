@@ -8,6 +8,7 @@ export function RankedProjectsErrorFallback() {
     await revalidateSnapshot();
     revalidateRankedProjects;
   };
+
   return (
     <div className="relative w-full max-w-[25rem] mx-auto my-10">
       <div className="flex flex-col gap-2 mb-4 text-center">

@@ -105,6 +105,11 @@ export const getLatestProjects = async (
 ) => {
   return infiniteApiClient<ProjectItem>(
     `/api/projects?sort=latest${cursorTime ? `&cursor-time=${cursorTime}` : ''}&cursor-id=${cursorId}&page-size=${pageSize}`,
+    {
+      next: {
+        tags: [PROJECT_REVALIDATE_TAG.LATEST_PROJECTS],
+      },
+    },
   );
 };
 
