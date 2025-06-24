@@ -1,10 +1,8 @@
 'use client';
 
-import { ErrorBoundary } from '@/components';
+import { ErrorHandlingWrapper } from '@/components';
 import { accessTokenAtom } from '@/store/atoms';
-import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
-import { Suspense } from 'react';
 import { BadgeErrorFallback } from './BadgeErrorFallback';
 import { BadgeFallback } from './BadgeFallback';
 import { BadgesFetcher } from './BadgesFetcher';
@@ -16,15 +14,12 @@ export function BadgesContainer() {
 
   return (
     <div className="mb-12 w-full">
-      <QueryErrorResetBoundary>
-        {({ reset }) => (
-          <ErrorBoundary fallback={<BadgeErrorFallback />} onReset={reset}>
-            <Suspense fallback={<BadgeFallback />}>
-              <BadgesFetcher />
-            </Suspense>
-          </ErrorBoundary>
-        )}
-      </QueryErrorResetBoundary>
+      <ErrorHandlingWrapper
+        ErrorFallback={<BadgeErrorFallback />}
+        SuspenseFallback={<BadgeFallback />}
+      >
+        <BadgesFetcher />
+      </ErrorHandlingWrapper>
     </div>
   );
 }
