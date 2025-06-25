@@ -6,25 +6,19 @@ import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useDashboard } from '../../hooks';
 import { Dashboard } from './Dashboard';
-import { DashboardFallback } from './DashboardFallback';
 
 export function DashboardFetcher() {
   const router = useRouter();
 
   const authData = useAtomValue(authAtom);
-  const { data: dashboard, isLoading } = useDashboard(authData?.teamId);
-
-  if (!authData) {
-    // 에러 throw 하고 에러바운더리로 처리
-    return null;
-  }
+  const { data: dashboard } = useDashboard(authData!.teamId);
 
   const handleBrowseProjectsClick = () => {
     router.push(PROJECT_PATH.DETAIL(dashboard!.projectId.toString()));
   };
   return (
     <section className="flex flex-col items-center gap-4 w-full">
-      {authData.course ? (
+      {authData?.course && dashboard ? (
         <>
           <div className="flex justify-between items-end w-full">
             <h2 className="text-lg font-semibold">대시보드</h2>
@@ -35,11 +29,7 @@ export function DashboardFetcher() {
               프로젝트 보러가기
             </button>
           </div>
-          {isLoading ? (
-            <DashboardFallback />
-          ) : (
-            <Dashboard dashboard={dashboard!} />
-          )}
+          <Dashboard dashboard={dashboard} />
         </>
       ) : (
         <div className="mt-9 flex flex-col items-center gap-4">

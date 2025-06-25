@@ -14,6 +14,7 @@ interface RequestConfig {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   body?: any;
   credentials?: RequestCredentials;
+  next?: NextFetchRequestConfig;
 }
 
 interface ApiResponse<T> {
@@ -25,7 +26,7 @@ export const fetchWithConfig = async <T>(
   endpoint: string,
   config: RequestConfig = {},
 ): Promise<T> => {
-  const { method = 'GET', headers = {}, body, credentials } = config;
+  const { method = 'GET', headers = {}, body, credentials, next } = config;
 
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
@@ -36,6 +37,7 @@ export const fetchWithConfig = async <T>(
       },
       body: body ? JSON.stringify(body) : undefined,
       credentials,
+      next: next ?? undefined,
     });
 
     if (!response.ok) {
