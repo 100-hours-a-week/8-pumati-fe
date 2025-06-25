@@ -6,7 +6,7 @@ import { Button, SkeletonBox } from '@/components';
 export function RankedProjectsErrorFallback() {
   const handleReset = async () => {
     await revalidateSnapshot();
-    revalidateRankedProjects;
+    revalidateRankedProjects();
   };
 
   return (

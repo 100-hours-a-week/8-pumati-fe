@@ -8,6 +8,8 @@ export async function LatestProjects() {
 
     return <ProjectGallery projects={projects} />;
   } catch (error) {
+    console.log('Get Latest Projects Error: ', error);
+
     return <ProjectGalleryErrorFallback />;
   }
 }

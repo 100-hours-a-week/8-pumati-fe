@@ -9,6 +9,8 @@ export async function RankedProjects() {
 
     return <SimpleProjects projects={projects} />;
   } catch (error) {
+    console.log('Get Ranked Projects Error: ', error);
+
     return <RankedProjectsErrorFallback />;
   }
 }
