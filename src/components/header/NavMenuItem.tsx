@@ -1,4 +1,4 @@
-import { navbarAtom } from '@/store';
+import { navbarAtom } from '@/store/atoms';
 import { useSetAtom } from 'jotai';
 import Link from 'next/link';
 

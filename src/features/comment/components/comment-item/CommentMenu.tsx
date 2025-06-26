@@ -1,7 +1,7 @@
 import { ConfirmModal, ModalPortal } from '@/components';
 import { DotMenuIcon, WarningIcon } from '@/components/icons';
 import { AUTH_PATH } from '@/constants';
-import { accessTokenAtom } from '@/store';
+import { accessTokenAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { useParams, useRouter } from 'next/navigation';
 import { RefObject, useState } from 'react';

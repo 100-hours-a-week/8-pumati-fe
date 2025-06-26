@@ -4,7 +4,7 @@ import { Button } from '@/components';
 import { EditIcon } from '@/components/icons';
 import { Badge } from '@/features/badge/components';
 import { useSendTeamBadge } from '@/features/badge/hooks';
-import { accessTokenAtom, authAtom } from '@/store';
+import { accessTokenAtom, authAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useGivePumati, useReceivePumati } from '../../hooks';

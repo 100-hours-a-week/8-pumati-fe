@@ -1,15 +1,16 @@
-import { ApiError } from '@/utils/error';
 import { getRankedProjects, getSnapshot } from '../../services';
 import { SimpleProjects } from '../simple-projects';
+import { RankedProjectsErrorFallback } from './RankedProjectsErrorFallback';
 
 export async function RankedProjects() {
-  const snapshot = await getSnapshot();
+  try {
+    const snapshot = await getSnapshot();
+    const { data: projects } = await getRankedProjects(snapshot!.id, 0, 3);
 
-  if (!snapshot) {
-    throw new ApiError(404, 'Snapshot not found');
+    return <SimpleProjects projects={projects} />;
+  } catch (error) {
+    console.log('Get Ranked Projects Error: ', error);
+
+    return <RankedProjectsErrorFallback />;
   }
-
-  const { data: projects } = await getRankedProjects(snapshot.id, 0, 3);
-
-  return <SimpleProjects projects={projects} />;
 }

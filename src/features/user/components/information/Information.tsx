@@ -2,7 +2,7 @@
 
 import { NavArrowIcon } from '@/components/icons';
 import { COURSE, USER_PATH } from '@/constants';
-import { authAtom } from '@/store';
+import { authAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -12,7 +12,6 @@ export function Information() {
   const authData = useAtomValue(authAtom);
 
   if (!authData) {
-    // 에러 throw 하고 에러바운더리로 처리
     return null;
   }
 

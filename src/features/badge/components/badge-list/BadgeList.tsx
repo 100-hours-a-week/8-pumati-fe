@@ -7,16 +7,15 @@ import { BadgeItem } from '../badge-item';
 
 type BadgeListProps = {
   badges: Badge[];
-  isLoading?: boolean;
 };
 
-export function BadgeList({ badges, isLoading }: BadgeListProps) {
+export function BadgeList({ badges }: BadgeListProps) {
   const router = useRouter();
 
   const handleVisitProject = () => {
     router.push(PROJECT_PATH.ROOT);
   };
-  return badges.length > 0 && !isLoading ? (
+  return badges.length > 0 ? (
     <ul className="grid grid-cols-3 xs:grid-cols-4 gap-4">
       {badges.map((badge) => (
         <BadgeItem key={badge.id} badge={badge} />

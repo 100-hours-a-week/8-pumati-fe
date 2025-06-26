@@ -3,7 +3,7 @@
 import { Button, Dropdown, TextInput } from '@/components';
 import { useTeamList } from '@/features/auth/hooks';
 import { useUploadFileToS3 } from '@/hooks';
-import { accessTokenAtom, authAtom } from '@/store';
+import { authAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -23,14 +23,13 @@ export function UserProfileEditForm() {
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
   const authData = useAtomValue(authAtom);
-  const accessToken = useAtomValue(accessTokenAtom);
   const { termOptions, teamNumberOptions } = useTeamList();
 
   const methods = useUserProfileEditForm(authData);
   const { handleSubmit, control, trigger, getValues } = methods;
   const { term } = useWatch({ control });
 
-  const { mutateAsync: editUserProfile } = useEditUserProfile(accessToken!);
+  const { mutate: editUserProfile } = useEditUserProfile();
   const { mutateAsync: getPresignedUrl } = useUploadFileToS3();
 
   const getEditData = async (data: UserProfileEditFormType) => {
@@ -54,7 +53,7 @@ export function UserProfileEditForm() {
   const handleTraineeEditProfile = async (data: UserProfileEditFormType) => {
     const editData = await getEditData(data);
 
-    await editUserProfile(editData);
+    editUserProfile(editData);
   };
   const handleNonTraineeEditProfile = async () => {
     const valid = await trigger(['profileImageUrl', 'name', 'nickname']);
@@ -62,7 +61,7 @@ export function UserProfileEditForm() {
       const values = getValues();
       const editData = await getEditData(values);
 
-      await editUserProfile(editData);
+      editUserProfile(editData);
     }
   };
   const handleEditClick = async () => {

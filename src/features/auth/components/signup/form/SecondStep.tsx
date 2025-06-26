@@ -5,7 +5,7 @@ import { ROOT_PATH } from '@/constants';
 import { useAuth, useSignup, useTeamList } from '@/features/auth/hooks';
 import { NonTraineeSignupData } from '@/features/auth/schemas';
 import { useUploadFileToS3 } from '@/hooks';
-import { isCodeVerifiedAtom, signupTokenAtom } from '@/store';
+import { isCodeVerifiedAtom, signupTokenAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useFormContext, useWatch } from 'react-hook-form';

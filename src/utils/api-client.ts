@@ -1,4 +1,7 @@
+import { refresh } from '@/features/auth/services';
 import { InfiniteScrollResponse, PaginationMeta } from '@/schemas';
+import { accessTokenAtom } from '@/store/atoms';
+import { getDefaultStore } from 'jotai';
 import { ApiError } from './error';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -11,6 +14,7 @@ interface RequestConfig {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   body?: any;
   credentials?: RequestCredentials;
+  next?: NextFetchRequestConfig;
 }
 
 interface ApiResponse<T> {
@@ -22,7 +26,7 @@ export const fetchWithConfig = async <T>(
   endpoint: string,
   config: RequestConfig = {},
 ): Promise<T> => {
-  const { method = 'GET', headers = {}, body, credentials } = config;
+  const { method = 'GET', headers = {}, body, credentials, next } = config;
 
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
@@ -33,6 +37,7 @@ export const fetchWithConfig = async <T>(
       },
       body: body ? JSON.stringify(body) : undefined,
       credentials,
+      next: next ?? undefined,
     });
 
     if (!response.ok) {
@@ -65,18 +70,57 @@ export const infiniteApiClient = async <T, M = PaginationMeta>(
   return fetchWithConfig<InfiniteScrollResponse<T, M>>(endpoint, config);
 };
 
+let isRefreshing = false;
+
+const refreshRequest = async <T>(
+  token: string,
+  request: (token: string) => Promise<T>,
+) => {
+  try {
+    return await request(token);
+  } catch (error) {
+    if (error instanceof ApiError && error.statusCode === 401) {
+      if (!isRefreshing) {
+        const store = getDefaultStore();
+
+        try {
+          isRefreshing = true;
+
+          const refreshResponse = await refresh();
+          const newAccessToken = refreshResponse!.accessToken;
+
+          store.set(accessTokenAtom, newAccessToken);
+
+          return await request(newAccessToken);
+        } catch {
+          store.set(accessTokenAtom, null);
+
+          window.location.href = '/login';
+        } finally {
+          isRefreshing = false;
+        }
+      }
+    }
+
+    throw error;
+  }
+};
+
 export const authApiClient = async <T>(
   endpoint: string,
   token: string,
   config: RequestConfig = {},
 ) => {
-  return apiClient<T>(endpoint, {
-    ...config,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...config.headers,
-    },
-  });
+  const request = (accessToken: string) =>
+    apiClient<T>(endpoint, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        ...config.headers,
+      },
+    });
+
+  return refreshRequest(token, request);
 };
 
 export const authInfiniteApiClient = <T, M = PaginationMeta>(
@@ -84,11 +128,14 @@ export const authInfiniteApiClient = <T, M = PaginationMeta>(
   token: string,
   config: RequestConfig = {},
 ) => {
-  return infiniteApiClient<T, M>(endpoint, {
-    ...config,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      ...config.headers,
-    },
-  });
+  const request = (accessToken: string) =>
+    infiniteApiClient<T, M>(endpoint, {
+      ...config,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        ...config.headers,
+      },
+    });
+
+  return refreshRequest(token, request);
 };

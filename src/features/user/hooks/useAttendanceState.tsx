@@ -1,5 +1,5 @@
 import { USER_QUERY_KEY } from '@/constants';
-import { accessTokenAtom } from '@/store';
+import { accessTokenAtom } from '@/store/atoms';
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import { getAttendanceState } from '../services';

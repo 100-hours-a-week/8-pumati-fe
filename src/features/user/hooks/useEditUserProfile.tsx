@@ -3,26 +3,30 @@
 import { USER_PATH, USER_QUERY_KEY } from '@/constants';
 import { useAuth } from '@/features/auth/hooks';
 import { getQueryClient } from '@/libs/tanstack-query';
-import { authAtom } from '@/store';
+import { accessTokenAtom, authAtom } from '@/store/atoms';
 import { useMutation } from '@tanstack/react-query';
-import { useSetAtom } from 'jotai';
+import { getDefaultStore, useAtomValue, useSetAtom } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { UserProfileEditData } from '../schemas';
 import { editUserProfile } from '../services';
 
-export function useEditUserProfile(token: string) {
+export function useEditUserProfile() {
   const router = useRouter();
 
   const queryClient = getQueryClient();
 
+  const accessToken = useAtomValue(accessTokenAtom);
   const setAuthData = useSetAtom(authAtom);
 
   const { mutateAsync: getMe } = useAuth();
 
   return useMutation({
-    mutationFn: (data: UserProfileEditData) => editUserProfile(token, data),
+    mutationFn: (data: UserProfileEditData) =>
+      editUserProfile(accessToken!, data),
     onSuccess: async () => {
-      const user = await getMe(token);
+      const store = getDefaultStore();
+      const accessToken = store.get(accessTokenAtom);
+      const user = await getMe(accessToken!);
 
       setAuthData(user);
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY.BADGES });

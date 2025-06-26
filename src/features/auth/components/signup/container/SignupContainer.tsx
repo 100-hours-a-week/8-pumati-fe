@@ -7,7 +7,7 @@ import {
   SignupForm as SignupFormData,
 } from '@/features/auth/schemas';
 import { useUploadFileToS3 } from '@/hooks';
-import { isCodeVerifiedAtom, signupTokenAtom } from '@/store';
+import { isCodeVerifiedAtom, signupTokenAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';

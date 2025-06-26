@@ -1,4 +1,4 @@
-import { accessTokenAtom } from '@/store';
+import { accessTokenAtom } from '@/store/atoms';
 import { useMutation } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import { NewProject } from '../schemas';
