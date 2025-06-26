@@ -1,6 +1,5 @@
 import { AuthData } from '@/features/user/schemas';
 import { apiClient, authApiClient } from '@/utils/api-client';
-import { ApiError } from '@/utils/error';
 import {
   LoginProvider,
   NonTraineeSignupData,
@@ -42,20 +41,8 @@ export const signup = async (signupData: SignupData | NonTraineeSignupData) => {
 };
 
 export const refresh = async () => {
-  try {
-    const response = await apiClient<RefreshResponse>('/api/auth/tokens', {
-      method: 'PUT',
-      credentials: 'include',
-    });
-
-    return response.data;
-  } catch (error) {
-    if (error instanceof ApiError) {
-      if (error.statusCode === 400) {
-        return undefined;
-      }
-    }
-
-    throw error;
-  }
+  return apiClient<RefreshResponse>('/api/auth/tokens', {
+    method: 'PUT',
+    credentials: 'include',
+  }).then((res) => res.data);
 };
