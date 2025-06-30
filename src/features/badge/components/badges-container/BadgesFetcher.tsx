@@ -6,7 +6,7 @@ import { useMyBadges } from '../../hooks';
 import { BadgeList } from '../badge-list';
 import { BadgeModalContent } from '../badge-modal-content';
 
-const MAX_BADGE_COUNT = 12;
+export const MAX_BADGE_COUNT = 12;
 
 export function BadgesFetcher() {
   const [isBadgeListModalOpen, setIsBadgeListModalOpen] = useState(false);

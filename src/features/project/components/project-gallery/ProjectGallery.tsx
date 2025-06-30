@@ -17,8 +17,8 @@ export function ProjectGallery({ projects }: ProjectGalleryProps) {
       </div>
       <div className="mb-4">
         <Carousel pagination={false}>
-          {projects.map((project) => (
-            <CardItem key={project.id} project={project} />
+          {projects.map((project, index) => (
+            <CardItem key={project.id} project={project} priority={index < 1} />
           ))}
         </Carousel>
       </div>

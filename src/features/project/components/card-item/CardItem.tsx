@@ -8,9 +8,10 @@ import { TagList } from '../tag';
 
 type CardItemProps = {
   project: ProjectItem;
+  priority?: boolean;
 };
 
-export function CardItem({ project }: CardItemProps) {
+export function CardItem({ project, priority }: CardItemProps) {
   const { id, representativeImageUrl, title, introduction, tags, teamNumber } =
     project;
   const router = useRouter();
@@ -30,6 +31,7 @@ export function CardItem({ project }: CardItemProps) {
           fill
           sizes="100%"
           className="object-contain group-hover:scale-105 transition-all duration-300"
+          priority={priority}
         />
       </div>
       <div className="px-4 pt-2 pb-4">

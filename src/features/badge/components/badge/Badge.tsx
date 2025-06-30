@@ -10,6 +10,7 @@ type BadgeProps = {
   size?: 'md' | 'lg' | 'xl';
   isExpandable?: boolean;
   title?: string;
+  priority?: boolean;
 };
 
 export function Badge({
@@ -17,6 +18,7 @@ export function Badge({
   size = 'md',
   isExpandable,
   title,
+  priority,
 }: BadgeProps) {
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false);
 
@@ -45,6 +47,7 @@ export function Badge({
           fill
           sizes="100%"
           className="object-contain"
+          priority={priority}
         />
       </div>
       {isBadgeModalOpen && (
