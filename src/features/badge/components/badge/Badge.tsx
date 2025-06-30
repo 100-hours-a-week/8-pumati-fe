@@ -22,6 +22,8 @@ export function Badge({
 }: BadgeProps) {
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false);
 
+  const sizes = size === 'md' ? 48 : size === 'lg' ? 64 : 224;
+
   const handleClick = () => {
     if (isExpandable) {
       setIsBadgeModalOpen(true);
@@ -44,8 +46,8 @@ export function Badge({
         <Image
           src={imageUrl}
           alt="프로젝트 뱃지"
-          fill
-          sizes="100%"
+          width={sizes}
+          height={sizes}
           className="object-contain"
           priority={priority}
         />

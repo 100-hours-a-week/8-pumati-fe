@@ -36,7 +36,7 @@ export function SimpleCardItem({
             src={representativeImageUrl}
             alt={title}
             fill
-            sizes="100%"
+            sizes="(max-width: 400px) 72px, 128px"
             className="object-contain"
             priority={priority}
           />

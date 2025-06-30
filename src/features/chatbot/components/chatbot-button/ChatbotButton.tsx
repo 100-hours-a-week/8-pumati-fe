@@ -52,7 +52,7 @@ export function ChatbotButton({
             src={chatbotImg}
             alt="chatbot"
             fill
-            sizes="100%"
+            sizes="(max-width: 400px) 48px, 56px"
             className="object-contain"
             priority
           />

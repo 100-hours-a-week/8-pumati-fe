@@ -49,7 +49,7 @@ export async function ProjectDetailContainer({
                 src={url}
                 alt="프로젝트 이미지"
                 fill
-                sizes="100%"
+                sizes="(max-width: 400px) 100vw, 400px"
                 className="object-contain group-hover:scale-105 transition-all duration-300"
                 priority
               />

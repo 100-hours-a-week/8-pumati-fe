@@ -29,7 +29,7 @@ export function CardItem({ project, priority }: CardItemProps) {
           src={representativeImageUrl}
           alt={title}
           fill
-          sizes="100%"
+          sizes="(max-width: 400px) 100vw, 400px"
           className="object-contain group-hover:scale-105 transition-all duration-300"
           priority={priority}
         />
