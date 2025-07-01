@@ -14,7 +14,7 @@ export function Dashboard({ dashboard }: DashboardProps) {
   const dashboardItems = [
     {
       title: '뱃지',
-      item: <Badge imageUrl={badgeImageUrl} />,
+      item: <Badge imageUrl={badgeImageUrl} priority />,
       itemStyle: 'bg-light-blue border-blue',
     },
     {

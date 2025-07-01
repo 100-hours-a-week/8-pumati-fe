@@ -16,8 +16,8 @@ export function ChattingItem({ content, isUser }: ChattingItemProps) {
             <Image
               src={chatbotImg}
               alt="chatbot"
-              fill
-              sizes="100%"
+              width={40}
+              height={40}
               className="object-contain"
             />
           </div>

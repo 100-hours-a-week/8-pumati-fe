@@ -31,8 +31,8 @@ export function CommentItem({ comment }: CommentItemProps) {
           <Image
             src={profileImageUrl}
             alt={name}
-            fill
-            sizes="100%"
+            width={40}
+            height={40}
             className="rounded-full object-cover"
           />
         </div>
