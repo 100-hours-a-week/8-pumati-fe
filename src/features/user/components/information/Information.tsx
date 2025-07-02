@@ -1,10 +1,10 @@
 'use client';
 
+import { ProfileImage } from '@/components';
 import { NavArrowIcon } from '@/components/icons';
 import { COURSE, USER_PATH } from '@/constants';
 import { authAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 export function Information() {
@@ -25,16 +25,12 @@ export function Information() {
     <section className="flex flex-col gap-4 w-full mb-12">
       <h2 className="text-lg font-semibold">회원 정보</h2>
       <div className="flex gap-4">
-        <div className="relative h-16 w-16 overflow-hidden shrink-0 rounded-full">
-          <Image
-            src={profileImageUrl}
-            alt="프로필 이미지"
-            fill
-            sizes="64px"
-            priority
-            className="object-cover"
-          />
-        </div>
+        <ProfileImage
+          src={profileImageUrl}
+          alt="프로필 이미지"
+          size="lg"
+          priority
+        />
         <div className="flex flex-col justify-center gap-1 text-sm">
           <div className="flex items-center gap-4">
             <p className="text-base font-semibold">

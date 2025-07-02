@@ -7,6 +7,7 @@ export * from './error-handling-wrapper';
 export * from './form';
 export * from './header';
 export * from './modal';
+export * from './profile-image';
 export * from './skeleton-box';
 export * from './text-input';
 export * from './textarea';
