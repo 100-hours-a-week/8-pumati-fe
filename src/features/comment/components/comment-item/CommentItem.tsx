@@ -1,9 +1,9 @@
+import { ProfileImage } from '@/components';
 import { COURSE } from '@/constants';
 import { useOutsideClick } from '@/hooks';
 import { authAtom } from '@/store/atoms';
 import { dateDistance } from '@/utils/date';
 import { useAtomValue } from 'jotai';
-import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { CommentItem as CommentItemType } from '../../schemas';
 import { CommentMenu } from './CommentMenu';
@@ -27,15 +27,7 @@ export function CommentItem({ comment }: CommentItemProps) {
   return (
     <li className="border-b border-light-grey last:border-b-0">
       <div className="flex justify-start items-start gap-4 pt-3 pb-6 mx-1">
-        <div className="relative w-10 h-10 shrink-0">
-          <Image
-            src={profileImageUrl}
-            alt={name}
-            width={40}
-            height={40}
-            className="rounded-full object-cover"
-          />
-        </div>
+        <ProfileImage src={profileImageUrl} alt={name} size="sm" />
         <div className="flex flex-col w-full">
           <div className="w-full">
             <div className="relative flex justify-between items-center">
