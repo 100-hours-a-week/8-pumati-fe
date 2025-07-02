@@ -25,7 +25,18 @@ export function BadgeItem({ badge, priority }: BadgeItemProps) {
   };
   return (
     <li className="flex flex-col items-center gap-2">
-      <div className="relative group cursor-pointer" onClick={handleBadgeClick}>
+      <div
+        role="button"
+        aria-label={`${giverTeamNumber}팀 뱃지`}
+        tabIndex={0}
+        className="relative group cursor-pointer"
+        onClick={handleBadgeClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            handleBadgeClick();
+          }
+        }}
+      >
         <Badge imageUrl={badgeImageUrl} size="lg" priority={priority} />
         <div className="absolute top-0 right-0 w-full h-full flex items-center justify-center bg-black/50 z-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
           <p className="text-white font-semibold">{giverTeamNumber}팀</p>

@@ -32,6 +32,14 @@ export function Badge({
   return (
     <>
       <div
+        role={isExpandable ? 'button' : undefined}
+        aria-label={`${title} 팀 뱃지`}
+        tabIndex={isExpandable ? 0 : undefined}
+        onKeyDown={(e) => {
+          if (isExpandable && e.key === 'Enter') {
+            handleClick();
+          }
+        }}
         className={cn(
           'relative flex items-center justify-center z-30 rounded-full overflow-hidden shadow-sm',
           size === 'md'
