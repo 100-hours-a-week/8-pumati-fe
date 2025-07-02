@@ -1,18 +1,21 @@
 'use client';
 
 import { NavArrowIcon } from '@/components/icons';
-import { ROOT_PATH } from '@/constants';
 import { useRouter } from 'next/navigation';
 
 export function AuthHeader() {
   const router = useRouter();
 
   const handleBack = () => {
-    router.push(ROOT_PATH);
+    router.back();
   };
   return (
     <header className="sticky top-0 flex justify-center items-center px-6 py-4 w-full h-16 border-b border-soft-grey bg-white z-40">
-      <button onClick={handleBack} className="absolute left-6 cursor-pointer">
+      <button
+        onClick={handleBack}
+        className="absolute left-6 cursor-pointer"
+        aria-label="뒤로가기"
+      >
         <NavArrowIcon
           width={28}
           height={28}

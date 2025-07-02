@@ -42,6 +42,7 @@ export function ConfirmModal({
               onClick={onConfirm}
               variant={destructive ? 'destructive' : 'primary'}
               isLoading={isLoading}
+              name={buttonText}
             >
               {buttonText}
             </Button>

@@ -29,6 +29,9 @@ export function Header() {
           ref={buttonRef}
           type="button"
           className="cursor-pointer"
+          aria-label={isNavbarOpen ? '메뉴 닫기' : '메뉴 열기'}
+          aria-expanded={isNavbarOpen}
+          aria-controls="navbar-menu"
           onClick={() => setIsNavbarOpen((prev) => !prev)}
         >
           {isNavbarOpen ? (

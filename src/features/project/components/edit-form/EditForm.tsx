@@ -167,7 +167,12 @@ export function EditForm({ project }: EditFormProps) {
           maxTags={5}
           disabled={isSubmitting}
         />
-        <Button type="submit" className="mt-3" isLoading={isSubmitting}>
+        <Button
+          type="submit"
+          className="mt-3"
+          isLoading={isSubmitting}
+          name="수정하기"
+        >
           수정하기
         </Button>
         <div className="flex justify-center mt-3">

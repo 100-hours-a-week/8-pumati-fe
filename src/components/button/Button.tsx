@@ -19,6 +19,7 @@ export function Button({
   isLoading,
   icon,
   children,
+  name,
   ...props
 }: ButtonProps) {
   return (
@@ -28,6 +29,8 @@ export function Button({
         className,
       )}
       disabled={disabled || isLoading}
+      aria-label={isLoading ? `${name} 버튼 로딩 중` : undefined}
+      name={name}
       {...props}
     >
       {isLoading && (

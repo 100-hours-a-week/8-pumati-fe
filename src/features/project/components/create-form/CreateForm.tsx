@@ -143,7 +143,12 @@ export function CreateForm() {
           maxTags={5}
           disabled={isSubmitting}
         />
-        <Button type="submit" className="mt-3" isLoading={isSubmitting}>
+        <Button
+          type="submit"
+          className="mt-3"
+          isLoading={isSubmitting}
+          name="생성하기"
+        >
           생성하기
         </Button>
       </form>

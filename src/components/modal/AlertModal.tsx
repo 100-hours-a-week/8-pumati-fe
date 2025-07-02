@@ -40,7 +40,12 @@ export function AlertModal({
           className="relative flex flex-col items-center justify-between gap-4 px-4 pt-4 pb-8 w-4/5 min-h-[200px] max-h-4/5 bg-white rounded-lg overflow-auto"
         >
           {children}
-          <Button size="md" onClick={handleConfirm} disabled={isLoading}>
+          <Button
+            size="md"
+            onClick={handleConfirm}
+            disabled={isLoading}
+            name={buttonText}
+          >
             {buttonText}
           </Button>
         </div>
