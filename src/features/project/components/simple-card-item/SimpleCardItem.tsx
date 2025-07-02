@@ -10,9 +10,14 @@ import { TagList } from '../tag';
 type SimpleCardItemProps = {
   project: ProjectItem;
   rank?: number;
+  priority?: boolean;
 };
 
-export function SimpleCardItem({ project, rank }: SimpleCardItemProps) {
+export function SimpleCardItem({
+  project,
+  rank,
+  priority,
+}: SimpleCardItemProps) {
   const { id, representativeImageUrl, title, introduction, teamNumber, tags } =
     project;
   const router = useRouter();
@@ -31,8 +36,9 @@ export function SimpleCardItem({ project, rank }: SimpleCardItemProps) {
             src={representativeImageUrl}
             alt={title}
             fill
-            sizes="100%"
+            sizes="(max-width: 400px) 72px, 128px"
             className="object-contain"
+            priority={priority}
           />
           {rank && (
             <span
