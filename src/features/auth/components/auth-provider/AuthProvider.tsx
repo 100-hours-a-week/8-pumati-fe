@@ -9,10 +9,11 @@ import { useRefresh } from '../../hooks/useRefresh';
 
 type AuthProviderProps = {
   children: ReactNode;
+  refreshToken?: string;
 };
 
-export function AuthProvider({ children }: AuthProviderProps) {
-  const [isLoading, setIsLoading] = useState(true);
+export function AuthProvider({ children, refreshToken }: AuthProviderProps) {
+  const [isLoading, setIsLoading] = useState(!!refreshToken);
 
   const setAccessToken = useSetAtom(accessTokenAtom);
 
@@ -20,7 +21,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     data: refreshData,
     isLoading: isRefreshing,
     isError: isRefreshError,
-  } = useRefresh();
+  } = useRefresh(refreshToken);
   const { mutateAsync: getAuth, isPending: isGettingAuth } = useAuth();
 
   useEffect(() => {
