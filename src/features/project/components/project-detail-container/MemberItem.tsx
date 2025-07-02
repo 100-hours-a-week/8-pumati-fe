@@ -1,5 +1,5 @@
+import { ProfileImage } from '@/components';
 import { COURSE } from '@/constants';
-import Image from 'next/image';
 import { TeamMember } from '../../schemas';
 
 type MemberItemProps = {
@@ -13,15 +13,7 @@ export function MemberItem({ member }: MemberItemProps) {
       key={id}
       className="flex items-center gap-4 py-3 mx-1 border-b border-light-grey"
     >
-      <div className="w-13 h-13 shrink-0 overflow-hidden rounded-full">
-        <Image
-          src={profileImageUrl}
-          alt={name}
-          width={52}
-          height={52}
-          className="object-cover"
-        />
-      </div>
+      <ProfileImage src={profileImageUrl} alt={name} size="md" />
       <div>
         <p className="font-medium">
           {nickname}({name})
