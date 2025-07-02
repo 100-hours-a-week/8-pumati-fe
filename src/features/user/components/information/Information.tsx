@@ -25,12 +25,12 @@ export function Information() {
     <section className="flex flex-col gap-4 w-full mb-12">
       <h2 className="text-lg font-semibold">회원 정보</h2>
       <div className="flex gap-4">
-        <div className="relative h-16 w-16 shrink-0 rounded-full">
+        <div className="relative h-16 w-16 overflow-hidden shrink-0 rounded-full">
           <Image
             src={profileImageUrl}
             alt="프로필 이미지"
-            width={64}
-            height={64}
+            fill
+            sizes="64px"
             priority
             className="object-cover"
           />

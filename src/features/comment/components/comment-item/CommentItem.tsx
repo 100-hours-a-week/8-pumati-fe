@@ -27,13 +27,13 @@ export function CommentItem({ comment }: CommentItemProps) {
   return (
     <li className="border-b border-light-grey last:border-b-0">
       <div className="flex justify-start items-start gap-4 pt-3 pb-6 mx-1">
-        <div className="relative w-10 h-10 shrink-0">
+        <div className="relative w-10 h-10 shrink-0 overflow-hidden rounded-full">
           <Image
             src={profileImageUrl}
             alt={name}
-            width={40}
-            height={40}
-            className="rounded-full object-cover"
+            fill
+            sizes="40px"
+            className="object-cover"
           />
         </div>
         <div className="flex flex-col w-full">
