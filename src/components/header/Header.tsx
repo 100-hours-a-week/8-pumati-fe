@@ -22,7 +22,7 @@ export function Header() {
             : 'transition-colors duration-300 ease-in-out',
         )}
       >
-        <Link href="/">
+        <Link href="/" aria-label="홈으로 이동">
           <LogoIcon width={92} />
         </Link>
         <button
