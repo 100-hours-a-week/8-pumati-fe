@@ -31,6 +31,7 @@ export function WithdrawModalContent({ onClose }: WithdrawModalContentProps) {
   return (
     <ModalPortal>
       <ConfirmModal
+        title="탈퇴 확인"
         buttonText="탈퇴"
         onClose={onClose}
         onConfirm={handleWithdraw}
@@ -38,10 +39,8 @@ export function WithdrawModalContent({ onClose }: WithdrawModalContentProps) {
       >
         <WarningIcon width={40} height={40} />
         <div className="flex flex-col items-center gap-2 mb-6">
-          <h2 className="text-lg font-semibold">
-            정말 프로젝트를 삭제하시겠습니까?
-          </h2>
-          <p>삭제한 프로젝트는 복구할 수 없습니다.</p>
+          <h2 className="text-lg font-semibold">정말 탈퇴하시겠습니까?</h2>
+          <p>탈퇴 시 모든 정보가 삭제됩니다.</p>
         </div>
       </ConfirmModal>
     </ModalPortal>

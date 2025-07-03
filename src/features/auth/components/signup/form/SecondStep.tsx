@@ -160,7 +160,7 @@ export function SecondStep({
           >
             이전
           </Button>
-          <Button type="submit" size="full" className="mt-3">
+          <Button type="submit" size="full" className="mt-3" name="회원가입">
             회원가입
           </Button>
         </div>

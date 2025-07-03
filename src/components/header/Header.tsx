@@ -22,13 +22,16 @@ export function Header() {
             : 'transition-colors duration-300 ease-in-out',
         )}
       >
-        <Link href="/">
+        <Link href="/" aria-label="홈으로 이동">
           <LogoIcon width={92} />
         </Link>
         <button
           ref={buttonRef}
           type="button"
           className="cursor-pointer"
+          aria-label={isNavbarOpen ? '메뉴 닫기' : '메뉴 열기'}
+          aria-expanded={isNavbarOpen}
+          aria-controls="navbar-menu"
           onClick={() => setIsNavbarOpen((prev) => !prev)}
         >
           {isNavbarOpen ? (

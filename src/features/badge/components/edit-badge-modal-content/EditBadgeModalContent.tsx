@@ -69,6 +69,7 @@ export function EditBadgeModalContent({ onClose }: EditBadgeModalContentProps) {
   return (
     <ModalPortal>
       <ConfirmModal
+        title="뱃지 변경"
         buttonText="변경"
         onClose={onClose}
         onConfirm={handleBadgeEdit}

@@ -5,6 +5,7 @@ import { DropdownOption, DropdownValue } from './types';
 
 type MenuListProps = {
   options: DropdownOption[];
+  selected?: string;
   onSelect: (value: DropdownValue) => void;
   onOutsideClick: () => void;
   buttonRef: RefObject<HTMLButtonElement | null>;
@@ -12,6 +13,7 @@ type MenuListProps = {
 
 export function MenuList({
   options,
+  selected,
   onSelect,
   onOutsideClick,
   buttonRef,
@@ -26,7 +28,12 @@ export function MenuList({
       className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg border-grey max-h-[146px] overflow-auto"
     >
       {options.map((option) => (
-        <MenuItem key={option.value} option={option} onSelect={onSelect} />
+        <MenuItem
+          key={option.value}
+          option={option}
+          onSelect={onSelect}
+          isSelected={selected === option.label}
+        />
       ))}
     </ul>
   );

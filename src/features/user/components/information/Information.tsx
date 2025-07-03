@@ -37,7 +37,11 @@ export function Information() {
               {nickname}({name})/
               <span>{course ? COURSE[course] : '외부인'}</span>
             </p>
-            <button onClick={handleEditClick} className="cursor-pointer">
+            <button
+              onClick={handleEditClick}
+              className="cursor-pointer"
+              aria-label="회원 정보 수정"
+            >
               <NavArrowIcon
                 width={20}
                 height={20}

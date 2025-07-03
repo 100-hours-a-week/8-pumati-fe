@@ -74,6 +74,7 @@ export function Description({
           <button
             className="flex justify-center items-center self-end p-1 cursor-pointer hover:bg-light-blue rounded-lg transition-colors duration-150"
             onClick={handleEditButtonClick}
+            aria-label="프로젝트 수정"
           >
             <EditIcon width={20} height={20} />
           </button>

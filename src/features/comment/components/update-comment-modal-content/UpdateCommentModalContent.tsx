@@ -12,7 +12,12 @@ export default function UpdateCommentModalContent({
   isSubmitting,
 }: UpdateCommentModalContentProps) {
   return (
-    <ConfirmModal buttonText="완료" onClose={onClose} isLoading={isSubmitting}>
+    <ConfirmModal
+      title="댓글 작성 및 수정"
+      buttonText="완료"
+      onClose={onClose}
+      isLoading={isSubmitting}
+    >
       <h2 className="text-lg font-semibold">{title}</h2>
       <Textarea
         name="content"

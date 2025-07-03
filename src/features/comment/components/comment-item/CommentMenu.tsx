@@ -50,12 +50,16 @@ export function CommentMenu({
         ref={menuButtonRef}
         className="cursor-pointer"
         onClick={onToggleMenu}
+        aria-label="댓글 메뉴 열기"
+        aria-expanded={isMenuOpen}
+        aria-controls="comment-menu"
       >
         <DotMenuIcon width={20} height={18} />
       </button>
       {isMenuOpen && (
         <div
           ref={ref}
+          id="comment-menu"
           className="absolute right-0 top-full flex flex-col bg-white rounded-md shadow-md border border-light-grey"
         >
           <button
@@ -83,6 +87,7 @@ export function CommentMenu({
       {isDeleteModalOpen && (
         <ModalPortal>
           <ConfirmModal
+            title="댓글 삭제"
             buttonText="삭제"
             onClose={() => setIsDeleteModalOpen(false)}
             onConfirm={handleDeleteComment}

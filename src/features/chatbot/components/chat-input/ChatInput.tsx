@@ -52,6 +52,7 @@ export function ChatInput({
             ? 'border-2 border-blue bg-white cursor-not-allowed'
             : 'bg-blue cursor-pointer',
         )}
+        aria-label={isTypingOrLoading ? '마티 답변 생성 중' : '전송하기'}
       >
         {isTypingOrLoading ? (
           <PauseIcon width={18} height={18} fill="blue" />
