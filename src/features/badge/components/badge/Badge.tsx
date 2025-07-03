@@ -63,6 +63,7 @@ export function Badge({
       {isBadgeModalOpen && (
         <ModalPortal>
           <AlertModal
+            title={`${title} 팀 뱃지 확인`}
             buttonText="닫기"
             onClose={() => setIsBadgeModalOpen(false)}
           >

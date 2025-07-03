@@ -59,6 +59,7 @@ export function Dropdown({
       {isOpen && (
         <MenuList
           options={options}
+          selected={selectedLabel}
           onSelect={handleSelect}
           onOutsideClick={() => setIsOpen(false)}
           buttonRef={buttonRef}

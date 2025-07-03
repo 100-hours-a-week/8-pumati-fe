@@ -87,6 +87,7 @@ export function CommentMenu({
       {isDeleteModalOpen && (
         <ModalPortal>
           <ConfirmModal
+            title="댓글 삭제"
             buttonText="삭제"
             onClose={() => setIsDeleteModalOpen(false)}
             onConfirm={handleDeleteComment}
