@@ -1,4 +1,3 @@
-import { BADGE_TAG_MAX_LENGTH } from '@/constants';
 import { z } from 'zod';
 
 export type PaginationMeta = {
@@ -22,13 +21,7 @@ export const badgeSchema = z.object({
 export type Badge = z.infer<typeof badgeSchema>;
 
 export const editBadgeSchema = z.object({
-  modificationTags: z
-    .array(z.string())
-    .min(BADGE_TAG_MAX_LENGTH, `태그를 ${BADGE_TAG_MAX_LENGTH}개 입력해주세요.`)
-    .max(
-      BADGE_TAG_MAX_LENGTH,
-      `태그는 ${BADGE_TAG_MAX_LENGTH}개만 입력할 수 있습니다.`,
-    ),
+  tag: z.string().min(1, '태그를 입력해주세요.'),
 });
 
 export type EditBadge = z.infer<typeof editBadgeSchema>;
