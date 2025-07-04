@@ -6,6 +6,7 @@ export * from './error-fallback';
 export * from './error-handling-wrapper';
 export * from './form';
 export * from './header';
+export * from './menu-header';
 export * from './modal';
 export * from './profile-image';
 export * from './skeleton-box';

@@ -1,47 +1,33 @@
 'use client';
 
-import { navbarAtom } from '@/store/atoms';
-import { cn } from '@/utils/style';
-import { useAtom } from 'jotai';
-import Link from 'next/link';
-import { useRef } from 'react';
-import { CancelIcon, LogoIcon, MenuIcon } from '../icons';
-import { NavBar } from './NavBar';
+import { NavArrowIcon } from '@/components/icons';
+import { useRouter } from 'next/navigation';
 
-export function Header() {
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const [isNavbarOpen, setIsNavbarOpen] = useAtom(navbarAtom);
+type HeaderProps = {
+  title: string;
+};
 
+export function Header({ title }: HeaderProps) {
+  const router = useRouter();
+
+  const handleBack = () => {
+    router.back();
+  };
   return (
-    <header className="sticky top-0 w-full bg-white overflow-hidden z-40">
-      <section
-        className={cn(
-          'flex justify-between items-center z-40 px-6 py-4 h-16 border-b border-soft-grey',
-          isNavbarOpen
-            ? 'border-b-white'
-            : 'transition-colors duration-300 ease-in-out',
-        )}
+    <header className="sticky top-0 flex justify-center items-center px-6 py-4 w-full h-16 border-b border-soft-grey bg-white z-40">
+      <button
+        onClick={handleBack}
+        className="absolute left-6 cursor-pointer"
+        aria-label="뒤로가기"
       >
-        <Link href="/" aria-label="홈으로 이동">
-          <LogoIcon width={92} />
-        </Link>
-        <button
-          ref={buttonRef}
-          type="button"
-          className="cursor-pointer"
-          aria-label={isNavbarOpen ? '메뉴 닫기' : '메뉴 열기'}
-          aria-expanded={isNavbarOpen}
-          aria-controls="navbar-menu"
-          onClick={() => setIsNavbarOpen((prev) => !prev)}
-        >
-          {isNavbarOpen ? (
-            <CancelIcon width={18} height={18} fill="var(--color-dark-grey)" />
-          ) : (
-            <MenuIcon width={24} height={24} fill="var(--color-dark-grey)" />
-          )}
-        </button>
-      </section>
-      <NavBar triggerRef={buttonRef} />
+        <NavArrowIcon
+          width={24}
+          height={24}
+          fill="var(--color-dark-grey)"
+          className="-rotate-90"
+        />
+      </button>
+      <h1 className="text-lg font-semibold flex-1 text-center">{title}</h1>
     </header>
   );
 }
