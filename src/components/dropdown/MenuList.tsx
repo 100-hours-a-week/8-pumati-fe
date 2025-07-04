@@ -25,7 +25,7 @@ export function MenuList({
   return (
     <ul
       ref={ref}
-      className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg border-grey max-h-[146px] overflow-auto"
+      className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg border-grey max-h-32 overflow-auto"
     >
       {options.map((option) => (
         <MenuItem
