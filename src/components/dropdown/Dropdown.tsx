@@ -40,6 +40,11 @@ export function Dropdown({
         onClick={handleMenuToggle}
         className="flex items-center justify-between w-full px-4 py-3 text-left border rounded-md border-grey focus:border-transparent focus:ring-2 focus:ring-blue focus:ring-offset-0 outline-none cursor-pointer disabled:bg-blue-white"
         disabled={disabled}
+        aria-label={
+          selectedLabel
+            ? `선택된 값: ${selectedLabel}. 목록 펼치기`
+            : `선택된 값 없음. 목록 펼치기`
+        }
       >
         <p className={selectedLabel ? '' : 'text-grey'}>
           {selectedLabel || placeholder}
@@ -54,6 +59,7 @@ export function Dropdown({
       {isOpen && (
         <MenuList
           options={options}
+          selected={selectedLabel}
           onSelect={handleSelect}
           onOutsideClick={() => setIsOpen(false)}
           buttonRef={buttonRef}

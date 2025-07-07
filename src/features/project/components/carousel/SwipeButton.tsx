@@ -23,6 +23,7 @@ export function SwipeButton({ direction }: SwipeButtonProps) {
         direction === 'left' ? 'left-2 xs:left-4' : 'right-2 xs:right-4',
       )}
       onClick={handleClick}
+      aria-label={`${direction} swipe button`}
     >
       <NavArrowIcon
         width={32}

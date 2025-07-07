@@ -11,6 +11,7 @@ export function LoginButton() {
       size="lg"
       icon={<KakaoIcon width={20} height={20} />}
       onClick={() => loginWithProvider('kakao')}
+      name="카카오 로그인"
     >
       카카오 로그인
     </Button>

@@ -9,6 +9,7 @@ export const PROJECT_PATH = Object.freeze({
   ROOT: '/projects',
   NEW: '/projects/new',
   DETAIL: (id: string) => `/projects/${id}`,
+  EDIT: (id: string) => `/projects/${id}/edit`,
 });
 
 export const USER_PATH = Object.freeze({

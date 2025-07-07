@@ -19,6 +19,7 @@ export function DeleteProjectModalContent({
   return (
     <ModalPortal>
       <ConfirmModal
+        title="프로젝트 삭제 확인"
         buttonText="삭제"
         onClose={onClose}
         onConfirm={handleDeleteProject}

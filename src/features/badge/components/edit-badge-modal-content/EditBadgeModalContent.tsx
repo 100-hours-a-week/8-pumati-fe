@@ -2,7 +2,7 @@
 
 import { ConfirmModal, ModalPortal } from '@/components';
 import { SpinnerIcon } from '@/components/icons';
-import { AUTH_PATH, BADGE_TAG_MAX_LENGTH } from '@/constants';
+import { AUTH_PATH } from '@/constants';
 import { accessTokenAtom, authAtom } from '@/store/atoms';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAtomValue } from 'jotai';
@@ -25,26 +25,18 @@ export function EditBadgeModalContent({ onClose }: EditBadgeModalContentProps) {
     formState: { errors },
   } = useForm<EditBadge>({
     defaultValues: {
-      modificationTags: [],
+      tag: '',
     },
     resolver: zodResolver(editBadgeSchema),
   });
-  const tags = watch('modificationTags');
+  const tag = watch('tag');
 
   const accessToken = useAtomValue(accessTokenAtom);
   const authData = useAtomValue(authAtom);
   const { mutate: editBadge, isPending: isEditingBadge } = useEditBadge();
 
-  const handleToggleTag = async (tag: string) => {
-    if (tags.includes(tag)) {
-      const newTags = tags.filter((t: string) => t !== tag);
-      setValue('modificationTags', newTags);
-      return;
-    }
-
-    if (tags.length < BADGE_TAG_MAX_LENGTH) {
-      setValue('modificationTags', [...tags, tag]);
-    }
+  const handleToggleTag = async (value: string) => {
+    setValue('tag', value);
   };
   const handleBadgeEdit = handleSubmit((data) => {
     if (!accessToken || !authData?.teamId) {
@@ -69,6 +61,7 @@ export function EditBadgeModalContent({ onClose }: EditBadgeModalContentProps) {
   return (
     <ModalPortal>
       <ConfirmModal
+        title="뱃지 변경"
         buttonText="변경"
         onClose={onClose}
         onConfirm={handleBadgeEdit}
@@ -90,16 +83,12 @@ export function EditBadgeModalContent({ onClose }: EditBadgeModalContentProps) {
             <div className="text-center">
               <p>뱃지의 스타일을 선택해주세요.</p>
             </div>
-            <TagList tags={tags} onToggleTag={handleToggleTag} />
-            {errors.modificationTags ? (
+            <TagList selectedTag={tag} onToggleTag={handleToggleTag} />
+            {errors.tag && (
               <p className="absolute -bottom-1 text-red-500 text-sm">
-                {String(errors.modificationTags.message)}
+                {String(errors.tag.message)}
               </p>
-            ) : tags.length === 5 ? (
-              <p className="absolute -bottom-1 text-red-500 text-sm">
-                태그는 최대 5개까지 입력할 수 있습니다.
-              </p>
-            ) : null}
+            )}
           </form>
         )}
         <p className="text-sm text-grey">

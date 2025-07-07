@@ -133,6 +133,7 @@ export function UserProfileEditForm() {
             type="button"
             isLoading={isSubmitting}
             onClick={handleEditClick}
+            name="수정하기"
           >
             수정하기
           </Button>

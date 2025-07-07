@@ -36,7 +36,11 @@ export function BadgesFetcher() {
       </div>
       {isBadgeListModalOpen && (
         <ModalPortal>
-          <AlertModal onClose={handleBadgeListModalToggle} buttonText="확인">
+          <AlertModal
+            title="받은 품앗이 뱃지 더 보기"
+            onClose={handleBadgeListModalToggle}
+            buttonText="확인"
+          >
             <BadgeModalContent
               badges={badges}
               hasNextPage={hasNextPage}

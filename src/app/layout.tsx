@@ -17,7 +17,7 @@ export default function RootLayout({
       <body
         className={cn(
           pretendard.className,
-          'min-h-screen w-full bg-blue-white',
+          'min-h-screen w-full bg-gradient-to-br from-blue-white via-soft-blue to-blue-white bg-[length:400%_400%] animate-gradient-move',
         )}
       >
         <Providers>

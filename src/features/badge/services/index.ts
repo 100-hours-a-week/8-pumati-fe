@@ -32,14 +32,16 @@ export const editBadge = async (
       token,
       {
         method: 'POST',
-        body: editBadgeData,
+        body: {
+          modificationTags: [editBadgeData.tag],
+        },
       },
     );
 
     return response;
   } catch (error) {
     if (error instanceof ApiError) {
-      if (error.statusCode === 400) {
+      if (error.statusCode === 409) {
         throw new ApiError(error.statusCode, BADGE_ERROR_MESSAGE.IN_PROGRESS);
       }
     }

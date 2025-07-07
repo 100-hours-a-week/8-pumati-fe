@@ -2,6 +2,7 @@
 
 import { Button } from '@/components';
 import { EditIcon } from '@/components/icons';
+import { PROJECT_PATH } from '@/constants';
 import { Badge } from '@/features/badge/components';
 import { useSendTeamBadge } from '@/features/badge/hooks';
 import { accessTokenAtom, authAtom } from '@/store/atoms';
@@ -43,12 +44,14 @@ export function Description({
   const auth = useAtomValue(authAtom);
   const accessToken = useAtomValue(accessTokenAtom);
 
+  const isMyProject = auth?.teamId === teamId;
+
   const { mutate: givePumati } = useGivePumati();
   const { mutate: receivePumati } = useReceivePumati();
   const { mutate: sendTeamBadge } = useSendTeamBadge();
 
   const handleEditButtonClick = () => {
-    router.push(`/projects/${id}/edit`);
+    router.push(PROJECT_PATH.EDIT(id.toString()));
   };
   const handleOpenProject = () => {
     if (accessToken && auth && auth.teamId) {
@@ -70,10 +73,11 @@ export function Description({
   return (
     <section className="flex flex-col gap-4 mt-4">
       <div className="flex flex-col gap-1">
-        {auth?.teamId === teamId && (
+        {isMyProject && (
           <button
             className="flex justify-center items-center self-end p-1 cursor-pointer hover:bg-light-blue rounded-lg transition-colors duration-150"
             onClick={handleEditButtonClick}
+            aria-label="프로젝트 수정"
           >
             <EditIcon width={20} height={20} />
           </button>
@@ -85,6 +89,8 @@ export function Description({
               isExpandable
               title={title}
               priority
+              projectId={id}
+              isMyProject={isMyProject}
             />
             <h1 className="text-2xl font-bold mr-2">{title}</h1>
           </div>

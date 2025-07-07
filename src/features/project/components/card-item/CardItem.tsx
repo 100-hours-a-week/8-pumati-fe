@@ -1,8 +1,6 @@
-'use client';
-
 import { PROJECT_PATH } from '@/constants';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { ProjectItem } from '../../schemas';
 import { TagList } from '../tag';
 
@@ -14,15 +12,11 @@ type CardItemProps = {
 export function CardItem({ project, priority }: CardItemProps) {
   const { id, representativeImageUrl, title, introduction, tags, teamNumber } =
     project;
-  const router = useRouter();
 
-  const handleClick = () => {
-    router.push(PROJECT_PATH.DETAIL(id.toString()));
-  };
   return (
-    <li
+    <Link
+      href={PROJECT_PATH.DETAIL(id.toString())}
       className="flex flex-col rounded-lg overflow-hidden shadow-lg group cursor-pointer"
-      onClick={handleClick}
     >
       <div className="relative w-full aspect-[16/9] overflow-hidden bg-black">
         <Image
@@ -48,6 +42,6 @@ export function CardItem({ project, priority }: CardItemProps) {
           <TagList tags={tags.map((tag) => tag.content)} />
         </div>
       </div>
-    </li>
+    </Link>
   );
 }

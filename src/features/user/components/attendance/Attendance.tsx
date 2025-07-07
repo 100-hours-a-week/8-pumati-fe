@@ -49,6 +49,7 @@ export function Attendance() {
       {isAttendanceModalOpen && (
         <ModalPortal>
           <AlertModal
+            title="운세 확인 모달"
             onClose={() => setIsAttendanceModalOpen(false)}
             buttonText="확인"
             isLoading={isCheckingAttendance}

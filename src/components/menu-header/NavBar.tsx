@@ -52,6 +52,7 @@ export function NavBar({ triggerRef }: NavbarProps) {
   return (
     <nav
       ref={navbarRef}
+      id="navbar-menu"
       className={cn(
         'px-8 bg-white transition-all duration-200 ease-in-out z-40',
         isNavbarOpen ? 'pb-4 border-b border-soft-grey' : 'h-0 overflow-hidden',

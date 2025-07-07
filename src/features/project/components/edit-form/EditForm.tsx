@@ -43,7 +43,7 @@ export function EditForm({ project }: EditFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const auth = useAtomValue(authAtom);
+  const authData = useAtomValue(authAtom);
 
   const methods = useForm<EditProjectForm>({
     defaultValues: {
@@ -62,7 +62,7 @@ export function EditForm({ project }: EditFormProps) {
   const { mutate: editProject } = useEditProject(project.id);
 
   const onSubmit = async (data: EditProjectForm) => {
-    if (!auth?.teamId) {
+    if (!authData?.teamId) {
       alert('팀 정보가 없습니다.');
       return;
     }
@@ -90,7 +90,7 @@ export function EditForm({ project }: EditFormProps) {
       {
         ...data,
         images: curImageUrls,
-        teamId: auth.teamId,
+        teamId: authData.teamId,
       },
       {
         onSuccess: () => {
@@ -104,11 +104,11 @@ export function EditForm({ project }: EditFormProps) {
   };
 
   useEffect(() => {
-    if (teamId !== auth?.teamId) {
+    if (authData && teamId !== authData.teamId) {
       alert('프로젝트 수정 권한이 없습니다.');
       router.replace(PROJECT_PATH.DETAIL(id.toString()));
     }
-  }, [teamId, auth, router, id]);
+  }, [teamId, authData, router, id]);
   return (
     <FormProvider {...methods}>
       <form
@@ -167,7 +167,12 @@ export function EditForm({ project }: EditFormProps) {
           maxTags={5}
           disabled={isSubmitting}
         />
-        <Button type="submit" className="mt-3" isLoading={isSubmitting}>
+        <Button
+          type="submit"
+          className="mt-3"
+          isLoading={isSubmitting}
+          name="수정하기"
+        >
           수정하기
         </Button>
         <div className="flex justify-center mt-3">

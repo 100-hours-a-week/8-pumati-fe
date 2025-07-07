@@ -47,6 +47,9 @@ export function ChatbotButton({
         <button
           className="fixed bottom-6 right-6 z-20 w-12 xs:w-14 h-12 xs:h-14 rounded-full bg-light-green shadow-xl flex items-center justify-center cursor-pointer"
           onClick={handleToggleChatbot}
+          aria-label="마티 챗봇 열기"
+          aria-expanded={isChatbotOpen}
+          aria-controls="chatbot-panel"
         >
           <Image
             src={chatbotImg}

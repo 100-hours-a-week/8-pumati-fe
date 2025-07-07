@@ -37,6 +37,7 @@ export function ImageUploader({ name, value, onChange }: ImageUploaderProps) {
         type="button"
         onClick={handleFileInputClick}
         className="absolute bottom-0 right-1 w-[28px] h-[28px] bg-soft-grey border-2 border-white rounded-full flex items-center justify-center"
+        aria-label="프로필 이미지 업로드"
       >
         <PlusIcon width={24} height={24} fill="var(--color-white)" />
       </button>

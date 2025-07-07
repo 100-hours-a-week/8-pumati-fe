@@ -9,6 +9,14 @@ type UploadBoxProps = {
 export function UploadBox({ onClick, disabled }: UploadBoxProps) {
   return (
     <div
+      role="button"
+      aria-label="이미지 업로드"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          onClick();
+        }
+      }}
       onClick={onClick}
       className={cn(
         'w-full h-32 mt-4 bg-light-grey transition-colors duration-200 rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer border border-dashed border-soft-grey',
