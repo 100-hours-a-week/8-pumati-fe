@@ -5,6 +5,7 @@ export * from './error-boundary';
 export * from './error-fallback';
 export * from './error-handling-wrapper';
 export * from './form';
+export * from './guide-message';
 export * from './header';
 export * from './menu-header';
 export * from './modal';

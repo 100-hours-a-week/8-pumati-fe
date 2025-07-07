@@ -1,8 +1,10 @@
 'use client';
 
-import { AlertModal, ModalPortal } from '@/components';
+import { AlertModal, GuideMessage, ModalPortal } from '@/components';
+import { PROJECT_PATH } from '@/constants';
 import { cn } from '@/utils/style';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 
 type BadgeProps = {
@@ -11,6 +13,8 @@ type BadgeProps = {
   isExpandable?: boolean;
   title?: string;
   priority?: boolean;
+  projectId?: number;
+  isMyProject?: boolean;
 };
 
 export function Badge({
@@ -19,6 +23,8 @@ export function Badge({
   isExpandable,
   title,
   priority,
+  projectId,
+  isMyProject,
 }: BadgeProps) {
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false);
 
@@ -68,7 +74,18 @@ export function Badge({
             onClose={() => setIsBadgeModalOpen(false)}
           >
             <h2 className="text-lg font-semibold mt-4">{title} 팀 뱃지</h2>
-            <div className="my-4">
+            <div className="flex flex-col items-center gap-1">
+              <GuideMessage message="뱃지는 프로젝트 수정페이지에서 변경할 수 있습니다." />
+              {isMyProject && projectId && (
+                <Link
+                  href={PROJECT_PATH.EDIT(projectId.toString())}
+                  className="text-xs text-blue hover:underline"
+                >
+                  뱃지 변경하기
+                </Link>
+              )}
+            </div>
+            <div className="mb-4">
               <Badge imageUrl={imageUrl} size="xl" />
             </div>
           </AlertModal>

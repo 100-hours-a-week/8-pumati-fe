@@ -1,5 +1,9 @@
+'use client';
+
 import { Badge } from '@/features/badge/components';
+import { authAtom } from '@/store/atoms';
 import { cn } from '@/utils/style';
+import { useAtomValue } from 'jotai';
 import { Team } from '../../schemas';
 import { DashboardItem } from './DashboardItem';
 
@@ -8,13 +12,31 @@ type DashboardProps = {
 };
 
 export function Dashboard({ dashboard }: DashboardProps) {
-  const { badgeImageUrl, givedPumatiCount, receivedPumatiCount, rank } =
-    dashboard;
+  const {
+    id,
+    projectId,
+    badgeImageUrl,
+    givedPumatiCount,
+    receivedPumatiCount,
+    rank,
+  } = dashboard;
+
+  const authData = useAtomValue(authAtom);
+
+  const isMyProject = authData?.teamId === id;
 
   const dashboardItems = [
     {
       title: '뱃지',
-      item: <Badge imageUrl={badgeImageUrl} priority />,
+      item: (
+        <Badge
+          imageUrl={badgeImageUrl}
+          isExpandable
+          priority
+          projectId={projectId}
+          isMyProject={isMyProject}
+        />
+      ),
       itemStyle: 'bg-light-blue border-blue',
     },
     {
