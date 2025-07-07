@@ -2,18 +2,18 @@ import { BADGE_TAGS } from '@/constants';
 import { TagItem } from './TagItem';
 
 type TagListProps = {
-  tags: string[];
+  selectedTag: string;
   onToggleTag: (tag: string) => void;
 };
 
-export function TagList({ tags, onToggleTag }: TagListProps) {
+export function TagList({ selectedTag, onToggleTag }: TagListProps) {
   return (
     <ul className="flex flex-wrap justify-center gap-2">
       {BADGE_TAGS.map((tag, index) => (
         <TagItem
           key={`${tag}-${index}`}
           tag={tag}
-          isSelected={tags.includes(tag)}
+          isSelected={selectedTag === tag}
           onToggleTag={onToggleTag}
         />
       ))}

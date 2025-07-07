@@ -1,4 +1,4 @@
-import { getProjectData } from '@/app/(header)/projects/[id]/page';
+import { getProjectData } from '@/app/(menu-header)/projects/[id]/page';
 import { COMMENT_QUERY_KEY } from '@/constants';
 import { getComments } from '@/features/comment/services';
 import { getQueryClient } from '@/libs/tanstack-query';
