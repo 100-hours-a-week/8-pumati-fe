@@ -1,1 +1,1 @@
-export * from './SubscriptionProjects';
+export * from './SubscribedProjects';

@@ -4,7 +4,7 @@ import { SpinnerIcon } from '@/components/icons';
 import { useIntersectionObserve } from '@/hooks';
 import { useSubscribedProjects } from '../../hooks/useSubscribedProjects';
 import { SubscribedProjectItem } from '../subscribed-project-item';
-import { Term } from '../subscribed-projects/SubscriptionProjects';
+import { Term } from '../subscribed-projects/SubscribedProjects';
 
 type SubscribedProjectsListProps = {
   term: Term;

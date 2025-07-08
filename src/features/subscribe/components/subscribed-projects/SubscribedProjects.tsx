@@ -2,8 +2,9 @@
 
 import { accessTokenAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { SubscribedProjectsList } from '../subscribed-projects-list';
+import { SubscribedProjectsFallback } from './SubscribedProjectsFallback';
 import { TermList } from './TermList';
 
 export const TERM_OPTIONS = [2] as const;
@@ -21,7 +22,11 @@ export function SubscribedProjects() {
   return (
     <section className="w-full flex flex-col gap-8 pb-20">
       <TermList selectedTerm={selectedTerm} onTermClick={handleTermClick} />
-      {accessToken && <SubscribedProjectsList term={selectedTerm} />}
+      {accessToken && (
+        <Suspense fallback={<SubscribedProjectsFallback />}>
+          <SubscribedProjectsList term={selectedTerm} />
+        </Suspense>
+      )}
     </section>
   );
 }

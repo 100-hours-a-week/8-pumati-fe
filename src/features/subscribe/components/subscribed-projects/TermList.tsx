@@ -1,5 +1,5 @@
 import { cn } from '@/utils/style';
-import { Term, TERM_OPTIONS } from './SubscriptionProjects';
+import { Term, TERM_OPTIONS } from './SubscribedProjects';
 
 type TermListProps = {
   selectedTerm: Term;
