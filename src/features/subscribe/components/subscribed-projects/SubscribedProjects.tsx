@@ -1,9 +1,11 @@
 'use client';
 
+import { ErrorHandlingWrapper } from '@/components';
 import { accessTokenAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
-import { Suspense, useState } from 'react';
+import { useState } from 'react';
 import { SubscribedProjectsList } from '../subscribed-projects-list';
+import { SubscribedProjectsErrorFallback } from './SubscribedProjectsErrorFallback';
 import { SubscribedProjectsFallback } from './SubscribedProjectsFallback';
 import { TermList } from './TermList';
 
@@ -23,9 +25,12 @@ export function SubscribedProjects() {
     <section className="w-full flex flex-col gap-8 pb-20">
       <TermList selectedTerm={selectedTerm} onTermClick={handleTermClick} />
       {accessToken && (
-        <Suspense fallback={<SubscribedProjectsFallback />}>
+        <ErrorHandlingWrapper
+          ErrorFallback={<SubscribedProjectsErrorFallback />}
+          SuspenseFallback={<SubscribedProjectsFallback />}
+        >
           <SubscribedProjectsList term={selectedTerm} />
-        </Suspense>
+        </ErrorHandlingWrapper>
       )}
     </section>
   );
