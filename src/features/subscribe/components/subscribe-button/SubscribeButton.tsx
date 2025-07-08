@@ -3,8 +3,11 @@
 import { SubscribeIcon } from '@/components/icons';
 import { accessTokenAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
-import { useSubscribe, useUnSubscribe } from '../../hooks';
-import { useCheckSubscriptionState } from '../../hooks/useCheckSubscriptionState';
+import {
+  useCheckSubscriptionState,
+  useSubscribe,
+  useUnSubscribe,
+} from '../../hooks';
 
 type SubscribeButtonProps = {
   projectId: number;

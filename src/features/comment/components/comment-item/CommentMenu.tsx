@@ -1,3 +1,5 @@
+'use client';
+
 import { ConfirmModal, ModalPortal } from '@/components';
 import { DotMenuIcon, WarningIcon } from '@/components/icons';
 import { AUTH_PATH } from '@/constants';

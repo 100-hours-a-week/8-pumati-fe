@@ -1,3 +1,5 @@
+'use client';
+
 import { ProfileImage } from '@/components';
 import { COURSE } from '@/constants';
 import { useOutsideClick } from '@/hooks';
