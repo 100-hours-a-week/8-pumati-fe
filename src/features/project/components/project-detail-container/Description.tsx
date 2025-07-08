@@ -5,6 +5,7 @@ import { EditIcon } from '@/components/icons';
 import { PROJECT_PATH } from '@/constants';
 import { Badge } from '@/features/badge/components';
 import { useSendTeamBadge } from '@/features/badge/hooks';
+import { SubscribeButton } from '@/features/subscribe/components';
 import { accessTokenAtom, authAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
@@ -73,15 +74,18 @@ export function Description({
   return (
     <section className="flex flex-col gap-4 mt-4">
       <div className="flex flex-col gap-1">
-        {isMyProject && (
-          <button
-            className="flex justify-center items-center self-end p-1 cursor-pointer hover:bg-light-blue rounded-lg transition-colors duration-150"
-            onClick={handleEditButtonClick}
-            aria-label="프로젝트 수정"
-          >
-            <EditIcon width={20} height={20} />
-          </button>
-        )}
+        <div className="flex justify-end">
+          {isMyProject && (
+            <button
+              className="flex justify-center items-center self-end p-1 cursor-pointer hover:bg-light-blue rounded-lg transition-colors duration-150"
+              onClick={handleEditButtonClick}
+              aria-label="프로젝트 수정"
+            >
+              <EditIcon width={24} height={24} />
+            </button>
+          )}
+          <SubscribeButton projectId={id} />
+        </div>
         <div className="flex justify-between">
           <div className="flex items-center gap-3">
             <Badge

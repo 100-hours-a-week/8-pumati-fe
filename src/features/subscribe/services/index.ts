@@ -1,6 +1,48 @@
 import { ProjectItem } from '@/features/project/schemas';
-import { authInfiniteApiClient } from '@/utils/api-client';
+import { authApiClient, authInfiniteApiClient } from '@/utils/api-client';
 import { Term } from '../components';
+import { SubscribeResponse } from '../schemas';
+
+export const subscribe = async ({
+  projectId,
+  token,
+}: {
+  projectId: number;
+  token: string;
+}) => {
+  return authApiClient<SubscribeResponse>(
+    `/api/projects/${projectId}/subscription`,
+    token,
+    {
+      method: 'POST',
+    },
+  ).then((res) => res.data);
+};
+
+export const unSubscribe = async ({
+  projectId,
+  token,
+}: {
+  projectId: number;
+  token: string;
+}) => {
+  return authApiClient(`/api/projects/${projectId}/subscription`, token, {
+    method: 'DELETE',
+  });
+};
+
+export const checkSubscription = async ({
+  projectId,
+  token,
+}: {
+  projectId: number;
+  token: string;
+}) => {
+  return authApiClient<{ isSubscribed: boolean }>(
+    `/api/projects/${projectId}/subscription`,
+    token,
+  ).then((res) => res.data);
+};
 
 export const getSubscribedProjects = async (
   term: Term,
