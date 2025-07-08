@@ -49,7 +49,7 @@ export const getSubscribedProjects = async (
   token: string,
   cursorTime: string | null,
   cursorId: number = 0,
-  pageSize: number = 10,
+  pageSize: number = 12,
 ) => {
   return authInfiniteApiClient<ProjectItem>(
     `/api/projects/subscription/term/${term}?sort=latest${cursorTime ? `&cursor-time=${cursorTime}` : ''}&cursor-id=${cursorId}&page-size=${pageSize}`,

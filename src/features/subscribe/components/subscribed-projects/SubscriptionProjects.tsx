@@ -19,7 +19,7 @@ export function SubscribedProjects() {
     setSelectedTerm(term);
   };
   return (
-    <section className="w-full flex flex-col gap-8">
+    <section className="w-full flex flex-col gap-8 pb-20">
       <TermList selectedTerm={selectedTerm} onTermClick={handleTermClick} />
       {accessToken && <SubscribedProjectsList term={selectedTerm} />}
     </section>
