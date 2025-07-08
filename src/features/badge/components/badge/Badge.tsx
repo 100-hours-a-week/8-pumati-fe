@@ -39,7 +39,7 @@ export function Badge({
     <>
       <div
         role={isExpandable ? 'button' : undefined}
-        aria-label={`${title} 팀 뱃지`}
+        aria-label={`${title || ''} 팀 뱃지`}
         tabIndex={isExpandable ? 0 : undefined}
         onKeyDown={(e) => {
           if (isExpandable && e.key === 'Enter') {

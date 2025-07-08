@@ -8,7 +8,7 @@ type TermListProps = {
 
 export function TermList({ selectedTerm, onTermClick }: TermListProps) {
   return (
-    <ul className="flex gap-2 overflow-x-auto max-w-full">
+    <ul className="flex justify-center gap-2 overflow-x-auto max-w-full">
       {TERM_OPTIONS.map((term) => (
         <li
           key={term}
@@ -18,7 +18,7 @@ export function TermList({ selectedTerm, onTermClick }: TermListProps) {
           )}
           onClick={() => onTermClick(term)}
         >
-          {term}
+          {term}기
         </li>
       ))}
     </ul>
