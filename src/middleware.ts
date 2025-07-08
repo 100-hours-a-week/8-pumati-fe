@@ -7,6 +7,7 @@ const PROTECTED_ROUTES = [
   /^\/mypage(\/.*)?$/,
   /^\/projects\/new$/,
   /^\/projects\/[^\/]+\/edit$/,
+  /^\/projects\/subscription$/,
 ];
 
 export function middleware(request: NextRequest) {
@@ -43,5 +44,6 @@ export const config = {
     '/mypage/:path*',
     '/projects/new',
     '/projects/:path*/edit',
+    '/projects/subscription',
   ],
 };
