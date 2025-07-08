@@ -14,6 +14,7 @@ export const USER_QUERY_KEY = Object.freeze({
 export const PROJECT_QUERY_KEY = Object.freeze({
   RANKED_PROJECTS: ['projects', 'rank'],
   CHECK_PROJECT_EXISTS: ['projects', 'existence'],
+  SUBSCRIPTION_DATA: ['projects', 'subscription'],
   SUBSCRIBED_PROJECTS: (term: Term) => ['projects', 'subscription', term],
   CHECK_SUBSCRIPTION: (projectId: number) => [
     'projects',

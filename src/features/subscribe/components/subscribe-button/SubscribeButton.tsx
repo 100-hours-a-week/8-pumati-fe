@@ -17,8 +17,8 @@ export function SubscribeButton({ projectId }: SubscribeButtonProps) {
   const accessToken = useAtomValue(accessTokenAtom);
 
   const { data } = useCheckSubscriptionState(projectId);
-  const { mutate: subscribe } = useSubscribe(projectId);
-  const { mutate: unSubscribe } = useUnSubscribe(projectId);
+  const { mutate: subscribe } = useSubscribe();
+  const { mutate: unSubscribe } = useUnSubscribe();
 
   const isSubscribed = !!data?.isSubscribed;
   const request = isSubscribed ? unSubscribe : subscribe;
