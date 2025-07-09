@@ -23,7 +23,7 @@ export function SimpleCardItem({
     <li>
       <Link
         href={PROJECT_PATH.DETAIL(id.toString())}
-        className="flex flex-col gap-2 cursor-pointer px-4 py-3 border rounded-lg border-blue"
+        className="flex flex-col gap-2 cursor-pointer px-4 py-3 border rounded-lg border-light-blue shadow-lg hover:-translate-y-2 transition-transform duration-200"
       >
         <div className="flex gap-4">
           <div className="relative aspect-square xs:aspect-[16/9] h-18 bg-blue-white shrink-0 rounded-lg">

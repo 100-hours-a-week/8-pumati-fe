@@ -1,15 +1,16 @@
-import { PROJECT_QUERY_KEY, STORAGE_KEY } from '@/constants';
+import { PROJECT_QUERY_KEY, STORAGE_KEY, USER_QUERY_KEY } from '@/constants';
 import { getQueryClient } from '@/libs/tanstack-query';
-import { accessTokenAtom } from '@/store/atoms';
+import { accessTokenAtom, authAtom } from '@/store/atoms';
 import { useMutation } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import { NewProject } from '../schemas';
 import { createProject } from '../services';
 
 export function useCreateProject() {
-  const accessToken = useAtomValue(accessTokenAtom);
-
   const queryClient = getQueryClient();
+
+  const authData = useAtomValue(authAtom);
+  const accessToken = useAtomValue(accessTokenAtom);
 
   return useMutation({
     mutationFn: (data: NewProject) =>
@@ -17,6 +18,9 @@ export function useCreateProject() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: PROJECT_QUERY_KEY.RANKED_PROJECTS,
+      });
+      queryClient.invalidateQueries({
+        queryKey: USER_QUERY_KEY.DASHBOARD(authData!.teamId!),
       });
       sessionStorage.removeItem(STORAGE_KEY);
     },

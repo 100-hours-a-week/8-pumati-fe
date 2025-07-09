@@ -1,6 +1,8 @@
 'use client';
 
 import chatbotImg from '@/assets/images/mati-chatbot.png';
+import { accessTokenAtom } from '@/store/atoms';
+import { useAtomValue } from 'jotai';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { Chatting as ChattingType } from '../../schemas';
@@ -29,6 +31,8 @@ export function ChatbotButton({
     },
   ]);
 
+  const accessToken = useAtomValue(accessTokenAtom);
+
   const handleToggleChatbot = () => {
     setIsChatbotOpen((prev) => !prev);
   };
@@ -41,6 +45,9 @@ export function ChatbotButton({
       chattingBottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [chattings, chattingBottomRef]);
+
+  if (!accessToken) return null;
+
   return (
     <>
       {!isChatbotOpen && (

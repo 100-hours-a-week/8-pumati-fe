@@ -11,5 +11,6 @@ export * from './PauseIcon';
 export * from './PlusIcon';
 export * from './ProfileIcon';
 export * from './SpinnerIcon';
+export * from './SubscribeIcon';
 export * from './UploadImageIcon';
 export * from './WarningIcon';
