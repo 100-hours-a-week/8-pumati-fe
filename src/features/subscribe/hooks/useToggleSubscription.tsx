@@ -22,10 +22,35 @@ export function useToggleSubscription() {
 
       return request({ projectId, token });
     },
+    onMutate: async ({ projectId, isSubscribed }) => {
+      await queryClient.cancelQueries({
+        queryKey: PROJECT_QUERY_KEY.CHECK_SUBSCRIPTION(projectId),
+      });
+
+      const prevSubscribedState = queryClient.getQueryData(
+        PROJECT_QUERY_KEY.CHECK_SUBSCRIPTION(projectId),
+      );
+
+      queryClient.setQueryData(
+        PROJECT_QUERY_KEY.CHECK_SUBSCRIPTION(projectId),
+        { isSubscribed: !isSubscribed },
+      );
+
+      return { prevSubscribedState };
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: PROJECT_QUERY_KEY.SUBSCRIPTION_DATA,
       });
+    },
+    onError: (error, variables, context) => {
+      console.log('Failed to toggle subscription with error', error);
+      alert('구독 또는 구독 취소에 실패했습니다.');
+
+      queryClient.setQueryData(
+        PROJECT_QUERY_KEY.CHECK_SUBSCRIPTION(variables.projectId),
+        context?.prevSubscribedState,
+      );
     },
   });
 }
