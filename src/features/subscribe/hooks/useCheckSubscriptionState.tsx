@@ -17,5 +17,8 @@ export function useCheckSubscriptionState(projectId: number) {
         token: accessToken as string,
       }),
     enabled: !!accessToken,
+    staleTime: 1000 * 60 * 5,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 }

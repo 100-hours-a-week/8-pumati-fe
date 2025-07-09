@@ -1,7 +1,6 @@
 import { ProjectItem } from '@/features/project/schemas';
 import { authApiClient, authInfiniteApiClient } from '@/utils/api-client';
 import { Term } from '../components';
-import { SubscribeResponse } from '../schemas';
 
 export const subscribe = async ({
   projectId,
@@ -10,13 +9,9 @@ export const subscribe = async ({
   projectId: number;
   token: string;
 }) => {
-  return authApiClient<SubscribeResponse>(
-    `/api/projects/${projectId}/subscription`,
-    token,
-    {
-      method: 'POST',
-    },
-  ).then((res) => res.data);
+  return authApiClient(`/api/projects/${projectId}/subscription`, token, {
+    method: 'POST',
+  });
 };
 
 export const unSubscribe = async ({
