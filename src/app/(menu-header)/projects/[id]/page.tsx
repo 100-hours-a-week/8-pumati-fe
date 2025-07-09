@@ -15,7 +15,7 @@ type ProjectDetailPageProps = {
   params: Promise<{ id: string }>;
 };
 
-export const getProjectData = cache(async (projectId: string) =>
+const getProjectData = cache(async (projectId: string) =>
   getProject(Number(projectId)),
 );
 
