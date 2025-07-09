@@ -1,4 +1,5 @@
-import { PROJECT_PATH } from '@/constants';
+import { PROJECT_PATH, PROJECT_QUERY_KEY } from '@/constants';
+import { getQueryClient } from '@/libs/tanstack-query';
 import { accessTokenAtom } from '@/store/atoms';
 import { useMutation } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
@@ -10,10 +11,15 @@ export function useDeleteProject() {
 
   const accessToken = useAtomValue(accessTokenAtom);
 
+  const queryClient = getQueryClient();
+
   return useMutation({
     mutationFn: (projectId: number) =>
       deleteProject(projectId, accessToken as string),
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: PROJECT_QUERY_KEY.SUBSCRIPTION_DATA,
+      });
       router.push(PROJECT_PATH.ROOT);
     },
     onError: (error) => {
