@@ -1,9 +1,15 @@
 import { SkeletonBox } from '@/components';
 
-export function SubscribedProjectsFallback() {
+type SubscribedProjectsFallbackProps = {
+  itemCount?: number;
+};
+
+export function SubscribedProjectsFallback({
+  itemCount = 8,
+}: SubscribedProjectsFallbackProps) {
   return (
     <ul className="flex flex-col gap-5 animate-pulse">
-      {Array.from({ length: 8 }, (_, index) => (
+      {Array.from({ length: itemCount }, (_, index) => (
         <li
           key={index}
           className="flex flex-col gap-2 px-4 py-3 rounded-lg bg-light-grey"

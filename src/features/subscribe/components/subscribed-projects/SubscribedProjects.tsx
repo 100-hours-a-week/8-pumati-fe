@@ -4,9 +4,9 @@ import { ErrorHandlingWrapper } from '@/components';
 import { accessTokenAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { useState } from 'react';
+import { SubscribedProjectsErrorFallback } from '../subscribed-projects-error-fallback/SubscribedProjectsErrorFallback';
+import { SubscribedProjectsFallback } from '../subscribed-projects-fallback';
 import { SubscribedProjectsList } from '../subscribed-projects-list';
-import { SubscribedProjectsErrorFallback } from './SubscribedProjectsErrorFallback';
-import { SubscribedProjectsFallback } from './SubscribedProjectsFallback';
 import { TermList } from './TermList';
 
 export const TERM_OPTIONS = [2] as const;

@@ -7,7 +7,7 @@ import { useAtomValue } from 'jotai';
 import { Term } from '../components';
 import { getSubscribedProjects } from '../services';
 
-export function useSubscribedProjects(term: Term) {
+export function useSubscribedProjects(term: Term, pageSize: number = 12) {
   const accessToken = useAtomValue(accessTokenAtom);
 
   return useSuspenseInfiniteQuery({
@@ -18,6 +18,7 @@ export function useSubscribedProjects(term: Term) {
         accessToken as string,
         pageParam.nextCursorTime,
         pageParam.nextCursorId,
+        pageSize,
       ),
     initialPageParam: {
       nextCursorId: 0,
