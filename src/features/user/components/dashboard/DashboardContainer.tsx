@@ -53,11 +53,13 @@ export function DashboardContainer() {
           <button
             className="cursor-pointer"
             onClick={() => setIsEmailNoticeModalOpen(true)}
+            aria-label="주간 품앗이 리포트 이메일 수신 안내 모달 열기"
           >
             <NavArrowIcon width={20} height={20} className="rotate-90" />
           </button>
         </div>
         <ToggleButton
+          title="주간 품앗이 리포트 이메일 수신 여부"
           isOn={authData.hasEmailConsent}
           onToggle={handleToggleEmailConsent}
           isLoading={isPending}

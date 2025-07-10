@@ -3,18 +3,25 @@
 import { cn } from '@/utils/style';
 
 type ToggleButtonProps = {
+  title: string;
   isOn: boolean;
   onToggle: () => void;
   isLoading: boolean;
 };
 
-export function ToggleButton({ isOn, onToggle, isLoading }: ToggleButtonProps) {
+export function ToggleButton({
+  title,
+  isOn,
+  onToggle,
+  isLoading,
+}: ToggleButtonProps) {
   const handleToggle = () => {
     onToggle();
   };
   return (
     <button
       type="button"
+      aria-label={`${title} 토글 버튼`}
       aria-pressed={isOn}
       onClick={handleToggle}
       disabled={isLoading}
