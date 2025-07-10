@@ -1,14 +1,24 @@
 'use client';
 
-import { ErrorHandlingWrapper, ToggleButton, Tooltip } from '@/components';
+import {
+  AlertModal,
+  ErrorHandlingWrapper,
+  ModalPortal,
+  ToggleButton,
+  Tooltip,
+} from '@/components';
 import { NavArrowIcon } from '@/components/icons';
 import { authAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
+import { useState } from 'react';
+import { EmailNoticeModalContent } from '../email-notice-modal-content';
 import { DashboardErrorFallback } from './DashboardErrorFallback';
 import { DashboardFallback } from './DashboardFallback';
 import { DashboardFetcher } from './DashboardFetcher';
 
 export function DashboardContainer() {
+  const [isEmailNoticeModalOpen, setIsEmailNoticeModalOpen] = useState(false);
+
   const authData = useAtomValue(authAtom);
 
   if (!authData) return null;
@@ -32,11 +42,25 @@ export function DashboardContainer() {
           <p className="font-semibold text-dark-grey">
             주간 품앗이 리포트 이메일 수신여부
           </p>
-          <button className="cursor-pointer">
+          <button
+            className="cursor-pointer"
+            onClick={() => setIsEmailNoticeModalOpen(true)}
+          >
             <NavArrowIcon width={20} height={20} className="rotate-90" />
           </button>
         </div>
         <ToggleButton initialValue={false} onToggle={() => {}} />
+        {isEmailNoticeModalOpen && (
+          <ModalPortal>
+            <AlertModal
+              title="주간 품앗이 리포트 이메일 수신 안내"
+              buttonText="확인"
+              onClose={() => setIsEmailNoticeModalOpen(false)}
+            >
+              <EmailNoticeModalContent />
+            </AlertModal>
+          </ModalPortal>
+        )}
       </div>
     </div>
   );
