@@ -5,9 +5,10 @@ import { cn } from '@/utils/style';
 type ToggleButtonProps = {
   isOn: boolean;
   onToggle: () => void;
+  isLoading: boolean;
 };
 
-export function ToggleButton({ isOn, onToggle }: ToggleButtonProps) {
+export function ToggleButton({ isOn, onToggle, isLoading }: ToggleButtonProps) {
   const handleToggle = () => {
     onToggle();
   };
@@ -16,6 +17,7 @@ export function ToggleButton({ isOn, onToggle }: ToggleButtonProps) {
       type="button"
       aria-pressed={isOn}
       onClick={handleToggle}
+      disabled={isLoading}
       className={cn(
         'w-12 h-7 rounded-full border-none outline-none transition-colors duration-200 relative p-0 inline-block shadow-sm cursor-pointer',
         isOn ? 'bg-blue' : 'bg-light-grey',

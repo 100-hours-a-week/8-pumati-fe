@@ -21,7 +21,7 @@ export function DashboardContainer() {
   const [isEmailNoticeModalOpen, setIsEmailNoticeModalOpen] = useState(false);
 
   const authData = useAtomValue(authAtom);
-  const { mutate: toggleEmailConsent } = useToggleEmailConsent();
+  const { mutate: toggleEmailConsent, isPending } = useToggleEmailConsent();
 
   if (!authData) return null;
 
@@ -57,6 +57,7 @@ export function DashboardContainer() {
         <ToggleButton
           isOn={authData.hasEmailConsent}
           onToggle={handleToggleEmailConsent}
+          isLoading={isPending}
         />
         {isEmailNoticeModalOpen && (
           <ModalPortal>
