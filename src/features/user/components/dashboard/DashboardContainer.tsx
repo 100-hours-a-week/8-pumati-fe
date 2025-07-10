@@ -11,6 +11,7 @@ import { NavArrowIcon } from '@/components/icons';
 import { authAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { useState } from 'react';
+import { useToggleEmailConsent } from '../../hooks';
 import { EmailNoticeModalContent } from '../email-notice-modal-content';
 import { DashboardErrorFallback } from './DashboardErrorFallback';
 import { DashboardFallback } from './DashboardFallback';
@@ -20,9 +21,13 @@ export function DashboardContainer() {
   const [isEmailNoticeModalOpen, setIsEmailNoticeModalOpen] = useState(false);
 
   const authData = useAtomValue(authAtom);
+  const { mutate: toggleEmailConsent } = useToggleEmailConsent();
 
   if (!authData) return null;
 
+  const handleToggleEmailConsent = () => {
+    toggleEmailConsent();
+  };
   return (
     <div className="mb-12 w-full">
       <ErrorHandlingWrapper
@@ -49,7 +54,10 @@ export function DashboardContainer() {
             <NavArrowIcon width={20} height={20} className="rotate-90" />
           </button>
         </div>
-        <ToggleButton initialValue={false} onToggle={() => {}} />
+        <ToggleButton
+          isOn={authData.hasEmailConsent}
+          onToggle={handleToggleEmailConsent}
+        />
         {isEmailNoticeModalOpen && (
           <ModalPortal>
             <AlertModal

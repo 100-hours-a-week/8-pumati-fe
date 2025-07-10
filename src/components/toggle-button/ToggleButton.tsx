@@ -1,19 +1,15 @@
 'use client';
 
 import { cn } from '@/utils/style';
-import { useState } from 'react';
 
 type ToggleButtonProps = {
-  initialValue: boolean;
-  onToggle: (isOn: boolean) => void;
+  isOn: boolean;
+  onToggle: () => void;
 };
 
-export function ToggleButton({ initialValue, onToggle }: ToggleButtonProps) {
-  const [isOn, setIsOn] = useState(initialValue);
-
+export function ToggleButton({ isOn, onToggle }: ToggleButtonProps) {
   const handleToggle = () => {
-    setIsOn((prev) => !prev);
-    onToggle(isOn);
+    onToggle();
   };
   return (
     <button
