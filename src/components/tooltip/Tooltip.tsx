@@ -17,7 +17,7 @@ export function Tooltip({ children, direction = 'left' }: TooltipProps) {
       />
       <div
         className={cn(
-          'absolute top-6 right-0 p-4 hidden group-hover:block text-sm bg-black/80 text-white shadow-lg rounded-lg w-xs',
+          'absolute top-6 right-0 p-4 hidden group-hover:flex group-hover:flex-col group-hover:gap-1 text-sm bg-black/80 text-white shadow-lg rounded-lg w-xs',
           direction === 'right' && 'translate-x-full',
         )}
       >

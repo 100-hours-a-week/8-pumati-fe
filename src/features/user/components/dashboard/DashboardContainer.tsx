@@ -43,6 +43,9 @@ export function DashboardContainer() {
               이메일을 수신에 동의하면 매주 월요일 주간 품앗이 리포트가
               발송됩니다.
             </p>
+            <p>
+              발송되는 이메일은 회원가입 시 등록하신 이메일 주소로 전송됩니다.
+            </p>
           </Tooltip>
           <p className="font-semibold text-dark-grey">
             주간 품앗이 리포트 이메일 수신여부
