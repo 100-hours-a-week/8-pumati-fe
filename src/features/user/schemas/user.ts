@@ -17,8 +17,7 @@ export const authDataSchema = z.object({
   createdAt: z.string().datetime(),
   modifiedAt: z.string().datetime(),
   isSocial: z.boolean(),
-  emailOptInAt: z.string().datetime().nullable(),
-  emailOptOutAt: z.string().datetime().nullable(),
+  hasEmailConsent: z.boolean(),
 });
 
 export type AuthData = z.infer<typeof authDataSchema>;

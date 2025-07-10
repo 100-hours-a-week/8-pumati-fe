@@ -38,3 +38,9 @@ export const withdraw = async (token: string) => {
     credentials: 'include',
   });
 };
+
+export const toggleEmailConsent = async (token: string) => {
+  return authApiClient('/api/members/me/email-consent', token, {
+    method: 'PATCH',
+  });
+};
