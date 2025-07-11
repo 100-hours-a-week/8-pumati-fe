@@ -26,7 +26,7 @@ export function ChattingItem({ content, isUser }: ChattingItemProps) {
       )}
       <pre
         className={cn(
-          'text-sm px-3 py-2 bg-white rounded-xl max-w-4/5 whitespace-pre-wrap break-words',
+          'text-sm px-3 py-2 bg-white rounded-xl max-w-4/5 w-fit whitespace-pre-wrap break-words',
           isUser && 'self-end',
         )}
       >
