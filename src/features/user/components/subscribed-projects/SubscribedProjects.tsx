@@ -9,7 +9,7 @@ export function SubscribedProjects() {
   const authData = useAtomValue(authAtom);
 
   const { data } = useSubscribedProjects(authData!.term as Term, 3);
-  const projects = data.pages.flatMap((page) => page.data);
+  const projects = data.pages.flatMap((page) => page.data).slice(0, 3);
   return (
     <ul className="flex flex-col gap-5">
       {projects.map((project) => (
