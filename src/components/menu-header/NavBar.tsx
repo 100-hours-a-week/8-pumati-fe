@@ -27,11 +27,15 @@ export function NavBar({ triggerRef }: NavbarProps) {
       href: ROOT_PATH,
     },
     {
-      label: '프로젝트',
+      label: '프로젝트 둘러보기',
       href: PROJECT_PATH.ROOT,
     },
     ...(isLoggedIn
       ? [
+          {
+            label: '구독 프로젝트 둘러보기',
+            href: PROJECT_PATH.SUBSCRIPTION,
+          },
           {
             label: '마이페이지',
             href: USER_PATH.MY_PAGE,

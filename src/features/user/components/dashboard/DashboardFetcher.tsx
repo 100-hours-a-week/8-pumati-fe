@@ -22,12 +22,14 @@ export function DashboardFetcher() {
         <>
           <div className="flex justify-between items-end w-full">
             <h2 className="text-lg font-semibold">대시보드</h2>
-            <button
-              className="text-sm text-blue cursor-pointer hover:underline"
-              onClick={handleBrowseProjectsClick}
-            >
-              프로젝트 보러가기
-            </button>
+            {dashboard.projectId && (
+              <button
+                className="text-sm text-blue cursor-pointer hover:underline"
+                onClick={handleBrowseProjectsClick}
+              >
+                프로젝트 보러가기
+              </button>
+            )}
           </div>
           <Dashboard dashboard={dashboard} />
         </>

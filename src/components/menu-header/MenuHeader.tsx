@@ -10,7 +10,12 @@ import { useRef } from 'react';
 import { CancelIcon, LogoIcon, MenuIcon, NavArrowIcon } from '../icons';
 import { NavBar } from './NavBar';
 
-const NO_BACK_BUTTON_PATHS = [ROOT_PATH, PROJECT_PATH.ROOT, USER_PATH.MY_PAGE];
+const NO_BACK_BUTTON_PATHS = [
+  ROOT_PATH,
+  PROJECT_PATH.ROOT,
+  PROJECT_PATH.SUBSCRIPTION,
+  USER_PATH.MY_PAGE,
+];
 
 export function MenuHeader() {
   const pathname = usePathname();
