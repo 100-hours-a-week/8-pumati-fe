@@ -2,8 +2,8 @@
 
 import { AlertModal, Button, ModalPortal } from '@/components';
 import { SmallIcon } from '@/components/icons/SmallIcon';
-import { AUTH_PATH } from '@/constants';
-import { accessTokenAtom, isLoggedInAtom } from '@/store/atoms';
+import { AUTH_PATH, DEFAULT_DEV_LUCK } from '@/constants';
+import { accessTokenAtom, devLuckAtom, isLoggedInAtom } from '@/store/atoms';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -12,26 +12,29 @@ import { useAttendanceState, useCheckAttendance } from '../../hooks';
 export function Attendance() {
   const router = useRouter();
 
-  const [luckMessage, setLuckMessage] = useState('운세 생성중...');
   const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
+
+  const devLuck = useAtomValue(devLuckAtom);
   const isLoggedIn = useAtomValue(isLoggedInAtom);
   const accessToken = useAtomValue(accessTokenAtom);
 
-  const { mutateAsync: checkAttendance, isPending: isCheckingAttendance } =
+  const { mutate: checkAttendance, isPending: isCheckingAttendance } =
     useCheckAttendance();
   const { data: attendanceState } = useAttendanceState();
 
   const isAttendanceChecked = attendanceState?.today && isLoggedIn;
 
-  const handleAttendance = async () => {
+  const handleAttendance = () => {
     if (!isLoggedIn || !accessToken) {
       router.push(AUTH_PATH.LOGIN);
       return;
     }
 
     setIsAttendanceModalOpen(true);
-    const attendanceData = await checkAttendance(accessToken);
-    setLuckMessage(attendanceData!.devLuck.overall);
+
+    if (devLuck === DEFAULT_DEV_LUCK) {
+      checkAttendance(accessToken);
+    }
   };
   return (
     <article className="flex flex-col items-center justify-center gap-4 p-8 my-10 bg-blue-white">
@@ -39,12 +42,8 @@ export function Attendance() {
       <p className="text-center mb-4">
         하루 한 번, 출석 체크하고 <br /> 개발자의 운세도 받아가세요!
       </p>
-      <Button
-        size="md"
-        onClick={handleAttendance}
-        disabled={isAttendanceChecked}
-      >
-        {isAttendanceChecked ? '출석 체크 완료' : '출석 체크'}
+      <Button size="md" onClick={handleAttendance}>
+        {isAttendanceChecked ? '운세 확인' : '출석 체크'}
       </Button>
       {isAttendanceModalOpen && (
         <ModalPortal>
@@ -59,7 +58,7 @@ export function Attendance() {
               <h3 className="text-lg font-semibold">오늘의 코딩 운세</h3>
             </div>
             <p className="text-center font-medium w-full break-words">
-              {luckMessage}
+              {devLuck}
             </p>
           </AlertModal>
         </ModalPortal>
