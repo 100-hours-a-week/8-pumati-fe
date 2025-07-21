@@ -52,11 +52,11 @@ export function SimpleCardItem({
             )}
           </div>
           <div className="grow">
-            <div className="flex justify-between items-center gap-4">
+            <div className="flex justify-between items-start gap-4">
               <h3 className="font-bold text-lg line-clamp-2 whitespace-pre-wrap break-all">
                 {title}
               </h3>
-              <span className="text-sm text-dark-grey font-semibold">
+              <span className="text-sm text-dark-grey font-semibold shrink-0">
                 {teamNumber}팀
               </span>
             </div>
