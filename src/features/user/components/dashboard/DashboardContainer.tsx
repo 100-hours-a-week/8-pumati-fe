@@ -25,17 +25,21 @@ export function DashboardContainer() {
 
   if (!authData) return null;
 
+  const isTrainee = authData && authData.course;
+
   const handleToggleEmailConsent = () => {
     toggleEmailConsent();
   };
   return (
     <div className="mb-12 w-full">
-      <ErrorHandlingWrapper
-        ErrorFallback={<DashboardErrorFallback />}
-        SuspenseFallback={<DashboardFallback />}
-      >
-        <DashboardFetcher />
-      </ErrorHandlingWrapper>
+      {isTrainee && (
+        <ErrorHandlingWrapper
+          ErrorFallback={<DashboardErrorFallback />}
+          SuspenseFallback={<DashboardFallback />}
+        >
+          <DashboardFetcher />
+        </ErrorHandlingWrapper>
+      )}
       <div className="flex justify-between items-center w-fullw-full mt-4">
         <div className="flex items-center gap-3">
           <Tooltip direction="right">
