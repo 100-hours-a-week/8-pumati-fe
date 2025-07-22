@@ -11,7 +11,7 @@ import BrowseSubscribedProjectsButton from './BrowseSubscribedProjectsButton';
 export function SubscribedProjects() {
   const authData = useAtomValue(authAtom);
 
-  const { data } = useSubscribedProjects(authData!.term as Term, 3);
+  const { data } = useSubscribedProjects((authData?.term as Term) || 2, 3);
   const projects = data.pages.flatMap((page) => page.data).slice(0, 3);
 
   const hasSubscribedProjects = projects.length > 0;

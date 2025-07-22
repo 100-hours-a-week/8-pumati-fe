@@ -25,8 +25,8 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
-# **next.config.ts를 처리하기 위한 의존성 명시적 설치**
-RUN pnpm add next@latest typescript ts-node @types/node --save-dev
+# **next.config.ts를 처리하기 위한 의존성 명시적 설치 (package.json 버전 사용)**
+RUN pnpm add typescript ts-node @types/node --save-dev
 
 # **소스 코드 먼저 복사 (next.config.ts 포함)**
 COPY . .
